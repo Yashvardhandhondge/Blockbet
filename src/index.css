@@ -81,6 +81,15 @@
   .loading-shimmer {
     @apply bg-gradient-to-r from-transparent via-white/5 to-transparent bg-[length:1000px_100%] animate-shimmer;
   }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
 }
 
 ::-webkit-scrollbar {
