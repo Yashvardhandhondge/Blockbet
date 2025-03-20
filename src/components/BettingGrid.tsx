@@ -91,26 +91,26 @@ const BettingGrid = () => {
     const pool = miningPools.find(p => p.id === poolId);
     switch (poolId) {
       case 'foundry':
-        return { background: 'linear-gradient(135deg, #ff8a00, #da1b60)' };
+        return { background: 'linear-gradient(135deg, #441800, #1a0a00)' };
       case 'antpool':
-        return { background: 'linear-gradient(135deg, #ff416c, #ff4b2b)' };
+        return { background: 'linear-gradient(135deg, #4a1212, #1a0505)' };
       case 'sbicrypto':
-        return { background: 'linear-gradient(135deg, #4776e6, #8e54e9)' };
+        return { background: 'linear-gradient(135deg, #251458, #0e0529)' };
       case 'f2pool':
-        return { background: 'linear-gradient(135deg, #2193b0, #6dd5ed)' };
+        return { background: 'linear-gradient(135deg, #0e2a36, #051318)' };
       case 'binance':
-        return { background: 'linear-gradient(135deg, #f7971e, #ffd200)' };
+        return { background: 'linear-gradient(135deg, #3e2b00, #1a1200)' };
       case 'viabtc':
-        return { background: 'linear-gradient(135deg, #56ab2f, #a8e063)' };
+        return { background: 'linear-gradient(135deg, #1c2e12, #0b1307)' };
       case 'whitepool':
-        return { background: 'linear-gradient(135deg, #9b87f5, #7e69ab)' };
+        return { background: 'linear-gradient(135deg, #272250, #0f0c1c)' };
       case 'slushpool':
-        return { background: 'linear-gradient(135deg, #0ea5e9, #1eaedb)' };
+        return { background: 'linear-gradient(135deg, #0a2a3d, #06141d)' };
       case 'poolin':
-        return { background: 'linear-gradient(135deg, #16a085, #2ecc71)' };
+        return { background: 'linear-gradient(135deg, #0a2a22, #04120e)' };
       case 'unknown':
       default:
-        return { background: 'linear-gradient(135deg, #485563, #29323c)' };
+        return { background: 'linear-gradient(135deg, #2a2a2a, #121212)' };
     }
   };
   
@@ -132,18 +132,26 @@ const BettingGrid = () => {
     
     return (
       <div className="w-full h-full flex items-center justify-center bg-white text-sm font-bold" 
-           style={{ color: poolId === 'foundry' ? '#ff8a00' : 
-                          poolId === 'antpool' ? '#ff416c' :
-                          poolId === 'sbicrypto' ? '#4776e6' :
-                          poolId === 'f2pool' ? '#2193b0' :
-                          poolId === 'binance' ? '#f7971e' :
-                          poolId === 'viabtc' ? '#56ab2f' :
-                          poolId === 'whitepool' ? '#9b87f5' :
-                          poolId === 'slushpool' ? '#0ea5e9' :
-                          poolId === 'poolin' ? '#16a085' : '#485563' }}>
+           style={{ color: poolId === 'foundry' ? '#884400' : 
+                          poolId === 'antpool' ? '#8a2222' :
+                          poolId === 'sbicrypto' ? '#4c2a99' :
+                          poolId === 'f2pool' ? '#1e5266' :
+                          poolId === 'binance' ? '#8a5700' :
+                          poolId === 'viabtc' ? '#3e6428' :
+                          poolId === 'whitepool' ? '#5a4fa5' :
+                          poolId === 'slushpool' ? '#1c6c99' :
+                          poolId === 'poolin' ? '#1c7a66' : '#485563' }}>
         {firstLetter}
       </div>
     );
+  };
+  
+  // Chip color gradients
+  const getChipGradient = (value: number) => {
+    if (value >= 500000) return "bg-gradient-to-r from-[#481818] to-[#301010]";
+    if (value >= 50000) return "bg-gradient-to-r from-[#18184a] to-[#101030]";
+    if (value >= 10000) return "bg-gradient-to-r from-[#18483a] to-[#10302a]";
+    return "bg-gradient-to-r from-[#5a4a18] to-[#2a2210]";
   };
   
   return (
@@ -173,11 +181,11 @@ const BettingGrid = () => {
       
       {/* Roulette table */}
       <div className="mb-6">
-        <Card className="bg-btc-dark border-white/10 p-4 rounded-xl">
+        <Card className="bg-[#121212] border-white/10 p-4 rounded-xl">
           {/* Zero slot */}
           <div className="mb-4 relative">
             <div 
-              className="h-16 w-full bg-gradient-to-r from-green-600 to-green-800 rounded-lg flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity border-2 border-white/20"
+              className="h-16 w-full bg-gradient-to-r from-[#1c322c] to-[#0f1a18] rounded-lg flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity border-2 border-white/20"
               onClick={() => handlePlaceBet(null)}
             >
               <div className="text-white text-xl font-bold">Empty Block</div>
@@ -187,7 +195,7 @@ const BettingGrid = () => {
                 {getBetsOnPool(null).map((bet) => (
                   <div 
                     key={bet.id}
-                    className="w-6 h-6 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg"
+                    className="w-6 h-6 rounded-full bg-gradient-to-r from-[#5a4a18] to-[#2a2210] flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg"
                   >
                     {bet.amount / 1000}k
                   </div>
@@ -219,7 +227,7 @@ const BettingGrid = () => {
                   {getBetsOnPool(pool.id).map((bet) => (
                     <div 
                       key={bet.id}
-                      className="w-6 h-6 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg"
+                      className={`w-6 h-6 rounded-full ${getChipGradient(bet.amount)} flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg`}
                     >
                       {bet.amount / 1000}k
                     </div>
@@ -234,7 +242,7 @@ const BettingGrid = () => {
       {/* Chip rack and bet controls */}
       <div className="flex flex-col md:flex-row gap-4 items-start">
         {/* Chip rack */}
-        <Card className="bg-btc-darker border-white/10 p-3 rounded-xl min-w-[260px]">
+        <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
           <div className="flex flex-wrap gap-2 justify-center">
             {CHIP_VALUES.map(value => (
@@ -243,17 +251,14 @@ const BettingGrid = () => {
                 className={cn(
                   "w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110",
                   selectedChip === value 
-                    ? "ring-3 ring-btc-orange ring-offset-2 ring-offset-btc-darker transform scale-110" 
+                    ? "ring-3 ring-btc-orange ring-offset-2 ring-offset-[#0a0a0a] transform scale-110" 
                     : "transform scale-100"
                 )}
                 onClick={() => handleSelectChip(value)}
               >
                 <div className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold bg-gradient-to-r border-2 border-white shadow-lg",
-                  value >= 500000 ? "from-red-500 to-red-700" :
-                  value >= 50000 ? "from-blue-500 to-blue-700" :
-                  value >= 10000 ? "from-green-500 to-green-700" :
-                  "from-yellow-400 to-yellow-600"
+                  "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg",
+                  getChipGradient(value)
                 )}>
                   {value >= 1000000 ? "1M" : 
                    value >= 100000 ? "100k" :
@@ -266,7 +271,7 @@ const BettingGrid = () => {
         </Card>
         
         {/* Bet summary */}
-        <Card className="flex-1 bg-btc-darker border-white/10 p-3 rounded-xl">
+        <Card className="flex-1 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>
             <Button 
@@ -291,7 +296,7 @@ const BettingGrid = () => {
                 {bets.map(bet => {
                   const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
                   return (
-                    <div key={bet.id} className="flex justify-between bg-btc-dark/50 p-1.5 rounded text-xs">
+                    <div key={bet.id} className="flex justify-between bg-[#151515]/50 p-1.5 rounded text-xs">
                       <div className="text-white">
                         {pool ? pool.name : 'Empty Block'}
                       </div>

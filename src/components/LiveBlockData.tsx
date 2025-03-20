@@ -63,7 +63,7 @@ const StatCard = ({ icon, title, value, secondaryText, isHighlighted = false }: 
         : "border-white/10"
     )}>
       <div className="flex items-center mb-3">
-        <div className="rounded-lg bg-btc-dark p-1.5 mr-2">
+        <div className="rounded-lg bg-[#121212] p-1.5 mr-2">
           {icon}
         </div>
         <div className="text-sm text-white/70">{title}</div>

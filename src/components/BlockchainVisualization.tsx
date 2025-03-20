@@ -60,26 +60,26 @@ const BlockchainVisualization = () => {
     const pool = miningPools.find(p => p.name === poolName);
     switch (pool?.id) {
       case 'foundry':
-        return { background: 'linear-gradient(135deg, #ff8a00, #da1b60)' };
+        return { background: 'linear-gradient(135deg, #441f00, #000000)' };
       case 'antpool':
-        return { background: 'linear-gradient(135deg, #ff416c, #ff4b2b)' };
+        return { background: 'linear-gradient(135deg, #4a1212, #000000)' };
       case 'sbicrypto':
-        return { background: 'linear-gradient(135deg, #4776e6, #8e54e9)' };
+        return { background: 'linear-gradient(135deg, #2a1258, #000000)' };
       case 'f2pool':
-        return { background: 'linear-gradient(135deg, #2193b0, #6dd5ed)' };
+        return { background: 'linear-gradient(135deg, #0e2a36, #000000)' };
       case 'binance':
-        return { background: 'linear-gradient(135deg, #f7971e, #ffd200)' };
+        return { background: 'linear-gradient(135deg, #3e2b00, #000000)' };
       case 'viabtc':
-        return { background: 'linear-gradient(135deg, #56ab2f, #a8e063)' };
+        return { background: 'linear-gradient(135deg, #1c2e12, #000000)' };
       case 'whitepool':
-        return { background: 'linear-gradient(135deg, #9b87f5, #7e69ab)' };
+        return { background: 'linear-gradient(135deg, #27224f, #000000)' };
       case 'slushpool':
-        return { background: 'linear-gradient(135deg, #0ea5e9, #1eaedb)' };
+        return { background: 'linear-gradient(135deg, #0a2a3d, #000000)' };
       case 'poolin':
-        return { background: 'linear-gradient(135deg, #16a085, #2ecc71)' };
+        return { background: 'linear-gradient(135deg, #092b23, #000000)' };
       case 'unknown':
       default:
-        return { background: 'linear-gradient(135deg, #485563, #29323c)' };
+        return { background: 'linear-gradient(135deg, #222, #000000)' };
     }
   };
 
@@ -192,11 +192,8 @@ const BlockchainVisualization = () => {
               )}
             >
               {/* Block header with height */}
-              <div className={cn(
-                "pt-3 pb-3 px-4 text-center text-white font-medium backdrop-blur-sm transition-all duration-300 border-b border-white/10",
-                getPoolColorClass(block.minedBy)
-              )}>
-                {block.height}
+              <div className="pt-3 pb-3 px-4 text-center bg-black flex items-center justify-center">
+                <span className="text-[#7EB5FF] font-medium">{block.height}</span>
               </div>
               
               {/* Block content with glossy effect */}
@@ -207,11 +204,11 @@ const BlockchainVisualization = () => {
                 {/* Glossy overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
                 
-                <div className="text-white font-medium mb-1 backdrop-blur-xs group-hover:text-white/90 transition-colors">{block.feesRangeText}</div>
-                <div className="text-yellow-300 text-sm mb-1 group-hover:text-yellow-200 transition-colors">{block.feeRange}</div>
-                <div className="text-white font-bold text-xl mb-2 group-hover:text-white/90 transition-colors">{block.totalBtc} BTC</div>
-                <div className="text-white/90 text-sm group-hover:text-white/80 transition-colors">{block.transactionCount.toLocaleString()} transactions</div>
-                <div className="mt-auto text-white/80 text-sm group-hover:text-white/70 transition-colors">{formatTimeAgo(block.timestamp)}</div>
+                <div className="text-white font-medium mb-1 backdrop-blur-xs group-hover:text-white/90 transition-colors text-center">{block.feesRangeText}</div>
+                <div className="text-yellow-300 text-sm mb-1 group-hover:text-yellow-200 transition-colors text-center">{block.feeRange}</div>
+                <div className="text-white font-bold text-xl mb-2 group-hover:text-white/90 transition-colors text-center">{block.totalBtc} BTC</div>
+                <div className="text-white/90 text-sm group-hover:text-white/80 transition-colors text-center">{block.transactionCount.toLocaleString()} transactions</div>
+                <div className="mt-auto text-white/80 text-sm group-hover:text-white/70 transition-colors text-center">{formatTimeAgo(block.timestamp)}</div>
               </div>
               
               {/* Pool info with glass effect */}

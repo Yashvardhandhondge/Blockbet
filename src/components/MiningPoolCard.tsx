@@ -17,6 +17,28 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
   // Animate hashrate percentage
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
+  // Get a darker gradient based on the pool's color
+  const getPoolDarkGradient = () => {
+    switch(pool.id) {
+      case 'antpool':
+        return 'bg-gradient-to-br from-[#4a1212] to-[#1a0505]';
+      case 'binance':
+        return 'bg-gradient-to-br from-[#3e2b00] to-[#1a1200]';
+      case 'f2pool':
+        return 'bg-gradient-to-br from-[#0e2a36] to-[#051318]';
+      case 'foundry':
+        return 'bg-gradient-to-br from-[#441f00] to-[#1a0a00]';
+      case 'slushpool':
+        return 'bg-gradient-to-br from-[#0a2a3d] to-[#06141d]';
+      case 'poolin':
+        return 'bg-gradient-to-br from-[#0a2a22] to-[#04120e]';
+      case 'viabtc':
+        return 'bg-gradient-to-br from-[#1c2e12] to-[#0b1307]';
+      default:
+        return 'bg-gradient-to-br from-[#2a2a2a] to-[#121212]';
+    }
+  };
+  
   return (
     <div 
       className={cn(
@@ -37,7 +59,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
       {/* Background gradient based on pool color */}
       <div className={cn(
         "absolute inset-0 opacity-30 transition-opacity duration-300",
-        pool.colorClass,
+        getPoolDarkGradient(),
         isSelected ? "opacity-40" : "opacity-20"
       )}></div>
       
@@ -53,7 +75,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
           </div>
           <div className={cn(
             "h-10 w-10 rounded-lg flex items-center justify-center",
-            pool.colorClass
+            getPoolDarkGradient()
           )}>
             <span className="text-xs font-medium text-white">
               {Math.round(displayedHashrate)}%
@@ -98,7 +120,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
           <div 
             className={cn(
               "h-full transition-all duration-1000 ease-out",
-              pool.colorClass
+              getPoolDarkGradient()
             )}
             style={{ width: `${displayedHashrate}%` }}
           ></div>

@@ -59,12 +59,34 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
     }, 1500);
   };
   
+  // Get a darker gradient based on the pool's color
+  const getPoolDarkGradient = () => {
+    switch(selectedPool.id) {
+      case 'antpool':
+        return 'bg-gradient-to-br from-[#4a1212] to-[#1a0505]';
+      case 'binance':
+        return 'bg-gradient-to-br from-[#3e2b00] to-[#1a1200]';
+      case 'f2pool':
+        return 'bg-gradient-to-br from-[#0e2a36] to-[#051318]';
+      case 'foundry':
+        return 'bg-gradient-to-br from-[#441f00] to-[#1a0a00]';
+      case 'slushpool':
+        return 'bg-gradient-to-br from-[#0a2a3d] to-[#06141d]';
+      case 'poolin':
+        return 'bg-gradient-to-br from-[#0a2a22] to-[#04120e]';
+      case 'viabtc':
+        return 'bg-gradient-to-br from-[#1c2e12] to-[#0b1307]';
+      default:
+        return 'bg-gradient-to-br from-[#2a2a2a] to-[#121212]';
+    }
+  };
+  
   return (
     <div className="glass-panel rounded-xl p-5 border border-white/10">
       <div className="flex items-center mb-4">
         <div className={cn(
           "h-8 w-8 rounded-lg flex items-center justify-center mr-3",
-          selectedPool.colorClass
+          getPoolDarkGradient()
         )}>
           <span className="text-xs font-medium text-white">
             {Math.round(selectedPool.hashRatePercent)}%
@@ -84,7 +106,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
                 type="number"
                 value={betAmount}
                 onChange={(e) => handleBetChange(parseFloat(e.target.value))}
-                className="pr-16 bg-btc-dark/80 border-white/10 focus:border-btc-orange focus:ring-btc-orange/20"
+                className="pr-16 bg-[#121212]/80 border-white/10 focus:border-btc-orange focus:ring-btc-orange/20"
                 step={0.0001}
                 min={0}
                 max={maxBet}
@@ -161,7 +183,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
           </Button>
         </div>
         
-        <div className="bg-btc-dark/40 rounded-xl p-4">
+        <div className="bg-[#121212]/40 rounded-xl p-4">
           <div className="mb-4">
             <div className="text-sm text-white/70 mb-1">Potential Win</div>
             <div className="flex items-end">
