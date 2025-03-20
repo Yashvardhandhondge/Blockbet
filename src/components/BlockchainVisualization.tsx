@@ -1,9 +1,7 @@
-
 import { useEffect, useState } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
-import { ArrowUpDown, ArrowDown, RefreshCw } from 'lucide-react';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
@@ -39,9 +37,7 @@ const BlockchainVisualization = () => {
       timestamp: Date.now(),
       size: Math.floor(Math.random() * 2000000) + 500000,
       transactionCount: Math.floor(Math.random() * 3000) + 1000,
-      fees: parseFloat((Math.random() * 0.5 + 0.1).toFixed(2)),
-      feeRate: Math.floor(Math.random() * 5) + 1,
-      amount: parseFloat((Math.random() * 0.05 + 0.01).toFixed(3))
+      fees: parseFloat((Math.random() * 0.5 + 0.1).toFixed(2))
     };
     
     // Update blocks state
@@ -51,164 +47,106 @@ const BlockchainVisualization = () => {
     }, 500);
   };
   
-  // Function to get pool color class based on fee rate
-  const getBlockColorClass = (feeRate: number): string => {
-    if (feeRate >= 4) return 'bg-gradient-to-r from-cyan-600 to-cyan-500';
-    if (feeRate >= 3) return 'bg-gradient-to-r from-blue-700 to-blue-600';
-    if (feeRate >= 2) return 'bg-gradient-to-r from-purple-700 to-purple-600';
-    return 'bg-gradient-to-r from-green-700 to-green-600';
-  };
-
-  const getFeeLabelText = (feeRate: number): string => {
-    return `~${feeRate} sat/vB`;
-  };
-
-  const getFeeLabelDetailText = (feeRate: number): string => {
-    if (feeRate >= 4) return `2 - 1,000 sat/vB`;
-    if (feeRate >= 3) return `2 - 500 sat/vB`;
-    if (feeRate >= 2) return `2 - 40 sat/vB`;
-    return `1 - ${Math.floor(Math.random() * 300) + 1} sat/vB`;
+  // Function to get pool color class
+  const getPoolColorClass = (poolName: string): string => {
+    const pool = miningPools.find(p => p.name === poolName);
+    return pool?.colorClass || 'bg-pool-unknown';
   };
   
   return (
-    <div className="w-full">
-      {/* Blockchain visualization header */}
-      <div className="flex justify-center items-center mb-1 text-white/60 py-3 relative">
-        <ArrowUpDown className="h-4 w-4 absolute left-0" />
-        {blocks.map((block, index) => (
-          <div key={`height-${block.height}`} className="px-10 text-cyan-400 font-mono text-lg">
-            {block.height}
-          </div>
-        ))}
-        <div className="absolute right-0 flex items-center">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          <ArrowDown className="h-4 w-4" />
+    <div className="w-full bg-btc-darker rounded-xl overflow-hidden border border-white/5 shadow-xl">
+      <div className="p-4 border-b border-white/5 flex justify-between items-center">
+        <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
+        <div className="flex items-center space-x-2">
+          <div className="h-2 w-2 rounded-full bg-btc-orange animate-pulse"></div>
+          <span className="text-xs text-white/60">Live</span>
         </div>
       </div>
       
-      {/* Blocks visualization */}
-      <div className="flex space-x-1 mb-4 overflow-x-auto pb-2">
-        {blocks.map((block, index) => (
-          <div 
-            key={block.hash} 
-            className="flex-shrink-0 min-w-44 w-44"
-          >
-            <div className={cn(
-              "rounded-md overflow-hidden",
-              getBlockColorClass(block.feeRate)
-            )}>
-              <div className="px-3 pt-3 pb-1 text-white/90">
-                <div className="text-sm font-medium">{getFeeLabelText(block.feeRate)}</div>
-                <div className="text-xs opacity-80">{getFeeLabelDetailText(block.feeRate)}</div>
+      <div className="relative">
+        {/* Pending block animation */}
+        <div className="p-3 border-b border-white/5 bg-btc-dark/50 flex items-center">
+          <div className="flex-shrink-0 mr-4 relative">
+            <div className="h-12 w-12 rounded-lg bg-btc-card flex items-center justify-center overflow-hidden">
+              <div className="font-mono text-xs text-white/70 animate-pulse">
+                ?
+              </div>
+              {/* Progress overlay */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 bg-btc-orange/30 transition-all duration-500 ease-out"
+                style={{ height: `${pendingBlock}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="flex-grow">
+            <div className="flex items-center">
+              <span className="text-sm font-medium text-white/90">Pending Block #{blocks[0].height + 1}</span>
+              <div className="ml-2 px-2 py-0.5 rounded bg-btc-orange/10 border border-btc-orange/20">
+                <span className="text-xs text-btc-orange">Mining...</span>
+              </div>
+            </div>
+            <div className="mt-1 flex items-center space-x-3 text-xs text-white/60">
+              <span>~{Math.floor(100 - pendingBlock)} blocks until found</span>
+              <span>•</span>
+              <span>Unknown pool</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* New block appearing animation */}
+        <div className={cn(
+          "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500",
+          isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}>
+          <div className="bg-btc-dark glass-panel rounded-xl p-6 transform transition-all duration-500 animate-block-appear">
+            <h3 className="text-lg font-medium text-white mb-2">New Block Found!</h3>
+            <p className="text-sm text-white/70">Block #{blocks[0].height + 1} has been mined.</p>
+          </div>
+        </div>
+        
+        {/* Existing blocks */}
+        <div className="overflow-x-auto">
+          {blocks.map((block, index) => (
+            <div 
+              key={block.hash} 
+              className={cn(
+                "p-3 border-b border-white/5 flex items-center hover:bg-white/[0.02] transition-colors",
+                index === 0 && "animate-block-appear"
+              )}
+            >
+              <div className="flex-shrink-0 mr-4">
+                <div className={cn(
+                  "h-12 w-12 rounded-lg flex items-center justify-center",
+                  getPoolColorClass(block.minedBy)
+                )}>
+                  <div className="font-mono text-xs text-white">
+                    {block.height}
+                  </div>
+                </div>
               </div>
               
-              <div className="px-3 pt-2 pb-2 flex flex-col">
-                <div className="text-2xl font-semibold text-white/95">{block.amount} BTC</div>
-                <div className="text-sm text-white/80">{block.transactionCount.toLocaleString()} transactions</div>
-              </div>
-              
-              <div className="px-3 py-1 bg-black/20 text-white/90">
-                <div className="text-sm">
-                  {index === 0 ? 'In ~9 minutes' : `${Math.floor(index * 10) + 4} minutes ago`}
+              <div className="flex-grow min-w-0">
+                <div className="flex items-center mb-1">
+                  <span className="text-sm font-medium text-white/90 truncate mr-2 max-w-[150px] md:max-w-none">
+                    {block.hash.substring(0, 16)}...
+                  </span>
+                  <div className="px-2 py-0.5 rounded bg-white/5 border border-white/10">
+                    <span className="text-xs text-white/70">{formatTimeAgo(block.timestamp)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 md:space-x-3 text-xs text-white/60 overflow-hidden">
+                  <span className="whitespace-nowrap">{block.transactionCount.toLocaleString()} transactions</span>
+                  <span className="hidden md:inline">•</span>
+                  <span className="whitespace-nowrap hidden md:inline">{(block.size / 1000000).toFixed(2)} MB</span>
+                  <span className="hidden md:inline">•</span>
+                  <span className="whitespace-nowrap truncate">
+                    Mined by <span className="text-white/80">{block.minedBy}</span>
+                  </span>
                 </div>
               </div>
             </div>
-            
-            {/* Mining pool label */}
-            <div className="mt-2 flex items-center justify-center">
-              <div className="h-4 w-4 rounded-full bg-orange-500 mr-1 flex items-center justify-center text-xs">
-                ⚡
-              </div>
-              <span className="text-sm text-white/70">
-                {block.minedBy}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* Transaction fees section */}
-      <div className="flex flex-col bg-btc-darker/70 rounded-md border border-white/5 p-4 mb-3">
-        <div className="uppercase text-xs text-white/50 mb-2 tracking-wider">Transaction Fees</div>
-        
-        <div className="flex w-full">
-          <div className="h-10 bg-green-700 text-white text-center flex items-center justify-center px-2 rounded-l-md text-sm w-1/4">
-            No Priority
-          </div>
-          <div className="h-10 bg-gradient-to-r from-green-700 via-yellow-700 to-orange-700 flex-grow rounded-r-md flex">
-            <div className="w-1/3 text-white text-center flex items-center justify-center text-sm">
-              Low Priority
-            </div>
-            <div className="w-1/3 text-white text-center flex items-center justify-center text-sm">
-              Medium Priority
-            </div>
-            <div className="w-1/3 text-white text-center flex items-center justify-center text-sm">
-              High Priority
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex mt-4 justify-between">
-          <div className="text-center">
-            <div className="text-xl font-semibold flex items-baseline">
-              <span className="text-white">2</span>
-              <span className="text-xs text-white/50 ml-1">sat/vB</span>
-            </div>
-            <div className="text-green-500 text-sm font-medium">$0.24</div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-xl font-semibold flex items-baseline">
-              <span className="text-white">2</span>
-              <span className="text-xs text-white/50 ml-1">sat/vB</span>
-            </div>
-            <div className="text-green-500 text-sm font-medium">$0.24</div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-xl font-semibold flex items-baseline">
-              <span className="text-white">2</span>
-              <span className="text-xs text-white/50 ml-1">sat/vB</span>
-            </div>
-            <div className="text-green-500 text-sm font-medium">$0.24</div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-xl font-semibold flex items-baseline">
-              <span className="text-white">2</span>
-              <span className="text-xs text-white/50 ml-1">sat/vB</span>
-            </div>
-            <div className="text-green-500 text-sm font-medium">$0.24</div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Block time section */}
-      <div className="flex flex-col bg-btc-darker/70 rounded-md border border-white/5 p-4">
-        <div className="uppercase text-xs text-white/50 mb-2 tracking-wider">Difficulty Adjustment</div>
-        
-        <div className="w-full h-3 bg-btc-dark rounded overflow-hidden mb-4">
-          <div className="h-full bg-gradient-to-r from-blue-600 to-blue-500" style={{ width: '75%' }}></div>
-        </div>
-        
-        <div className="flex justify-between">
-          <div>
-            <div className="text-xl font-semibold text-white">~9.9 minutes</div>
-            <div className="text-sm text-white/50">Average block time</div>
-          </div>
-          
-          <div className="text-right">
-            <div className="flex items-center justify-end">
-              <div className="text-green-500 mr-1">▲</div>
-              <div className="text-xl font-semibold text-green-500">1.23 %</div>
-            </div>
-            <div className="text-sm text-white/50">Previous: <span className="text-green-500">▲ 1.43 %</span></div>
-          </div>
-          
-          <div className="text-right">
-            <div className="text-xl font-semibold text-white">In ~3 days</div>
-            <div className="text-sm text-white/50">March 23 at 8:06 AM</div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
