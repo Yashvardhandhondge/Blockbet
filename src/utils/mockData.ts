@@ -1,4 +1,3 @@
-
 export interface MiningPool {
   id: string;
   name: string;
@@ -18,6 +17,8 @@ export interface Block {
   size: number;
   transactionCount: number;
   fees: number;
+  feeRate: number;
+  amount: number;
 }
 
 export const miningPools: MiningPool[] = [
@@ -105,49 +106,59 @@ export const miningPools: MiningPool[] = [
 
 export const recentBlocks: Block[] = [
   {
-    height: 800542,
+    height: 888558,
     hash: '000000000000000000026e2c5c201e0963aad79f8ff21f282b468a343c153267',
-    minedBy: 'Foundry USA',
-    timestamp: Date.now() - 540000, // 9 minutes ago
+    minedBy: 'ViaBTC',
+    timestamp: Date.now() - 240000, // 4 minutes ago
     size: 1283452,
-    transactionCount: 2853,
-    fees: 0.32
+    transactionCount: 1736,
+    fees: 0.32,
+    feeRate: 2,
+    amount: 0.026
   },
   {
-    height: 800541,
+    height: 888557,
     hash: '000000000000000000012a7e9d96e8642682f2187b2da245da49d7226e8a82a5',
     minedBy: 'AntPool',
-    timestamp: Date.now() - 1200000, // 20 minutes ago
+    timestamp: Date.now() - 600000, // 10 minutes ago
     size: 1485213,
-    transactionCount: 3124,
-    fees: 0.45
+    transactionCount: 489,
+    fees: 0.45,
+    feeRate: 2,
+    amount: 0.022
   },
   {
-    height: 800540,
+    height: 888556,
     hash: '0000000000000000000ab7c1f29ae8127a89d833a0545823480e9c8e304fa8b6',
-    minedBy: 'Binance Pool',
-    timestamp: Date.now() - 1740000, // 29 minutes ago
+    minedBy: 'ViaBTC',
+    timestamp: Date.now() - 660000, // 11 minutes ago
     size: 932641,
-    transactionCount: 1932,
-    fees: 0.21
+    transactionCount: 2607,
+    fees: 0.21,
+    feeRate: 3,
+    amount: 0.04
   },
   {
-    height: 800539,
+    height: 888555,
     hash: '000000000000000000024a1c85a839be89da34f691cff26356e7c12a2c111fd1',
-    minedBy: 'F2Pool',
-    timestamp: Date.now() - 2580000, // 43 minutes ago
+    minedBy: 'ViaBTC',
+    timestamp: Date.now() - 1440000, // 24 minutes ago
     size: 1129574,
-    transactionCount: 2341,
-    fees: 0.28
+    transactionCount: 3164,
+    fees: 0.28,
+    feeRate: 4,
+    amount: 0.053
   },
   {
-    height: 800538,
+    height: 888554,
     hash: '000000000000000000019ce64c08ea78b923812f9da28ceec53b69c9985d918f',
-    minedBy: 'Foundry USA',
-    timestamp: Date.now() - 3240000, // 54 minutes ago
+    minedBy: 'Unknown',
+    timestamp: Date.now() - 2520000, // 42 minutes ago
     size: 1398732,
-    transactionCount: 2978,
-    fees: 0.36
+    transactionCount: 3428,
+    fees: 0.36,
+    feeRate: 4,
+    amount: 0.066
   }
 ];
 
@@ -167,9 +178,7 @@ export const nextBlockEstimate = {
   feeRate: 32
 };
 
-// Helper to get a random mining pool for simulation
 export const getRandomMiningPool = (): MiningPool => {
-  // Weight by hashrate percentage
   const rand = Math.random() * 100;
   let cumulative = 0;
   
@@ -183,7 +192,6 @@ export const getRandomMiningPool = (): MiningPool => {
   return miningPools[0];
 };
 
-// Helper to format BTC with appropriate precision
 export const formatBTC = (amount: number): string => {
   if (amount < 0.001) {
     return `${amount.toFixed(8)} BTC`;
@@ -194,7 +202,6 @@ export const formatBTC = (amount: number): string => {
   }
 };
 
-// Format time ago
 export const formatTimeAgo = (timestamp: number): string => {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   

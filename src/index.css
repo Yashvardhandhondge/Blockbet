@@ -81,6 +81,23 @@
   .loading-shimmer {
     @apply bg-gradient-to-r from-transparent via-white/5 to-transparent bg-[length:1000px_100%] animate-shimmer;
   }
+  
+  /* New classes for mempool visualization */
+  .block-green {
+    @apply bg-gradient-to-r from-green-700 to-green-600;
+  }
+  
+  .block-purple {
+    @apply bg-gradient-to-r from-purple-700 to-purple-600;
+  }
+  
+  .block-blue {
+    @apply bg-gradient-to-r from-blue-700 to-blue-600;
+  }
+  
+  .block-cyan {
+    @apply bg-gradient-to-r from-cyan-600 to-cyan-500;
+  }
 }
 
 ::-webkit-scrollbar {
