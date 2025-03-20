@@ -55,7 +55,35 @@ const BlockchainVisualization = () => {
     }, 500);
   };
   
-  // Function to get pool color class
+  // Function to get pool gradient class based on the pool name
+  const getPoolGradientStyle = (poolName: string): React.CSSProperties => {
+    const pool = miningPools.find(p => p.name === poolName);
+    switch (pool?.id) {
+      case 'foundry':
+        return { background: 'linear-gradient(135deg, #ff8a00, #da1b60)' };
+      case 'antpool':
+        return { background: 'linear-gradient(135deg, #ff416c, #ff4b2b)' };
+      case 'sbicrypto':
+        return { background: 'linear-gradient(135deg, #4776e6, #8e54e9)' };
+      case 'f2pool':
+        return { background: 'linear-gradient(135deg, #2193b0, #6dd5ed)' };
+      case 'binance':
+        return { background: 'linear-gradient(135deg, #f7971e, #ffd200)' };
+      case 'viabtc':
+        return { background: 'linear-gradient(135deg, #56ab2f, #a8e063)' };
+      case 'whitepool':
+        return { background: 'linear-gradient(135deg, #9b87f5, #7e69ab)' };
+      case 'slushpool':
+        return { background: 'linear-gradient(135deg, #0ea5e9, #1eaedb)' };
+      case 'poolin':
+        return { background: 'linear-gradient(135deg, #16a085, #2ecc71)' };
+      case 'unknown':
+      default:
+        return { background: 'linear-gradient(135deg, #485563, #29323c)' };
+    }
+  };
+
+  // Function to get pool color class (for header)
   const getPoolColorClass = (poolName: string): string => {
     const pool = miningPools.find(p => p.name === poolName);
     return pool?.colorClass || 'bg-pool-unknown';
@@ -159,21 +187,24 @@ const BlockchainVisualization = () => {
             <div 
               key={`${block.height}-${block.hash.substring(0, 10)}`} 
               className={cn(
-                "flex-shrink-0 w-56 rounded-md overflow-hidden",
+                "flex-shrink-0 w-56 rounded-md overflow-hidden shadow-lg",
                 index === 0 ? "animate-block-appear" : ""
               )}
             >
               {/* Block header with height */}
-              <div className="bg-blue-500 pt-3 pb-3 px-4 text-center text-white font-medium">
+              <div className={cn(
+                "pt-3 pb-3 px-4 text-center text-white font-medium backdrop-blur-sm",
+                getPoolColorClass(block.minedBy)
+              )}>
                 {block.height}
               </div>
               
               {/* Block content */}
-              <div className={cn(
-                "p-3 bg-blue-600 flex flex-col h-40",
-                getPoolColorClass(block.minedBy)
-              )}>
-                <div className="text-white font-medium mb-1">{block.feesRangeText}</div>
+              <div 
+                className="p-3 flex flex-col h-40 backdrop-blur-sm" 
+                style={getPoolGradientStyle(block.minedBy)}
+              >
+                <div className="text-white font-medium mb-1 backdrop-blur-xs">{block.feesRangeText}</div>
                 <div className="text-yellow-300 text-sm mb-1">{block.feeRange}</div>
                 <div className="text-white font-bold text-xl mb-2">{block.totalBtc} BTC</div>
                 <div className="text-white text-sm">{block.transactionCount.toLocaleString()} transactions</div>
@@ -181,7 +212,7 @@ const BlockchainVisualization = () => {
               </div>
               
               {/* Pool info */}
-              <div className="bg-gray-900 py-2 px-3 flex items-center space-x-2">
+              <div className="bg-gray-900 py-2 px-3 flex items-center space-x-2 bg-opacity-90 backdrop-blur-sm">
                 <img 
                   src={getPoolLogo(block.minedBy)} 
                   alt={block.minedBy}
