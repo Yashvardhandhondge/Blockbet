@@ -1,12 +1,83 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState, useEffect } from 'react';
+import Navbar from '@/components/Navbar';
+import BlockchainVisualization from '@/components/BlockchainVisualization';
+import BettingGrid from '@/components/BettingGrid';
+import LiveBlockData from '@/components/LiveBlockData';
+import { mockUserBalance } from '@/utils/mockData';
+import { useElementAppear } from '@/lib/animations';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Simulate initial loading
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+  }, []);
+  
+  // Animation for sections
+  const headerAnimation = useElementAppear(!isLoading, { delay: 300 });
+  const blockchainAnimation = useElementAppear(!isLoading, { delay: 600 });
+  const liveDataAnimation = useElementAppear(!isLoading, { delay: 900 });
+  const bettingGridAnimation = useElementAppear(!isLoading, { delay: 1200 });
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-btc-dark pb-20">
+      {/* Loading screen */}
+      <div className={cn(
+        "fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500",
+        isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+      )}>
+        <div className="relative h-20 w-20 mb-6">
+          <div className="absolute inset-0 rounded-full border-4 border-btc-orange/20"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-btc-orange border-r-transparent animate-spin-slow"></div>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-center px-4">
+          <span className="text-gradient">Block</span>
+          <span className="text-white">Bet</span>
+        </h1>
+        <p className="mt-2 text-white/60 text-center px-4">
+          Loading Bitcoin Mining Pool Roulette
+        </p>
       </div>
+      
+      {/* Main content */}
+      <Navbar balance={mockUserBalance.availableBalance} />
+      
+      <main className="container max-w-7xl mx-auto px-4 pt-24">
+        {/* Header */}
+        <div style={headerAnimation.style} className="mb-8 text-center">
+          <div className="inline-block px-3 py-1 rounded-full bg-btc-orange/10 border border-btc-orange/20 text-btc-orange text-sm font-medium mb-4">
+            Bitcoin Mining Pool Prediction Game
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            <span className="text-gradient">Block</span>
+            <span className="text-white">Bet</span>
+            <span className="text-white"> Roulette</span>
+          </h1>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            Predict which mining pool will mine the next Bitcoin block and win BTC rewards
+          </p>
+        </div>
+        
+        {/* Blockchain visualization */}
+        <div style={blockchainAnimation.style} className="mb-8">
+          <BlockchainVisualization />
+        </div>
+        
+        {/* Live network data */}
+        <div style={liveDataAnimation.style} className="mb-10">
+          <LiveBlockData />
+        </div>
+        
+        {/* Betting grid */}
+        <div style={bettingGridAnimation.style}>
+          <BettingGrid />
+        </div>
+      </main>
     </div>
   );
 };
