@@ -169,42 +169,44 @@ const BettingGrid = () => {
   
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 space-y-2 md:space-y-0">
-        <div>
-          <h2 className="text-xl font-bold text-white">Place Your Bets</h2>
-          <p className="text-white/60 text-sm mt-1">Predict which mining pool will mine the next block</p>
+      <div className="flex flex-col items-center mb-6">
+        <div className="px-6 py-3 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] text-white text-xl font-bold mb-3 shadow-[0_0_15px_rgba(139,92,246,0.5)]">
+          Place Your Bets
         </div>
+        <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
+          Predict which mining pool will mine the next block
+        </p>
+      </div>
+      
+      <div className="flex flex-wrap justify-center items-center gap-2 mb-6">
+        <StatCard 
+          icon={<Clock className="h-3 w-3 text-btc-orange" />}
+          title="Betting closes in"
+          value={formatTimeRemaining()}
+          secondaryText=""
+          isHighlighted={true}
+        />
         
-        <div className="flex flex-wrap items-center gap-2">
-          <StatCard 
-            icon={<Clock className="h-3 w-3 text-btc-orange" />}
-            title="Betting closes in"
-            value={formatTimeRemaining()}
-            secondaryText=""
-            isHighlighted={true}
-          />
-          
-          <StatCard 
-            icon={<Zap className="h-3 w-3 text-btc-orange" />}
-            title="Next block"
-            value={`#${miningPools[0].blocksLast24h + 1}`}
-            secondaryText=""
-          />
-          
-          <StatCard 
-            icon={<Clock className="h-3 w-3 text-btc-orange" />}
-            title="Est. Next Block"
-            value={estimatedTime}
-            secondaryText="avg"
-          />
-          
-          <StatCard 
-            icon={<Server className="h-3 w-3 text-btc-orange" />}
-            title="Pending Transactions"
-            value={pendingTxCount.toLocaleString()}
-            secondaryText="mempool"
-          />
-        </div>
+        <StatCard 
+          icon={<Zap className="h-3 w-3 text-btc-orange" />}
+          title="Next block"
+          value={`#${miningPools[0].blocksLast24h + 1}`}
+          secondaryText=""
+        />
+        
+        <StatCard 
+          icon={<Clock className="h-3 w-3 text-btc-orange" />}
+          title="Est. Next Block"
+          value={estimatedTime}
+          secondaryText="avg"
+        />
+        
+        <StatCard 
+          icon={<Server className="h-3 w-3 text-btc-orange" />}
+          title="Pending Transactions"
+          value={pendingTxCount.toLocaleString()}
+          secondaryText="mempool"
+        />
       </div>
       
       <div className="mb-6">

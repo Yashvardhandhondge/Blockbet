@@ -59,8 +59,8 @@ export const StatCard = ({ icon, title, value, secondaryText, isHighlighted = fa
     <div className={cn(
       "rounded-lg px-3 py-1 flex items-center",
       isHighlighted 
-        ? "border-btc-orange/30" 
-        : "glass-panel"
+        ? "bg-gradient-to-r from-[#8B5CF6]/30 to-[#0EA5E9]/30 border border-[#8B5CF6]/40" 
+        : "bg-gradient-to-r from-[#121212] to-[#1a1a1a] border border-white/10"
     )}>
       <div className="flex items-center">
         <div className="mr-1">
