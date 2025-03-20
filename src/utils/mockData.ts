@@ -33,7 +33,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-orange-500',
     odds: 2.92,
     region: 'North America',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/f0584a66-01ae-4b04-9ba0-1ea8129f3a87.png'
   },
   {
     id: 'antpool',
@@ -44,7 +44,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-red-600',
     odds: 4.63,
     region: 'Asia',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/7ab03c18-1a68-4df3-9087-eb896c23f6a4.png'
   },
   {
     id: 'sbicrypto',
@@ -55,7 +55,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-blue-600',
     odds: 8.4,
     region: 'Asia',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/64a839f4-25d9-4105-b34e-aac2eed30a97.png'
   },
   {
     id: 'f2pool',
@@ -66,7 +66,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-blue-500',
     odds: 6.13,
     region: 'Asia',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/5c3e1e9b-d7fb-4f6c-9a61-91b2e30f8b5d.png'
   },
   {
     id: 'binance',
@@ -77,7 +77,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-yellow-500',
     odds: 8.77,
     region: 'Asia',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/18c93bb7-ff11-48df-9a28-b91e4a26e082.png'
   },
   {
     id: 'viabtc',
@@ -88,7 +88,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-green-600',
     odds: 12.82,
     region: 'Asia',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/a3982dc4-aa74-4e5c-b5e6-45f8a5da36e9.png'
   },
   {
     id: 'whitepool',
@@ -99,7 +99,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-indigo-600',
     odds: 20.0,
     region: 'Europe',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/11e4b3eb-f455-4c13-8ac0-7aa34b8d7701.png'
   },
   {
     id: 'slushpool',
@@ -110,7 +110,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-cyan-600',
     odds: 20.0,
     region: 'Europe',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/76c9b04b-c25d-4234-882a-30d00331fb7c.png'
   },
   {
     id: 'poolin',
@@ -121,7 +121,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-emerald-600',
     odds: 47.62,
     region: 'Asia',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/c1a17aed-456c-4025-aa93-9dca04c62f31.png'
   },
   {
     id: 'unknown',
@@ -132,7 +132,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-gray-600',
     odds: 62.5,
     region: 'Unknown',
-    logoUrl: '/lovable-uploads/a39381e4-2b79-419b-9b71-6343e332f82e.png'
+    logoUrl: '/lovable-uploads/9c3a1e5c-44c9-48f8-9cf3-22315f35cdde.png'
   }
 ];
 

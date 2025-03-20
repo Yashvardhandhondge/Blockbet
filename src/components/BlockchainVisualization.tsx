@@ -32,10 +32,12 @@ const BlockchainVisualization = () => {
   const addNewBlock = () => {
     setIsNewBlockAppearing(true);
     
-    // Create new block
+    // Create new block with unique hash
+    const randomHash = `000000000000000000${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 30)}`;
+    
     const newBlock: Block = {
       height: blocks[0].height + 1,
-      hash: `000000000000000000${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 30)}`,
+      hash: randomHash,
       minedBy: getRandomMiningPool().name,
       timestamp: Date.now(),
       size: Math.floor(Math.random() * 2000000) + 500000,
@@ -155,7 +157,7 @@ const BlockchainVisualization = () => {
         >
           {blocks.map((block, index) => (
             <div 
-              key={block.hash} 
+              key={`${block.height}-${block.hash.substring(0, 10)}`} 
               className={cn(
                 "flex-shrink-0 w-56 rounded-md overflow-hidden",
                 index === 0 ? "animate-block-appear" : ""
