@@ -124,6 +124,28 @@ const BettingGrid = () => {
     return (satoshis / 100000000).toFixed(8);
   };
   
+  // Get placeholder image based on pool id
+  const getPlaceholderImage = (poolId: string) => {
+    // Return a colored circle with the first letter of the pool name
+    const pool = miningPools.find(p => p.id === poolId);
+    const firstLetter = pool?.name.charAt(0) || '?';
+    
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-white text-sm font-bold" 
+           style={{ color: poolId === 'foundry' ? '#ff8a00' : 
+                          poolId === 'antpool' ? '#ff416c' :
+                          poolId === 'sbicrypto' ? '#4776e6' :
+                          poolId === 'f2pool' ? '#2193b0' :
+                          poolId === 'binance' ? '#f7971e' :
+                          poolId === 'viabtc' ? '#56ab2f' :
+                          poolId === 'whitepool' ? '#9b87f5' :
+                          poolId === 'slushpool' ? '#0ea5e9' :
+                          poolId === 'poolin' ? '#16a085' : '#485563' }}>
+        {firstLetter}
+      </div>
+    );
+  };
+  
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 space-y-2 md:space-y-0">
@@ -185,15 +207,7 @@ const BettingGrid = () => {
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
                   <div className="w-8 h-8 rounded-full bg-white p-1 mb-1 overflow-hidden">
-                    <img
-                      src={`/pool-logos/${pool.id}.png`}
-                      alt={pool.name}
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        // Fallback to a default image if the logo can't be loaded
-                        (e.target as HTMLImageElement).src = '/placeholder.svg';
-                      }}
-                    />
+                    {getPlaceholderImage(pool.id)}
                   </div>
                   <div className="text-white font-bold text-sm">{pool.name}</div>
                   <div className="text-white/80 text-xs">{pool.hashRatePercent.toFixed(1)}% Hash</div>
@@ -217,7 +231,7 @@ const BettingGrid = () => {
         </Card>
       </div>
       
-      {/* Chip rack and bet controls - Made more compact */}
+      {/* Chip rack and bet controls */}
       <div className="flex flex-col md:flex-row gap-4 items-start">
         {/* Chip rack */}
         <Card className="bg-btc-darker border-white/10 p-3 rounded-xl min-w-[260px]">
