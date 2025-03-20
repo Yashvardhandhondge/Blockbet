@@ -34,12 +34,12 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
         <div className="absolute top-0 right-0 w-0 h-0 border-t-[32px] border-r-[32px] border-t-transparent border-r-btc-orange z-10"></div>
       )}
       
-      {/* Background gradient based on pool color */}
+      {/* Background gradient based on pool color - now using darker tech gradients */}
       <div className={cn(
         "absolute inset-0 opacity-30 transition-opacity duration-300",
         isSelected ? "opacity-40" : "opacity-20"
       )}
-      style={{ background: pool.gradient }}></div>
+      style={{ background: getDarkerTechGradient(pool.id) }}></div>
       
       {/* Glassmorphism overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
@@ -52,7 +52,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
             <div className="mt-1 text-xs text-white/60">{pool.region}</div>
           </div>
           <div className="h-10 w-10 rounded-lg flex items-center justify-center"
-               style={{ background: pool.gradient }}>
+               style={{ background: getDarkerTechGradient(pool.id) }}>
             <span className="text-xs font-medium text-white">
               {Math.round(displayedHashrate)}%
             </span>
@@ -95,12 +95,44 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
         <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
           <div 
             className="h-full transition-all duration-1000 ease-out"
-            style={{ width: `${displayedHashrate}%`, background: pool.gradient }}
+            style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
           ></div>
         </div>
       </div>
     </div>
   );
+};
+
+// Function to get darker, more tech-oriented gradients based on pool ID
+const getDarkerTechGradient = (poolId: string): string => {
+  switch(poolId) {
+    case 'slushpool':
+      return 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)';
+    case 'f2pool':
+      return 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)';
+    case 'antpool':
+      return 'linear-gradient(135deg, #4a0e0e 0%, #2a0606 100%)';
+    case 'viabtc':
+      return 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)';
+    case 'btccom':
+      return 'linear-gradient(135deg, #2a1f5e 0%, #16102d 100%)';
+    case 'poolin':
+      return 'linear-gradient(135deg, #0a4a30 0%, #052218 100%)';
+    case 'genesis':
+      return 'linear-gradient(135deg, #3a1e5e 0%, #1c0e2d 100%)';
+    case 'bitfury':
+      return 'linear-gradient(135deg, #4f1a2e 0%, #290e18 100%)';
+    case 'binance':
+      return 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)';
+    case 'kano':
+      return 'linear-gradient(135deg, #354a0e 0%, #1a2405 100%)';
+    case 'pega':
+      return 'linear-gradient(135deg, #1a344f 0%, #0e1a29 100%)';
+    case 'emcd':
+      return 'linear-gradient(135deg, #4a0e3f 0%, #24051e 100%)';
+    default:
+      return 'linear-gradient(135deg, #1a1a2e 0%, #0d0d16 100%)';
+  }
 };
 
 export default MiningPoolCard;
