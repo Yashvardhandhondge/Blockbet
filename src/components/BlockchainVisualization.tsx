@@ -55,7 +55,7 @@ const BlockchainVisualization = () => {
     }, 500);
   };
   
-  // Function to get pool gradient class based on the pool name
+  // Function to get pool gradient style based on the pool name
   const getPoolGradientStyle = (poolName: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.name === poolName);
     switch (pool?.id) {
@@ -109,27 +109,27 @@ const BlockchainVisualization = () => {
   };
   
   return (
-    <div className="w-full bg-btc-darker rounded-xl overflow-hidden border border-white/5 shadow-xl">
-      <div className="p-4 border-b border-white/5 flex justify-between items-center">
+    <div className="w-full bg-btc-darker/80 rounded-xl overflow-hidden border border-white/10 shadow-xl backdrop-blur-sm">
+      <div className="p-4 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <button 
               onClick={scrollLeft}
-              className="p-1.5 rounded-full hover:bg-white/5 transition-colors"
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
             >
-              <ArrowLeft className="h-5 w-5 text-white/60" />
+              <ArrowLeft className="h-5 w-5 text-white/70" />
             </button>
             <button 
               onClick={scrollRight}
-              className="p-1.5 rounded-full hover:bg-white/5 transition-colors"
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
             >
-              <ArrowRight className="h-5 w-5 text-white/60" />
+              <ArrowRight className="h-5 w-5 text-white/70" />
             </button>
           </div>
           <div className="flex items-center space-x-2">
             <div className="h-2 w-2 rounded-full bg-btc-orange animate-pulse"></div>
-            <span className="text-xs text-white/60">Live</span>
+            <span className="text-xs text-white/70">Live</span>
           </div>
         </div>
       </div>
@@ -187,37 +187,40 @@ const BlockchainVisualization = () => {
             <div 
               key={`${block.height}-${block.hash.substring(0, 10)}`} 
               className={cn(
-                "flex-shrink-0 w-56 rounded-md overflow-hidden shadow-lg",
+                "flex-shrink-0 w-56 rounded-md overflow-hidden shadow-2xl group transition-all duration-300 hover:transform hover:scale-[1.02]",
                 index === 0 ? "animate-block-appear" : ""
               )}
             >
               {/* Block header with height */}
               <div className={cn(
-                "pt-3 pb-3 px-4 text-center text-white font-medium backdrop-blur-sm",
+                "pt-3 pb-3 px-4 text-center text-white font-medium backdrop-blur-sm transition-all duration-300 border-b border-white/10",
                 getPoolColorClass(block.minedBy)
               )}>
                 {block.height}
               </div>
               
-              {/* Block content */}
+              {/* Block content with glossy effect */}
               <div 
-                className="p-3 flex flex-col h-40 backdrop-blur-sm" 
+                className="p-3 flex flex-col h-40 backdrop-blur-md relative overflow-hidden transition-all duration-300"
                 style={getPoolGradientStyle(block.minedBy)}
               >
-                <div className="text-white font-medium mb-1 backdrop-blur-xs">{block.feesRangeText}</div>
-                <div className="text-yellow-300 text-sm mb-1">{block.feeRange}</div>
-                <div className="text-white font-bold text-xl mb-2">{block.totalBtc} BTC</div>
-                <div className="text-white text-sm">{block.transactionCount.toLocaleString()} transactions</div>
-                <div className="mt-auto text-white text-sm">{formatTimeAgo(block.timestamp)}</div>
+                {/* Glossy overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+                
+                <div className="text-white font-medium mb-1 backdrop-blur-xs group-hover:text-white/90 transition-colors">{block.feesRangeText}</div>
+                <div className="text-yellow-300 text-sm mb-1 group-hover:text-yellow-200 transition-colors">{block.feeRange}</div>
+                <div className="text-white font-bold text-xl mb-2 group-hover:text-white/90 transition-colors">{block.totalBtc} BTC</div>
+                <div className="text-white/90 text-sm group-hover:text-white/80 transition-colors">{block.transactionCount.toLocaleString()} transactions</div>
+                <div className="mt-auto text-white/80 text-sm group-hover:text-white/70 transition-colors">{formatTimeAgo(block.timestamp)}</div>
               </div>
               
-              {/* Pool info */}
-              <div className="bg-gray-900 py-2 px-3 flex items-center space-x-2 bg-opacity-90 backdrop-blur-sm">
-                <img 
-                  src={getPoolLogo(block.minedBy)} 
-                  alt={block.minedBy}
-                  className="w-5 h-5 object-contain"
-                />
+              {/* Pool info with glass effect */}
+              <div className="bg-gray-900/70 py-2 px-3 flex items-center space-x-2 bg-opacity-90 backdrop-blur-lg border-t border-white/5">
+                <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold"
+                  style={{ background: getPoolGradientStyle(block.minedBy).background }}
+                >
+                  {block.minedBy.charAt(0)}
+                </div>
                 <span className="text-white text-sm">{block.minedBy}</span>
               </div>
             </div>
