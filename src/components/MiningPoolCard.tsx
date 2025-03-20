@@ -21,21 +21,21 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
   const getPoolDarkGradient = () => {
     switch(pool.id) {
       case 'antpool':
-        return 'bg-gradient-to-br from-[#4a1212] to-[#1a0505]';
+        return 'bg-gradient-to-br from-[#661919] to-[#2a0808]';
       case 'binance':
-        return 'bg-gradient-to-br from-[#3e2b00] to-[#1a1200]';
+        return 'bg-gradient-to-br from-[#553c00] to-[#2a1c00]';
       case 'f2pool':
-        return 'bg-gradient-to-br from-[#0e2a36] to-[#051318]';
+        return 'bg-gradient-to-br from-[#143a4d] to-[#081c24]';
       case 'foundry':
-        return 'bg-gradient-to-br from-[#441f00] to-[#1a0a00]';
+        return 'bg-gradient-to-br from-[#662e00] to-[#2a1200]';
       case 'slushpool':
-        return 'bg-gradient-to-br from-[#0a2a3d] to-[#06141d]';
+        return 'bg-gradient-to-br from-[#0d3b56] to-[#091e2a]';
       case 'poolin':
-        return 'bg-gradient-to-br from-[#0a2a22] to-[#04120e]';
+        return 'bg-gradient-to-br from-[#0d3b30] to-[#061c17]';
       case 'viabtc':
-        return 'bg-gradient-to-br from-[#1c2e12] to-[#0b1307]';
+        return 'bg-gradient-to-br from-[#28401a] to-[#101a0a]';
       default:
-        return 'bg-gradient-to-br from-[#2a2a2a] to-[#121212]';
+        return 'bg-gradient-to-br from-[#3a3a3a] to-[#1a1a1a]';
     }
   };
   

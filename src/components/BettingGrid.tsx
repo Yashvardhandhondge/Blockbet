@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2 } from 'lucide-react';
@@ -7,7 +6,6 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { toast } from './ui/use-toast';
 
-// Chip denominations in satoshis
 const CHIP_VALUES = [1000, 5000, 10000, 50000, 100000, 500000, 1000000];
 
 const BettingGrid = () => {
@@ -17,12 +15,10 @@ const BettingGrid = () => {
   const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
   const [totalBet, setTotalBet] = useState(0);
   
-  // Update time remaining for simulated countdown
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          // Reset timer when it reaches zero
           return nextBlockEstimate.estimatedTimeMinutes * 60;
         }
         return prev - 1;
@@ -32,19 +28,16 @@ const BettingGrid = () => {
     return () => clearInterval(interval);
   }, []);
   
-  // Update total bet amount when bets change
   useEffect(() => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
   
-  // Format remaining time
   const formatTimeRemaining = () => {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
   
-  // Calculate urgency based on time remaining
   const getUrgencyClass = () => {
     const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
     const percentageLeft = (timeRemaining / totalTime) * 100;
@@ -91,42 +84,38 @@ const BettingGrid = () => {
     const pool = miningPools.find(p => p.id === poolId);
     switch (poolId) {
       case 'foundry':
-        return { background: 'linear-gradient(135deg, #441800, #1a0a00)' };
+        return { background: 'linear-gradient(135deg, #662900, #2a1200)' };
       case 'antpool':
-        return { background: 'linear-gradient(135deg, #4a1212, #1a0505)' };
+        return { background: 'linear-gradient(135deg, #661919, #2a0808)' };
       case 'sbicrypto':
-        return { background: 'linear-gradient(135deg, #251458, #0e0529)' };
+        return { background: 'linear-gradient(135deg, #35187a, #140a3a)' };
       case 'f2pool':
-        return { background: 'linear-gradient(135deg, #0e2a36, #051318)' };
+        return { background: 'linear-gradient(135deg, #143a4d, #081c24)' };
       case 'binance':
-        return { background: 'linear-gradient(135deg, #3e2b00, #1a1200)' };
+        return { background: 'linear-gradient(135deg, #553c00, #2a1c00)' };
       case 'viabtc':
-        return { background: 'linear-gradient(135deg, #1c2e12, #0b1307)' };
+        return { background: 'linear-gradient(135deg, #28401a, #101a0a)' };
       case 'whitepool':
-        return { background: 'linear-gradient(135deg, #272250, #0f0c1c)' };
+        return { background: 'linear-gradient(135deg, #352e66, #151229)' };
       case 'slushpool':
-        return { background: 'linear-gradient(135deg, #0a2a3d, #06141d)' };
+        return { background: 'linear-gradient(135deg, #0d3b56, #091e2a)' };
       case 'poolin':
-        return { background: 'linear-gradient(135deg, #0a2a22, #04120e)' };
+        return { background: 'linear-gradient(135deg, #0d3b30, #061c17)' };
       case 'unknown':
       default:
-        return { background: 'linear-gradient(135deg, #2a2a2a, #121212)' };
+        return { background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)' };
     }
   };
   
-  // Calculate total number of chips placed on a pool
   const getBetsOnPool = (poolId: string | null) => {
     return bets.filter(bet => bet.poolId === poolId);
   };
   
-  // Format satoshis to BTC
   const formatBTC = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8);
   };
   
-  // Get placeholder image based on pool id
   const getPlaceholderImage = (poolId: string) => {
-    // Return a colored circle with the first letter of the pool name
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
     
@@ -146,12 +135,11 @@ const BettingGrid = () => {
     );
   };
   
-  // Chip color gradients
   const getChipGradient = (value: number) => {
-    if (value >= 500000) return "bg-gradient-to-r from-[#481818] to-[#301010]";
-    if (value >= 50000) return "bg-gradient-to-r from-[#18184a] to-[#101030]";
-    if (value >= 10000) return "bg-gradient-to-r from-[#18483a] to-[#10302a]";
-    return "bg-gradient-to-r from-[#5a4a18] to-[#2a2210]";
+    if (value >= 500000) return "bg-gradient-to-r from-[#661919] to-[#3d1010]";
+    if (value >= 50000) return "bg-gradient-to-r from-[#1e1e66] to-[#141438]";
+    if (value >= 10000) return "bg-gradient-to-r from-[#1e6652] to-[#143d32]";
+    return "bg-gradient-to-r from-[#7a6624] to-[#3d3312]";
   };
   
   return (
@@ -179,10 +167,8 @@ const BettingGrid = () => {
         </div>
       </div>
       
-      {/* Roulette table */}
       <div className="mb-6">
         <Card className="bg-[#121212] border-white/10 p-4 rounded-xl">
-          {/* Zero slot */}
           <div className="mb-4 relative">
             <div 
               className="h-16 w-full bg-gradient-to-r from-[#1c322c] to-[#0f1a18] rounded-lg flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity border-2 border-white/20"
@@ -190,7 +176,6 @@ const BettingGrid = () => {
             >
               <div className="text-white text-xl font-bold">Empty Block</div>
               
-              {/* Show chips placed on empty block */}
               <div className="absolute top-1 right-1 flex flex-wrap justify-end gap-1 max-w-[120px]">
                 {getBetsOnPool(null).map((bet) => (
                   <div 
@@ -204,7 +189,6 @@ const BettingGrid = () => {
             </div>
           </div>
           
-          {/* Mining pool slots */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
             {miningPools.map((pool) => (
               <div 
@@ -222,7 +206,6 @@ const BettingGrid = () => {
                   <div className="text-yellow-300 text-xs font-bold mt-0.5">{pool.odds.toFixed(2)}x</div>
                 </div>
                 
-                {/* Show chips placed on this pool */}
                 <div className="absolute top-1 right-1 flex flex-wrap justify-end gap-1 max-w-[60px]">
                   {getBetsOnPool(pool.id).map((bet) => (
                     <div 
@@ -239,9 +222,7 @@ const BettingGrid = () => {
         </Card>
       </div>
       
-      {/* Chip rack and bet controls */}
       <div className="flex flex-col md:flex-row gap-4 items-start">
-        {/* Chip rack */}
         <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
           <div className="flex flex-wrap gap-2 justify-center">
@@ -270,7 +251,6 @@ const BettingGrid = () => {
           </div>
         </Card>
         
-        {/* Bet summary */}
         <Card className="flex-1 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>

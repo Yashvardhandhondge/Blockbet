@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -60,26 +59,26 @@ const BlockchainVisualization = () => {
     const pool = miningPools.find(p => p.name === poolName);
     switch (pool?.id) {
       case 'foundry':
-        return { background: 'linear-gradient(135deg, #441f00, #000000)' };
+        return { background: 'linear-gradient(135deg, #662900, #000000)' };
       case 'antpool':
-        return { background: 'linear-gradient(135deg, #4a1212, #000000)' };
+        return { background: 'linear-gradient(135deg, #661919, #000000)' };
       case 'sbicrypto':
-        return { background: 'linear-gradient(135deg, #2a1258, #000000)' };
+        return { background: 'linear-gradient(135deg, #391a7a, #000000)' };
       case 'f2pool':
-        return { background: 'linear-gradient(135deg, #0e2a36, #000000)' };
+        return { background: 'linear-gradient(135deg, #143a4d, #000000)' };
       case 'binance':
-        return { background: 'linear-gradient(135deg, #3e2b00, #000000)' };
+        return { background: 'linear-gradient(135deg, #553c00, #000000)' };
       case 'viabtc':
-        return { background: 'linear-gradient(135deg, #1c2e12, #000000)' };
+        return { background: 'linear-gradient(135deg, #28401a, #000000)' };
       case 'whitepool':
-        return { background: 'linear-gradient(135deg, #27224f, #000000)' };
+        return { background: 'linear-gradient(135deg, #373066, #000000)' };
       case 'slushpool':
-        return { background: 'linear-gradient(135deg, #0a2a3d, #000000)' };
+        return { background: 'linear-gradient(135deg, #0d3b56, #000000)' };
       case 'poolin':
-        return { background: 'linear-gradient(135deg, #092b23, #000000)' };
+        return { background: 'linear-gradient(135deg, #0d3b30, #000000)' };
       case 'unknown':
       default:
-        return { background: 'linear-gradient(135deg, #222, #000000)' };
+        return { background: 'linear-gradient(135deg, #333, #000000)' };
     }
   };
 
