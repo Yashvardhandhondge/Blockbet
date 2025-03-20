@@ -60,26 +60,26 @@ const BlockchainVisualization = () => {
     const pool = miningPools.find(p => p.name === poolName);
     switch (pool?.id) {
       case 'foundry':
-        return { background: 'linear-gradient(135deg, #ff8a00, #da1b60)' };
+        return { background: 'linear-gradient(135deg, #F7971E, #FFD200)' }; // Orange to Yellow
       case 'antpool':
-        return { background: 'linear-gradient(135deg, #ff416c, #ff4b2b)' };
+        return { background: 'linear-gradient(135deg, #ff416c, #ff4b2b)' }; // Red shades
       case 'sbicrypto':
-        return { background: 'linear-gradient(135deg, #4776e6, #8e54e9)' };
+        return { background: 'linear-gradient(135deg, #8e2de2, #4a00e0)' }; // Purple shades
       case 'f2pool':
-        return { background: 'linear-gradient(135deg, #2193b0, #6dd5ed)' };
+        return { background: 'linear-gradient(135deg, #2193b0, #6dd5ed)' }; // Blue shades
       case 'binance':
-        return { background: 'linear-gradient(135deg, #f7971e, #ffd200)' };
+        return { background: 'linear-gradient(135deg, #f2994a, #f2c94c)' }; // Orange to Yellow
       case 'viabtc':
-        return { background: 'linear-gradient(135deg, #56ab2f, #a8e063)' };
+        return { background: 'linear-gradient(135deg, #56ab2f, #a8e063)' }; // Green shades
       case 'whitepool':
-        return { background: 'linear-gradient(135deg, #9b87f5, #7e69ab)' };
+        return { background: 'linear-gradient(135deg, #834d9b, #d04ed6)' }; // Purple shades
       case 'slushpool':
-        return { background: 'linear-gradient(135deg, #0ea5e9, #1eaedb)' };
+        return { background: 'linear-gradient(135deg, #0099f7, #0052d4)' }; // Blue shades
       case 'poolin':
-        return { background: 'linear-gradient(135deg, #16a085, #2ecc71)' };
+        return { background: 'linear-gradient(135deg, #11998e, #38ef7d)' }; // Green shades
       case 'unknown':
       default:
-        return { background: 'linear-gradient(135deg, #485563, #29323c)' };
+        return { background: 'linear-gradient(135deg, #485563, #29323c)' }; // Gray to Dark shades
     }
   };
 
@@ -187,31 +187,29 @@ const BlockchainVisualization = () => {
             <div 
               key={`${block.height}-${block.hash.substring(0, 10)}`} 
               className={cn(
-                "flex-shrink-0 w-56 rounded-md overflow-hidden shadow-2xl group transition-all duration-300 hover:transform hover:scale-[1.02]",
+                "flex-shrink-0 w-56 h-64 rounded-md overflow-hidden shadow-2xl group transition-all duration-300 hover:transform hover:scale-[1.02]",
                 index === 0 ? "animate-block-appear" : ""
               )}
             >
-              {/* Block header with height */}
-              <div className={cn(
-                "pt-3 pb-3 px-4 text-center text-white font-medium backdrop-blur-sm transition-all duration-300 border-b border-white/10",
-                getPoolColorClass(block.minedBy)
-              )}>
+              {/* Block header with height - updated to match screenshot */}
+              <div className="pt-2 pb-2 px-4 text-center font-medium backdrop-blur-sm transition-all duration-300 border-b border-white/10 bg-black text-[#0ea5e9]">
                 {block.height}
               </div>
               
               {/* Block content with glossy effect */}
               <div 
-                className="p-3 flex flex-col h-40 backdrop-blur-md relative overflow-hidden transition-all duration-300"
+                className="p-3 flex flex-col h-full backdrop-blur-md relative overflow-hidden transition-all duration-300 text-center"
                 style={getPoolGradientStyle(block.minedBy)}
               >
                 {/* Glossy overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
                 
-                <div className="text-white font-medium mb-1 backdrop-blur-xs group-hover:text-white/90 transition-colors">{block.feesRangeText}</div>
-                <div className="text-yellow-300 text-sm mb-1 group-hover:text-yellow-200 transition-colors">{block.feeRange}</div>
-                <div className="text-white font-bold text-xl mb-2 group-hover:text-white/90 transition-colors">{block.totalBtc} BTC</div>
-                <div className="text-white/90 text-sm group-hover:text-white/80 transition-colors">{block.transactionCount.toLocaleString()} transactions</div>
-                <div className="mt-auto text-white/80 text-sm group-hover:text-white/70 transition-colors">{formatTimeAgo(block.timestamp)}</div>
+                {/* Content styled to match screenshot */}
+                <div className="text-white font-medium text-sm mb-1">{block.feesRangeText}</div>
+                <div className="text-yellow-300 text-xs mb-1">{block.feeRange}</div>
+                <div className="text-white font-bold text-xl mb-2">{block.totalBtc} BTC</div>
+                <div className="text-white/90 text-sm">{block.transactionCount.toLocaleString()} transactions</div>
+                <div className="mt-auto text-white/80 text-sm">{formatTimeAgo(block.timestamp)} ago</div>
               </div>
               
               {/* Pool info with glass effect */}
