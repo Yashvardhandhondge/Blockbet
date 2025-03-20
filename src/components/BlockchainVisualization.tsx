@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -202,14 +201,11 @@ const BlockchainVisualization = () => {
                 {block.height}
               </div>
               
-              {/* Block content with purple to blue gradient - Updated with text-center class */}
+              {/* Block content without gradient background */}
               <div 
-                className="p-6 flex flex-col h-48 relative overflow-hidden text-center"
-                style={{
-                  background: 'linear-gradient(to bottom, #8B5CF6 0%, #3B82F6 100%)'
-                }}
+                className="p-6 flex flex-col h-48 relative overflow-hidden text-center bg-transparent border border-white/5"
               >
-                {/* Content layout matching screenshot with centered text */}
+                {/* Content layout with centered text */}
                 <div className="text-white text-lg font-medium mb-2">{block.feesRangeText}</div>
                 <div className="text-yellow-300 text-lg font-medium mb-3">{block.feeRange}</div>
                 
@@ -219,7 +215,7 @@ const BlockchainVisualization = () => {
                 <div className="mt-auto text-white/80 text-lg">{formatTimeAgo(block.timestamp)}</div>
               </div>
               
-              {/* Pool info with black background - Updated with justify-center */}
+              {/* Pool info with black background */}
               <div className="bg-black py-3 px-4 flex items-center justify-center space-x-3 border-t border-black/50">
                 <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold bg-opacity-80"
                   style={{ background: getPoolGradientStyle(block.minedBy).background }}
