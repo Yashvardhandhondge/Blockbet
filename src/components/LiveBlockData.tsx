@@ -68,14 +68,14 @@ const StatCard = ({ icon, title, value, secondaryText, isHighlighted = false }: 
       {/* 3D Box Effect - Side */}
       <div className="h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0 rounded-bl-md"></div>
       
-      <div className="flex items-center mb-3">
+      <div className="flex items-center mb-3 justify-center">
         <div className="rounded-lg bg-[#1a1a1a] p-1.5 mr-2">
           {icon}
         </div>
         <div className="text-sm text-white/70">{title}</div>
       </div>
       
-      <div className="flex items-end">
+      <div className="flex items-end justify-center">
         <div className={cn(
           "text-xl font-bold mr-1",
           isHighlighted ? "text-btc-orange" : "text-white"
