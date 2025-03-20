@@ -17,28 +17,6 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
   // Animate hashrate percentage
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
-  // Get a darker gradient based on the pool's color
-  const getPoolDarkGradient = () => {
-    switch(pool.id) {
-      case 'antpool':
-        return 'bg-gradient-to-br from-[#661919] to-[#2a0808]';
-      case 'binance':
-        return 'bg-gradient-to-br from-[#553c00] to-[#2a1c00]';
-      case 'f2pool':
-        return 'bg-gradient-to-br from-[#143a4d] to-[#081c24]';
-      case 'foundry':
-        return 'bg-gradient-to-br from-[#662e00] to-[#2a1200]';
-      case 'slushpool':
-        return 'bg-gradient-to-br from-[#0d3b56] to-[#091e2a]';
-      case 'poolin':
-        return 'bg-gradient-to-br from-[#0d3b30] to-[#061c17]';
-      case 'viabtc':
-        return 'bg-gradient-to-br from-[#28401a] to-[#101a0a]';
-      default:
-        return 'bg-gradient-to-br from-[#3a3a3a] to-[#1a1a1a]';
-    }
-  };
-  
   return (
     <div 
       className={cn(
@@ -59,9 +37,9 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
       {/* Background gradient based on pool color */}
       <div className={cn(
         "absolute inset-0 opacity-30 transition-opacity duration-300",
-        getPoolDarkGradient(),
         isSelected ? "opacity-40" : "opacity-20"
-      )}></div>
+      )}
+      style={{ background: pool.gradient }}></div>
       
       {/* Glassmorphism overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
@@ -73,10 +51,8 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
             <h3 className="text-lg font-medium text-white">{pool.name}</h3>
             <div className="mt-1 text-xs text-white/60">{pool.region}</div>
           </div>
-          <div className={cn(
-            "h-10 w-10 rounded-lg flex items-center justify-center",
-            getPoolDarkGradient()
-          )}>
+          <div className="h-10 w-10 rounded-lg flex items-center justify-center"
+               style={{ background: pool.gradient }}>
             <span className="text-xs font-medium text-white">
               {Math.round(displayedHashrate)}%
             </span>
@@ -118,11 +94,8 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
         {/* Progress bar showing hashrate percentage */}
         <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
           <div 
-            className={cn(
-              "h-full transition-all duration-1000 ease-out",
-              getPoolDarkGradient()
-            )}
-            style={{ width: `${displayedHashrate}%` }}
+            className="h-full transition-all duration-1000 ease-out"
+            style={{ width: `${displayedHashrate}%`, background: pool.gradient }}
           ></div>
         </div>
       </div>

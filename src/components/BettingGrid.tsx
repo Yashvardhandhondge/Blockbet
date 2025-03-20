@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server } from 'lucide-react';
@@ -18,7 +17,6 @@ const BettingGrid = () => {
   const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
   const [totalBet, setTotalBet] = useState(0);
   
-  // For live data
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   
@@ -35,14 +33,13 @@ const BettingGrid = () => {
     return () => clearInterval(interval);
   }, []);
   
-  // Random updates to simulate live data
   useRandomInterval(() => {
     setPendingTxCount(prev => {
-      const variation = (Math.random() * 100) - 20; // more coming in than going out
+      const variation = (Math.random() * 100) - 20;
       return Math.max(1000, Math.floor(prev + variation));
     });
     
-    setTimeVariation(Math.random() * 1.5 - 0.75); // -0.75 to +0.75 minutes
+    setTimeVariation(Math.random() * 1.5 - 0.75);
   }, 3000, 8000);
   
   useEffect(() => {
@@ -55,7 +52,6 @@ const BettingGrid = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
   
-  // Calculate next block estimate with variation
   const estimatedTime = (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
@@ -107,29 +103,10 @@ const BettingGrid = () => {
   
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.id === poolId);
-    switch (poolId) {
-      case 'foundry':
-        return { background: 'linear-gradient(135deg, #662900, #2a1200)' };
-      case 'antpool':
-        return { background: 'linear-gradient(135deg, #661919, #2a0808)' };
-      case 'sbicrypto':
-        return { background: 'linear-gradient(135deg, #35187a, #140a3a)' };
-      case 'f2pool':
-        return { background: 'linear-gradient(135deg, #143a4d, #081c24)' };
-      case 'binance':
-        return { background: 'linear-gradient(135deg, #553c00, #2a1c00)' };
-      case 'viabtc':
-        return { background: 'linear-gradient(135deg, #28401a, #101a0a)' };
-      case 'whitepool':
-        return { background: 'linear-gradient(135deg, #352e66, #151229)' };
-      case 'slushpool':
-        return { background: 'linear-gradient(135deg, #0d3b56, #091e2a)' };
-      case 'poolin':
-        return { background: 'linear-gradient(135deg, #0d3b30, #061c17)' };
-      case 'unknown':
-      default:
-        return { background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)' };
+    if (pool) {
+      return { background: pool.gradient };
     }
+    return { background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)' };
   };
   
   const getBetsOnPool = (poolId: string | null) => {
@@ -144,17 +121,11 @@ const BettingGrid = () => {
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
     
+    const textColor = poolId === 'unknown' ? '#FFFFFF' : '#FFFFFF';
+    
     return (
       <div className="w-full h-full flex items-center justify-center bg-white text-sm font-bold" 
-           style={{ color: poolId === 'foundry' ? '#884400' : 
-                          poolId === 'antpool' ? '#8a2222' :
-                          poolId === 'sbicrypto' ? '#4c2a99' :
-                          poolId === 'f2pool' ? '#1e5266' :
-                          poolId === 'binance' ? '#8a5700' :
-                          poolId === 'viabtc' ? '#3e6428' :
-                          poolId === 'whitepool' ? '#5a4fa5' :
-                          poolId === 'slushpool' ? '#1c6c99' :
-                          poolId === 'poolin' ? '#1c7a66' : '#485563' }}>
+           style={{ color: textColor }}>
         {firstLetter}
       </div>
     );
@@ -236,7 +207,7 @@ const BettingGrid = () => {
               <div 
                 key={pool.id}
                 className="relative h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border-2 border-white/20"
-                style={getPoolGradientStyle(pool.id)}
+                style={{ background: pool.gradient }}
                 onClick={() => handlePlaceBet(pool.id)}
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
