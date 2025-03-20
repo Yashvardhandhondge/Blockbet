@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -179,45 +180,53 @@ const BlockchainVisualization = () => {
         {/* Horizontal blocks scrolling area */}
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-3 border-b border-white/5"
+          className="flex overflow-x-auto hide-scrollbar py-8 pl-8 pr-8 space-x-8 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707]"
           style={{ scrollbarWidth: 'none' }}
         >
           {blocks.map((block, index) => (
             <div 
               key={`${block.height}-${block.hash.substring(0, 10)}`} 
               className={cn(
-                "flex-shrink-0 w-56 rounded-md overflow-hidden shadow-2xl group transition-all duration-300 hover:transform hover:scale-[1.02]",
+                "flex-shrink-0 w-64 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
                 index === 0 ? "animate-block-appear" : ""
               )}
             >
+              {/* 3D Box Effect - Top */}
+              <div className="h-8 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-6 left-4"></div>
+              
+              {/* 3D Box Effect - Side */}
+              <div className="h-full w-8 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-8 top-0"></div>
+              
               {/* Block header with height */}
-              <div className="pt-3 pb-3 px-4 text-center bg-black flex items-center justify-center">
-                <span className="text-[#7EB5FF] font-medium">{block.height}</span>
+              <div className="h-12 flex items-center justify-center bg-black text-[#7EB5FF] text-2xl font-bold">
+                {block.height}
               </div>
               
-              {/* Block content with glossy effect */}
+              {/* Block content with purple to blue gradient */}
               <div 
-                className="p-3 flex flex-col h-40 backdrop-blur-md relative overflow-hidden transition-all duration-300"
-                style={getPoolGradientStyle(block.minedBy)}
+                className="p-6 flex flex-col h-48 relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(to bottom, #8B5CF6 0%, #3B82F6 100%)'
+                }}
               >
-                {/* Glossy overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+                {/* Content layout matching screenshot */}
+                <div className="text-white text-lg font-medium mb-2">{block.feesRangeText}</div>
+                <div className="text-yellow-300 text-lg font-medium mb-3">{block.feeRange}</div>
                 
-                <div className="text-white font-medium mb-1 backdrop-blur-xs group-hover:text-white/90 transition-colors text-center">{block.feesRangeText}</div>
-                <div className="text-yellow-300 text-sm mb-1 group-hover:text-yellow-200 transition-colors text-center">{block.feeRange}</div>
-                <div className="text-white font-bold text-xl mb-2 group-hover:text-white/90 transition-colors text-center">{block.totalBtc} BTC</div>
-                <div className="text-white/90 text-sm group-hover:text-white/80 transition-colors text-center">{block.transactionCount.toLocaleString()} transactions</div>
-                <div className="mt-auto text-white/80 text-sm group-hover:text-white/70 transition-colors text-center">{formatTimeAgo(block.timestamp)}</div>
+                <div className="text-white font-bold text-3xl mb-4">{block.totalBtc} BTC</div>
+                
+                <div className="text-white/90 text-lg mb-1">{block.transactionCount.toLocaleString()} transactions</div>
+                <div className="mt-auto text-white/80 text-lg">{formatTimeAgo(block.timestamp)}</div>
               </div>
               
-              {/* Pool info with glass effect */}
-              <div className="bg-gray-900/70 py-2 px-3 flex items-center space-x-2 bg-opacity-90 backdrop-blur-lg border-t border-white/5">
-                <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold"
+              {/* Pool info with black background */}
+              <div className="bg-black py-3 px-4 flex items-center space-x-3 border-t border-black/50">
+                <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold bg-opacity-80"
                   style={{ background: getPoolGradientStyle(block.minedBy).background }}
                 >
                   {block.minedBy.charAt(0)}
                 </div>
-                <span className="text-white text-sm">{block.minedBy}</span>
+                <span className="text-white font-medium">{block.minedBy}</span>
               </div>
             </div>
           ))}

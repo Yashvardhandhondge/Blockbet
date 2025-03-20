@@ -57,11 +57,17 @@ interface StatCardProps {
 const StatCard = ({ icon, title, value, secondaryText, isHighlighted = false }: StatCardProps) => {
   return (
     <div className={cn(
-      "glass-panel rounded-xl p-4 border",
+      "glass-panel rounded-xl p-4 border relative",
       isHighlighted 
         ? "border-btc-orange/30 shadow-[0_0_15px_rgba(247,147,26,0.15)]" 
         : "border-white/10"
     )}>
+      {/* 3D Box Effect - Top */}
+      <div className="h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-4 left-2 rounded-tl-md"></div>
+      
+      {/* 3D Box Effect - Side */}
+      <div className="h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0 rounded-bl-md"></div>
+      
       <div className="flex items-center mb-3">
         <div className="rounded-lg bg-[#1a1a1a] p-1.5 mr-2">
           {icon}
