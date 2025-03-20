@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -196,16 +197,19 @@ const BlockchainVisualization = () => {
               {/* 3D Box Effect - Side */}
               <div className="h-full w-8 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-8 top-0"></div>
               
-              {/* Block header with height */}
+              {/* Block header with height - cyan color to match screenshot */}
               <div className="h-12 flex items-center justify-center bg-black text-[#7EB5FF] text-2xl font-bold">
                 {block.height}
               </div>
               
-              {/* Block content without gradient background */}
+              {/* Block content with purple to blue gradient to match screenshot */}
               <div 
-                className="p-6 flex flex-col h-48 relative overflow-hidden text-center bg-transparent border border-white/5"
+                className="p-6 flex flex-col h-48 relative overflow-hidden text-center"
+                style={{
+                  background: 'linear-gradient(to bottom, #8B5CF6 0%, #3B82F6 100%)'
+                }}
               >
-                {/* Content layout with centered text */}
+                {/* Content layout matching screenshot with centered text */}
                 <div className="text-white text-lg font-medium mb-2">{block.feesRangeText}</div>
                 <div className="text-yellow-300 text-lg font-medium mb-3">{block.feeRange}</div>
                 
