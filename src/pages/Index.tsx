@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
 import BettingGrid from '@/components/BettingGrid';
-import LiveBlockData from '@/components/LiveBlockData';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
+
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,12 +23,10 @@ const Index = () => {
   const blockchainAnimation = useElementAppear(!isLoading, {
     delay: 600
   });
-  const liveDataAnimation = useElementAppear(!isLoading, {
+  const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
   });
-  const bettingGridAnimation = useElementAppear(!isLoading, {
-    delay: 1200
-  });
+
   return <div className="min-h-screen bg-btc-dark pb-20">
       {/* Loading screen */}
       <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
@@ -68,11 +67,6 @@ const Index = () => {
           <BlockchainVisualization />
         </div>
         
-        {/* Live network data */}
-        <div style={liveDataAnimation.style} className="mb-10">
-          <LiveBlockData />
-        </div>
-        
         {/* Betting grid */}
         <div style={bettingGridAnimation.style}>
           <BettingGrid />
@@ -80,4 +74,5 @@ const Index = () => {
       </main>
     </div>;
 };
+
 export default Index;

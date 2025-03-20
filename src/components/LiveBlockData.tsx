@@ -1,11 +1,11 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { nextBlockEstimate } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { Clock, Server } from 'lucide-react';
 
-const LiveBlockData = () => {
+export const LiveBlockData = () => {
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   
@@ -54,29 +54,28 @@ interface StatCardProps {
   isHighlighted?: boolean;
 }
 
-const StatCard = ({ icon, title, value, secondaryText, isHighlighted = false }: StatCardProps) => {
+export const StatCard = ({ icon, title, value, secondaryText, isHighlighted = false }: StatCardProps) => {
   return (
     <div className={cn(
-      "glass-panel rounded-xl p-4 border relative",
+      "rounded-lg px-3 py-1 flex items-center",
       isHighlighted 
-        ? "border-btc-orange/30 shadow-[0_0_15px_rgba(247,147,26,0.15)]" 
-        : "border-white/10"
+        ? "border-btc-orange/30" 
+        : "glass-panel"
     )}>
-      <div className="flex items-center mb-3 justify-center">
-        <div className="rounded-lg bg-[#1a1a1a] p-1.5 mr-2">
+      <div className="flex items-center">
+        <div className="mr-1">
           {icon}
         </div>
-        <div className="text-sm text-white/70">{title}</div>
-      </div>
-      
-      <div className="flex items-end justify-center">
-        <div className={cn(
-          "text-xl font-bold mr-1",
-          isHighlighted ? "text-btc-orange" : "text-white"
-        )}>
-          {value}
+        <div>
+          <span className="text-xs mr-1">{title}: </span>
+          <span className={cn(
+            "font-mono font-medium text-xs",
+            isHighlighted ? "text-btc-orange" : "text-white"
+          )}>
+            {value}
+          </span>
+          <span className="text-xs text-white/60 ml-1">{secondaryText}</span>
         </div>
-        <div className="text-xs text-white/60 mb-0.5">{secondaryText}</div>
       </div>
     </div>
   );

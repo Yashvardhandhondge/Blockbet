@@ -1,10 +1,13 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2 } from 'lucide-react';
+import { Clock, Zap, Trash2, Server } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { toast } from './ui/use-toast';
+import { StatCard } from './LiveBlockData';
+import { useRandomInterval } from '@/lib/animations';
 
 const CHIP_VALUES = [1000, 5000, 10000, 50000, 100000, 500000, 1000000];
 
@@ -14,6 +17,10 @@ const BettingGrid = () => {
   const [nextBetId, setNextBetId] = useState(1);
   const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
   const [totalBet, setTotalBet] = useState(0);
+  
+  // For live data
+  const [timeVariation, setTimeVariation] = useState(0);
+  const [pendingTxCount, setPendingTxCount] = useState(12483);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,6 +35,16 @@ const BettingGrid = () => {
     return () => clearInterval(interval);
   }, []);
   
+  // Random updates to simulate live data
+  useRandomInterval(() => {
+    setPendingTxCount(prev => {
+      const variation = (Math.random() * 100) - 20; // more coming in than going out
+      return Math.max(1000, Math.floor(prev + variation));
+    });
+    
+    setTimeVariation(Math.random() * 1.5 - 0.75); // -0.75 to +0.75 minutes
+  }, 3000, 8000);
+  
   useEffect(() => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
@@ -37,6 +54,14 @@ const BettingGrid = () => {
     const seconds = timeRemaining % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+  
+  // Calculate next block estimate with variation
+  const estimatedTime = (() => {
+    const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
+    const minutes = Math.floor(totalMinutes);
+    const seconds = Math.floor((totalMinutes - minutes) * 60);
+    return `${minutes}m ${seconds}s`;
+  })();
   
   const getUrgencyClass = () => {
     const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
@@ -150,20 +175,35 @@ const BettingGrid = () => {
           <p className="text-white/60 text-sm mt-1">Predict which mining pool will mine the next block</p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <div className="glass-panel rounded-lg px-3 py-1 flex items-center">
-            <Clock className="h-3 w-3 text-btc-orange mr-1" />
-            <span className="text-xs">Betting closes in </span>
-            <span className={cn("ml-1 font-mono font-bold text-xs", getUrgencyClass())}>
-              {formatTimeRemaining()}
-            </span>
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <StatCard 
+            icon={<Clock className="h-3 w-3 text-btc-orange" />}
+            title="Betting closes in"
+            value={formatTimeRemaining()}
+            secondaryText=""
+            isHighlighted={true}
+          />
           
-          <div className="glass-panel rounded-lg px-3 py-1 flex items-center">
-            <Zap className="h-3 w-3 text-btc-orange mr-1" />
-            <span className="text-xs">Next block: </span>
-            <span className="ml-1 font-mono font-medium text-xs">#{miningPools[0].blocksLast24h + 1}</span>
-          </div>
+          <StatCard 
+            icon={<Zap className="h-3 w-3 text-btc-orange" />}
+            title="Next block"
+            value={`#${miningPools[0].blocksLast24h + 1}`}
+            secondaryText=""
+          />
+          
+          <StatCard 
+            icon={<Clock className="h-3 w-3 text-btc-orange" />}
+            title="Est. Next Block"
+            value={estimatedTime}
+            secondaryText="avg"
+          />
+          
+          <StatCard 
+            icon={<Server className="h-3 w-3 text-btc-orange" />}
+            title="Pending Transactions"
+            value={pendingTxCount.toLocaleString()}
+            secondaryText="mempool"
+          />
         </div>
       </div>
       
