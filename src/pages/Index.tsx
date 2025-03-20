@@ -4,7 +4,6 @@ import Navbar from '@/components/Navbar';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
 import BettingGrid from '@/components/BettingGrid';
 import LiveBlockData from '@/components/LiveBlockData';
-import { mockUserBalance } from '@/utils/mockData';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 
@@ -45,7 +44,7 @@ const Index = () => {
       </div>
       
       {/* Main content */}
-      <Navbar balance={mockUserBalance.availableBalance} />
+      <Navbar />
       
       <main className="container max-w-7xl mx-auto px-4 pt-24">
         {/* Header */}
