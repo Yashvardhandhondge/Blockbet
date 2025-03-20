@@ -1,23 +1,16 @@
 
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { nextBlockEstimate } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
-import { BarChart2, Clock, Zap, Server } from 'lucide-react';
+import { Clock, Server } from 'lucide-react';
 
 const LiveBlockData = () => {
-  const [difficulty, setDifficulty] = useState(nextBlockEstimate.difficulty);
-  const [feeRate, setFeeRate] = useState(nextBlockEstimate.feeRate);
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   
   // Random updates to simulate live data
   useRandomInterval(() => {
-    setFeeRate(prev => {
-      const variation = (Math.random() * 6) - 3; // -3 to +3
-      return Math.max(1, Math.floor(prev + variation));
-    });
-    
     setPendingTxCount(prev => {
       const variation = (Math.random() * 100) - 20; // more coming in than going out
       return Math.max(1000, Math.floor(prev + variation));
@@ -27,35 +20,20 @@ const LiveBlockData = () => {
   }, 3000, 8000);
   
   // Calculate next block estimate with variation
-  const estimatedTime = useMemo(() => {
+  const estimatedTime = (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
-  }, [timeVariation]);
+  })();
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <StatCard 
         icon={<Clock className="h-5 w-5 text-btc-orange" />}
         title="Est. Next Block"
         value={estimatedTime}
         secondaryText="average time"
-      />
-      
-      <StatCard 
-        icon={<BarChart2 className="h-5 w-5 text-btc-orange" />}
-        title="Network Difficulty"
-        value={difficulty.toFixed(3)}
-        secondaryText="T"
-      />
-      
-      <StatCard 
-        icon={<Zap className="h-5 w-5 text-btc-orange" />}
-        title="Fee Rate"
-        value={feeRate.toString()}
-        secondaryText="sat/vB"
-        isHighlighted={feeRate > 40}
       />
       
       <StatCard 
