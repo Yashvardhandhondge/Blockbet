@@ -25,11 +25,11 @@ const Navbar = () => {
           </h1>
         </div>
         
-        <nav className="hidden md:flex items-center space-x-6">
-          <a href="#" className="text-sm text-white/80 hover:text-btc-orange transition-colors">Home</a>
-          <a href="#" className="text-sm text-white/80 hover:text-btc-orange transition-colors">How to Play</a>
-          <a href="#" className="text-sm text-white/80 hover:text-btc-orange transition-colors">Leaderboard</a>
-          <a href="#" className="text-sm text-white/80 hover:text-btc-orange transition-colors">FAQ</a>
+        <nav className="hidden md:flex items-center space-x-8">
+          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">Home</a>
+          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">How to Play</a>
+          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">Leaderboard</a>
+          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">FAQ</a>
         </nav>
 
         <div className="flex items-center space-x-3">
@@ -44,17 +44,17 @@ const Navbar = () => {
               {/* Deposit/Withdraw dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20">
+                  <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold">
                     <Wallet className="mr-1 h-4 w-4 text-btc-orange" />
                     <span>Wallet</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-btc-darker border-white/10">
-                  <DropdownMenuItem className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange">
+                  <DropdownMenuItem className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium">
                     <ArrowDownToLine className="h-4 w-4" />
                     <span>Deposit</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange">
+                  <DropdownMenuItem className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium">
                     <ArrowUpFromLine className="h-4 w-4" />
                     <span>Withdraw</span>
                   </DropdownMenuItem>
@@ -67,7 +67,7 @@ const Navbar = () => {
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="text-white/80 hover:text-btc-orange hover:bg-btc-darker/40"
+                className="text-white hover:text-btc-orange hover:bg-btc-darker/40 font-semibold tracking-wide"
               >
                 <LogIn className="mr-1 h-4 w-4" />
                 <span>Login</span>
@@ -77,7 +77,7 @@ const Navbar = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker"
+                className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide"
               >
                 <UserPlus className="mr-1 h-4 w-4" />
                 <span>Sign Up</span>
