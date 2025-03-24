@@ -170,6 +170,12 @@ const BettingGrid = () => {
     return "bg-gradient-to-r from-[#7a6624] to-[#3d3312]";
   };
   
+  const formatChipValue = (value: number) => {
+    if (value >= 10000) return `${value/1000}K`;
+    if (value >= 1000) return `${value/1000}K`;
+    return value;
+  };
+  
   const renderStackedChips = (bets: Array<{ id: number; amount: number }>) => {
     if (bets.length === 0) return null;
     
@@ -222,6 +228,43 @@ const BettingGrid = () => {
     }));
     
     return result;
+  };
+  
+  const renderSmallChips = (amount: number) => {
+    const chipsToRender: number[] = [];
+    let remainingAmount = amount;
+    
+    const sortedChips = [...CHIP_VALUES].sort((a, b) => b - a);
+    
+    while (remainingAmount > 0) {
+      const chipToUse = sortedChips.find(val => val <= remainingAmount) || sortedChips[sortedChips.length - 1];
+      chipsToRender.push(chipToUse);
+      remainingAmount -= chipToUse;
+      
+      if (chipsToRender.length >= 5) break;
+    }
+    
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToRender.slice(0, 3).map((chipValue, index) => (
+          <div 
+            key={index}
+            className={cn(
+              "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border border-white shadow-sm",
+              getChipGradient(chipValue)
+            )}
+            style={{ zIndex: 5 - index }}
+          >
+            {chipValue >= 1000 ? `${chipValue/1000}K` : chipValue}
+          </div>
+        ))}
+        {chipsToRender.length > 3 && (
+          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
+            +{chipsToRender.length - 3}
+          </div>
+        )}
+      </div>
+    );
   };
   
   return (
@@ -332,7 +375,7 @@ const BettingGrid = () => {
                   "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg",
                   getChipGradient(value)
                 )}>
-                  {value >= 10000 ? `${value/1000}k` : value}
+                  {formatChipValue(value)}
                 </div>
               </div>
             ))}
@@ -387,12 +430,15 @@ const BettingGrid = () => {
                 {getConsolidatedBets().map((consolidatedBet, index) => {
                   const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
                   return (
-                    <div key={index} className="flex justify-between bg-[#151515]/50 p-1.5 rounded text-xs">
+                    <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
                       <div className="text-white">
                         {pool ? pool.name : 'Empty Block'}
                       </div>
-                      <div className="text-btc-orange font-mono">
-                        {formatSats(consolidatedBet.amount)}
+                      <div className="flex items-center">
+                        {renderSmallChips(consolidatedBet.amount)}
+                        <div className="text-btc-orange font-mono">
+                          {formatSats(consolidatedBet.amount)}
+                        </div>
                       </div>
                     </div>
                   );
@@ -414,3 +460,4 @@ const BettingGrid = () => {
 };
 
 export default BettingGrid;
+
