@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -167,17 +166,14 @@ const BettingGrid = () => {
     return "bg-gradient-to-r from-[#7a6624] to-[#3d3312]";
   };
   
-  // Function to render stacked chips on a pool
   const renderStackedChips = (bets: Array<{ id: number; amount: number }>) => {
     if (bets.length === 0) return null;
     
-    // Take at most 5 chips to display (to avoid overcrowding)
     const displayBets = bets.slice(-5);
     const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
     
     return (
       <div className="absolute bottom-1 right-1 flex flex-col items-end">
-        {/* Stack of chips - now bottom to top */}
         <div className="relative h-12 w-8">
           {displayBets.map((bet, index) => (
             <div 
@@ -200,7 +196,6 @@ const BettingGrid = () => {
           ))}
         </div>
         
-        {/* Show count of additional chips if more than 5 */}
         {remainingCount > 0 && (
           <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
             +{remainingCount} more
@@ -208,6 +203,23 @@ const BettingGrid = () => {
         )}
       </div>
     );
+  };
+  
+  const getConsolidatedBets = () => {
+    const consolidatedBets = new Map<string | null, number>();
+    
+    bets.forEach(bet => {
+      const poolKey = bet.poolId !== null ? bet.poolId : 'empty';
+      const currentAmount = consolidatedBets.get(poolKey) || 0;
+      consolidatedBets.set(poolKey, currentAmount + bet.amount);
+    });
+    
+    const result = Array.from(consolidatedBets).map(([poolKey, amount]) => ({
+      poolId: poolKey === 'empty' ? null : poolKey,
+      amount,
+    }));
+    
+    return result;
   };
   
   return (
@@ -244,7 +256,6 @@ const BettingGrid = () => {
         />
       </div>
       
-      {/* Linear buffer with label for betting time */}
       <div className="w-full mb-6 px-2">
         <div className="flex justify-between items-center mb-1">
           <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-btc-orange to-orange-500 bg-clip-text text-transparent">
@@ -272,7 +283,6 @@ const BettingGrid = () => {
             >
               <div className="text-white text-xl font-bold">Empty Block</div>
               
-              {/* Render stacked chips for Empty Block */}
               {renderStackedChips(getBetsOnPool(null))}
             </div>
           </div>
@@ -294,7 +304,6 @@ const BettingGrid = () => {
                   <div className="text-yellow-300 text-xs font-bold mt-0.5">{pool.odds.toFixed(2)}x</div>
                 </div>
                 
-                {/* Render stacked chips for each pool */}
                 {renderStackedChips(getBetsOnPool(pool.id))}
               </div>
             ))}
@@ -330,7 +339,6 @@ const BettingGrid = () => {
             ))}
           </div>
           
-          {/* New buttons for cancelling bets */}
           <div className="grid grid-cols-2 gap-2">
             <Button 
               variant="outline" 
@@ -377,15 +385,15 @@ const BettingGrid = () => {
           ) : (
             <>
               <div className="mb-3 space-y-1 max-h-[150px] overflow-y-auto hide-scrollbar">
-                {bets.map(bet => {
-                  const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
+                {getConsolidatedBets().map((consolidatedBet, index) => {
+                  const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
                   return (
-                    <div key={bet.id} className="flex justify-between bg-[#151515]/50 p-1.5 rounded text-xs">
+                    <div key={index} className="flex justify-between bg-[#151515]/50 p-1.5 rounded text-xs">
                       <div className="text-white">
                         {pool ? pool.name : 'Empty Block'}
                       </div>
                       <div className="text-btc-orange font-mono">
-                        {formatBTC(bet.amount)} BTC
+                        {formatBTC(consolidatedBet.amount)} BTC
                       </div>
                     </div>
                   );
