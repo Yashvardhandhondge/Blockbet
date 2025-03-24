@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -288,8 +289,8 @@ const BettingGrid = () => {
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
         <SparklesText text="Place Your Bets" className="px-6 py-3 text-5xl mb-3 text-white" colors={{
-        first: "#F59E0B",
-        second: "#D946EF"
+        first: "#9E7AFF",
+        second: "#FE8BBB"
       }} sparklesCount={15} />
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
           Predict which mining pool will mine the next Bitcoin block
