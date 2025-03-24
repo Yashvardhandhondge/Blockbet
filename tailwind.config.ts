@@ -127,6 +127,37 @@ export default {
 				'spin-slow': {
 					'0%': { transform: 'rotate(0deg)' },
 					'100%': { transform: 'rotate(360deg)' }
+				},
+				// New gradient animations
+				'gradient-border': {
+					'0%': { transform: 'translateX(0) translateY(0)' },
+					'33%': { transform: 'translateX(100%) translateY(0)' },
+					'66%': { transform: 'translateX(100%) translateY(100%)' },
+					'100%': { transform: 'translateX(0) translateY(0)' }
+				},
+				'gradient-1': {
+					'0%': { opacity: '0.5' },
+					'33%': { opacity: '1' },
+					'66%': { opacity: '0.25' },
+					'100%': { opacity: '0.75' }
+				},
+				'gradient-2': {
+					'0%': { opacity: '1' },
+					'33%': { opacity: '0.25' },
+					'66%': { opacity: '0.75' },
+					'100%': { opacity: '0.5' }
+				},
+				'gradient-3': {
+					'0%': { opacity: '0.25' },
+					'33%': { opacity: '0.75' },
+					'66%': { opacity: '0.5' },
+					'100%': { opacity: '1' }
+				},
+				'gradient-4': {
+					'0%': { opacity: '0.75' },
+					'33%': { opacity: '0.5' },
+					'66%': { opacity: '1' },
+					'100%': { opacity: '0.25' }
 				}
 			},
 			animation: {

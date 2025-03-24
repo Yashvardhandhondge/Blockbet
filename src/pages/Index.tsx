@@ -5,6 +5,7 @@ import BlockchainVisualization from '@/components/BlockchainVisualization';
 import BettingGrid from '@/components/BettingGrid';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
+import { GradientText } from '@/components/ui/gradient-text';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,9 +54,8 @@ const Index = () => {
             Bitcoin Mining Pool Prediction Game
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            <span className="text-gradient">Bitcoin</span>
+            <GradientText className="text-btc-orange">Bitcoin</GradientText>
             <span className="text-white">Roulette</span>
-            
           </h1>
           <p className="text-lg text-white/70 max-w-2xl mx-auto">
             Predict which mining pool will mine the next Bitcoin block and win BTC rewards
