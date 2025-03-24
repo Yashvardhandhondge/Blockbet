@@ -3,20 +3,14 @@ import { useState } from 'react';
 import { nextBlockEstimate } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
-import { Clock, Server, Timer } from 'lucide-react';
+import { Clock, Timer } from 'lucide-react';
 
 export const LiveBlockData = () => {
   const [timeVariation, setTimeVariation] = useState(0);
-  const [pendingTxCount, setPendingTxCount] = useState(12483);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8); // Average block time in minutes
   
   // Random updates to simulate live data
   useRandomInterval(() => {
-    setPendingTxCount(prev => {
-      const variation = (Math.random() * 100) - 20; // more coming in than going out
-      return Math.max(1000, Math.floor(prev + variation));
-    });
-    
     setTimeVariation(Math.random() * 1.5 - 0.75); // -0.75 to +0.75 minutes
     
     // Slightly randomize average block time
@@ -35,19 +29,12 @@ export const LiveBlockData = () => {
   })();
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <StatCard 
         icon={<Clock className="h-5 w-5 text-btc-orange" />}
         title="Est. Next Block"
         value={estimatedTime}
         secondaryText="average time"
-      />
-      
-      <StatCard 
-        icon={<Server className="h-5 w-5 text-btc-orange" />}
-        title="Pending Transactions"
-        value={pendingTxCount.toLocaleString()}
-        secondaryText="in mempool"
       />
       
       <StatCard 
