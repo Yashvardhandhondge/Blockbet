@@ -8,6 +8,7 @@ import { Progress } from './ui/progress';
 import { toast } from './ui/use-toast';
 import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
+import MiningPoolCard from './MiningPoolCard';
 
 const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
 
@@ -17,6 +18,7 @@ const BettingGrid = () => {
   const [nextBetId, setNextBetId] = useState(1);
   const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
   const [totalBet, setTotalBet] = useState(0);
+  const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
@@ -130,6 +132,11 @@ const BettingGrid = () => {
     setSelectedChip(value);
   };
   
+  const handleSelectPool = (pool: MiningPool) => {
+    setSelectedPool(pool);
+    handlePlaceBet(pool.id);
+  };
+  
   const getPoolLogo = (poolId: string) => {
     const logoMap: Record<string, string> = {
       'foundry': '/pool-logos/foundryusa.png',
@@ -222,7 +229,6 @@ const BettingGrid = () => {
   };
   
   const renderRouletteCasualChips = (amount: number) => {
-    // For the small chips display in the "Your Bets" section
     const chipsToRender: number[] = [];
     let remainingAmount = amount;
     
@@ -368,6 +374,17 @@ const BettingGrid = () => {
             "transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500",
           )}
         />
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
+        {miningPools.map(pool => (
+          <MiningPoolCard 
+            key={pool.id} 
+            pool={pool} 
+            onSelect={handleSelectPool} 
+            isSelected={selectedPool?.id === pool.id}
+          />
+        ))}
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">
