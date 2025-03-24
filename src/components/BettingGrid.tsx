@@ -255,7 +255,7 @@ const BettingGrid = () => {
           <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
             +{chipsToRender.length - 3}
           </div>
-        ))}
+        )}
       </div>
     );
   };
@@ -283,7 +283,7 @@ const BettingGrid = () => {
                 transform: `rotate(${(index * 5) - 10}deg)`
               }}
             >
-              <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
+              <div className="absolute inset-1.5 rounded-full border border-white/30\"></div>
               <div className="absolute inset-0.5 rounded-full border-4 border-dashed" style={{ borderColor: `${getChipSecondaryColor(bet.amount)}` }}></div>
               <span className="relative z-10 text-white font-bold drop-shadow-md">
                 {bet.amount >= 10000 ? `${bet.amount/1000}k` : bet.amount}
