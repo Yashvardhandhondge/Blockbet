@@ -129,6 +129,40 @@ const BettingGrid = () => {
     setSelectedChip(value);
   };
   
+  const getPoolLogo = (poolId: string) => {
+    const logoMap: Record<string, string> = {
+      'foundry': 'foundryusa.png',
+      'antpool': 'antpool.png',
+      'f2pool': 'f2pool.svg',
+      'binance': 'binancepool.png',
+      'viabtc': 'viabtc.svg',
+      'slushpool': 'braiinspool.svg',
+      'poolin': 'poolin.svg',
+      'btc-com': 'btccom.svg',
+      'genesis': 'genesisdigitalassets.svg',
+      'bitfury': 'bitfury.svg',
+      'kanopool': 'kanopool.svg',
+      'pegapool': 'pegapool.svg',
+      'emcd': 'emcd.svg',
+      'unknown': 'unknown.svg'
+    };
+    
+    const logoFileName = logoMap[poolId] || 'unknown.svg';
+    
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden p-0.5">
+        <img 
+          src={`/pool-logos/${logoFileName}`} 
+          alt={`${poolId} logo`}
+          className="w-full h-full object-contain"
+          onError={(e) => {
+            e.currentTarget.src = '/pool-logos/unknown.svg';
+          }}
+        />
+      </div>
+    );
+  };
+  
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.id === poolId);
     if (pool) {
@@ -342,7 +376,7 @@ const BettingGrid = () => {
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
                   <div className="w-8 h-8 rounded-full bg-white p-1 mb-1 overflow-hidden">
-                    {getPlaceholderImage(pool.id)}
+                    {getPoolLogo(pool.id)}
                   </div>
                   <div className="text-white font-bold text-sm">{pool.name}</div>
                   <div className="text-white/80 text-xs">{pool.hashRatePercent.toFixed(1)}% Hash</div>
@@ -460,4 +494,3 @@ const BettingGrid = () => {
 };
 
 export default BettingGrid;
-

@@ -34,7 +34,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-orange-500',
     odds: 3.77,
     region: 'North America',
-    logoUrl: '/pool-logos/foundry.png',
+    logoUrl: '/pool-logos/foundryusa.png',
     gradient: 'linear-gradient(135deg, #F97316, #7C2D12)'
   },
   {
@@ -58,7 +58,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-blue-500',
     odds: 7.94,
     region: 'Asia',
-    logoUrl: '/pool-logos/f2pool.png',
+    logoUrl: '/pool-logos/f2pool.svg',
     gradient: 'linear-gradient(135deg, #3B82F6, #1E40AF)'
   },
   {
@@ -70,7 +70,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-yellow-500',
     odds: 11.36,
     region: 'Asia',
-    logoUrl: '/pool-logos/binance.png',
+    logoUrl: '/pool-logos/binancepool.png',
     gradient: 'linear-gradient(135deg, #EAB308, #854D0E)'
   },
   {
@@ -82,7 +82,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-green-600',
     odds: 16.67,
     region: 'Asia',
-    logoUrl: '/pool-logos/viabtc.png',
+    logoUrl: '/pool-logos/viabtc.svg',
     gradient: 'linear-gradient(135deg, #16A34A, #14532D)'
   },
   {
@@ -94,7 +94,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-cyan-600',
     odds: 19.23,
     region: 'Europe',
-    logoUrl: '/pool-logos/slushpool.png',
+    logoUrl: '/pool-logos/braiinspool.svg',
     gradient: 'linear-gradient(135deg, #0891B2, #164E63)'
   },
   {
@@ -106,7 +106,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-emerald-600',
     odds: 20.83,
     region: 'Asia',
-    logoUrl: '/pool-logos/poolin.png',
+    logoUrl: '/pool-logos/poolin.svg',
     gradient: 'linear-gradient(135deg, #059669, #065F46)'
   },
   {
@@ -118,7 +118,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-red-500',
     odds: 22.73,
     region: 'Asia',
-    logoUrl: '/pool-logos/btc-com.png',
+    logoUrl: '/pool-logos/btccom.svg',
     gradient: 'linear-gradient(135deg, #EF4444, #991B1B)'
   },
   {
@@ -130,7 +130,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-indigo-500',
     odds: 25.0,
     region: 'Europe',
-    logoUrl: '/pool-logos/genesis.png',
+    logoUrl: '/pool-logos/genesisdigitalassets.svg',
     gradient: 'linear-gradient(135deg, #6366F1, #4338CA)'
   },
   {
@@ -142,7 +142,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-sky-600',
     odds: 30.30,
     region: 'Europe',
-    logoUrl: '/pool-logos/bitfury.png',
+    logoUrl: '/pool-logos/bitfury.svg',
     gradient: 'linear-gradient(135deg, #0284C7, #0C4A6E)'
   },
   {
@@ -154,7 +154,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-amber-600',
     odds: 33.33,
     region: 'North America',
-    logoUrl: '/pool-logos/kanopool.png',
+    logoUrl: '/pool-logos/kanopool.svg',
     gradient: 'linear-gradient(135deg, #D97706, #78350F)'
   },
   {
@@ -166,7 +166,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-fuchsia-600',
     odds: 40.0,
     region: 'North America',
-    logoUrl: '/pool-logos/pegapool.png',
+    logoUrl: '/pool-logos/pegapool.svg',
     gradient: 'linear-gradient(135deg, #C026D3, #86198F)'
   },
   {
@@ -178,7 +178,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-rose-600',
     odds: 52.63,
     region: 'Europe',
-    logoUrl: '/pool-logos/emcd.png',
+    logoUrl: '/pool-logos/emcd.svg',
     gradient: 'linear-gradient(135deg, #E11D48, #9F1239)'
   },
   {
@@ -190,7 +190,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-gray-600',
     odds: 83.33,
     region: 'Unknown',
-    logoUrl: '/pool-logos/unknown.png',
+    logoUrl: '/pool-logos/unknown.svg',
     gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
   }
 ];
