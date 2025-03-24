@@ -10,7 +10,7 @@ import { toast } from './ui/use-toast';
 import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
-import { SparklesText } from './ui/sparkles-text';
+import { GradientText } from './ui/gradient-text';
 
 const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
 
@@ -288,10 +288,14 @@ const BettingGrid = () => {
 
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
-        <SparklesText text="Place Your Bets" className="px-6 py-3 text-5xl mb-3 text-white" colors={{
-        first: "#9E7AFF",
-        second: "#FE8BBB"
-      }} sparklesCount={15} />
+        <GradientText as="h1" className="px-6 py-3 text-5xl mb-3 text-white font-bold" style={{
+          "--color-1": "270 75% 60%",
+          "--color-2": "330 75% 60%",
+          "--color-3": "180 75% 60%",
+          "--color-4": "30 75% 60%"
+        } as React.CSSProperties}>
+          Place Your Bets
+        </GradientText>
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
           Predict which mining pool will mine the next Bitcoin block
         </p>
