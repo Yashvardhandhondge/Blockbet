@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server } from 'lucide-react';
@@ -141,6 +142,49 @@ const BettingGrid = () => {
     return "bg-gradient-to-r from-[#7a6624] to-[#3d3312]";
   };
   
+  // Function to render stacked chips on a pool
+  const renderStackedChips = (bets: Array<{ id: number; amount: number }>) => {
+    if (bets.length === 0) return null;
+    
+    // Take at most 5 chips to display (to avoid overcrowding)
+    const displayBets = bets.slice(-5);
+    const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
+    
+    return (
+      <div className="absolute top-1 right-1 flex flex-col items-end">
+        {/* Show count of additional chips if more than 5 */}
+        {remainingCount > 0 && (
+          <div className="text-xs text-white/80 font-medium mb-0.5 bg-black/50 px-1 rounded">
+            +{remainingCount} more
+          </div>
+        )}
+        
+        {/* Stack of chips */}
+        <div className="relative h-12 w-8">
+          {displayBets.map((bet, index) => (
+            <div 
+              key={bet.id}
+              className={cn(
+                "absolute w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg",
+                getChipGradient(bet.amount)
+              )}
+              style={{ 
+                top: `${index * 4}px`, 
+                right: `${index % 2 === 0 ? 0 : 2}px`,
+                zIndex: 10 - index,
+                transform: `rotate(${(index * 5) - 10}deg)`
+              }}
+            >
+              {bet.amount >= 1000000 ? "1M" : 
+               bet.amount >= 100000 ? "100k" :
+               `${bet.amount/1000}k`}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
   return (
     <div className="w-full">
       <div className="flex flex-col items-center mb-6">
@@ -203,16 +247,8 @@ const BettingGrid = () => {
             >
               <div className="text-white text-xl font-bold">Empty Block</div>
               
-              <div className="absolute top-1 right-1 flex flex-wrap justify-end gap-1 max-w-[120px]">
-                {getBetsOnPool(null).map((bet) => (
-                  <div 
-                    key={bet.id}
-                    className="w-6 h-6 rounded-full bg-gradient-to-r from-[#5a4a18] to-[#2a2210] flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg"
-                  >
-                    {bet.amount / 1000}k
-                  </div>
-                ))}
-              </div>
+              {/* Render stacked chips for Empty Block */}
+              {renderStackedChips(getBetsOnPool(null))}
             </div>
           </div>
           
@@ -233,16 +269,8 @@ const BettingGrid = () => {
                   <div className="text-yellow-300 text-xs font-bold mt-0.5">{pool.odds.toFixed(2)}x</div>
                 </div>
                 
-                <div className="absolute top-1 right-1 flex flex-wrap justify-end gap-1 max-w-[60px]">
-                  {getBetsOnPool(pool.id).map((bet) => (
-                    <div 
-                      key={bet.id}
-                      className={`w-6 h-6 rounded-full ${getChipGradient(bet.amount)} flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg`}
-                    >
-                      {bet.amount / 1000}k
-                    </div>
-                  ))}
-                </div>
+                {/* Render stacked chips for each pool */}
+                {renderStackedChips(getBetsOnPool(pool.id))}
               </div>
             ))}
           </div>
