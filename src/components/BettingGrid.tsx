@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -101,6 +101,31 @@ const BettingGrid = () => {
     });
   };
   
+  const handleCancelLastBet = () => {
+    if (bets.length === 0) {
+      toast({
+        title: "No bets to cancel",
+        description: "You haven't placed any bets yet",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const lastBet = bets[bets.length - 1];
+    const newBets = bets.slice(0, -1);
+    setBets(newBets);
+    
+    const poolName = lastBet.poolId 
+      ? miningPools.find(p => p.id === lastBet.poolId)?.name 
+      : 'Empty Block';
+    
+    toast({
+      title: "Last bet cancelled",
+      description: `Removed bet of ${(lastBet.amount / 100000).toFixed(5)} BTC on ${poolName}`,
+      variant: "default",
+    });
+  };
+  
   const handleSelectChip = (value: number) => {
     setSelectedChip(value);
   };
@@ -151,15 +176,8 @@ const BettingGrid = () => {
     const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
     
     return (
-      <div className="absolute top-1 right-1 flex flex-col items-end">
-        {/* Show count of additional chips if more than 5 */}
-        {remainingCount > 0 && (
-          <div className="text-xs text-white/80 font-medium mb-0.5 bg-black/50 px-1 rounded">
-            +{remainingCount} more
-          </div>
-        )}
-        
-        {/* Stack of chips */}
+      <div className="absolute bottom-1 right-1 flex flex-col items-end">
+        {/* Stack of chips - now bottom to top */}
         <div className="relative h-12 w-8">
           {displayBets.map((bet, index) => (
             <div 
@@ -169,9 +187,9 @@ const BettingGrid = () => {
                 getChipGradient(bet.amount)
               )}
               style={{ 
-                top: `${index * 4}px`, 
+                bottom: `${index * 4}px`, 
                 right: `${index % 2 === 0 ? 0 : 2}px`,
-                zIndex: 10 - index,
+                zIndex: index,
                 transform: `rotate(${(index * 5) - 10}deg)`
               }}
             >
@@ -181,6 +199,13 @@ const BettingGrid = () => {
             </div>
           ))}
         </div>
+        
+        {/* Show count of additional chips if more than 5 */}
+        {remainingCount > 0 && (
+          <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
+            +{remainingCount} more
+          </div>
+        )}
       </div>
     );
   };
@@ -280,7 +305,7 @@ const BettingGrid = () => {
       <div className="flex flex-col md:flex-row gap-4 items-start">
         <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-wrap gap-2 justify-center mb-4">
             {CHIP_VALUES.map(value => (
               <div
                 key={value}
@@ -303,6 +328,30 @@ const BettingGrid = () => {
                 </div>
               </div>
             ))}
+          </div>
+          
+          {/* New buttons for cancelling bets */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center justify-center gap-1.5 border-white/10 hover:border-btc-orange/50 hover:bg-btc-orange/5"
+              onClick={handleCancelLastBet}
+              disabled={bets.length === 0}
+            >
+              <X className="w-3.5 h-3.5" />
+              Cancel Last
+            </Button>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="flex items-center justify-center gap-1.5"
+              onClick={handleClearBets}
+              disabled={bets.length === 0}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Clear All
+            </Button>
           </div>
         </Card>
         
