@@ -132,33 +132,33 @@ const BettingGrid = () => {
   
   const getPoolLogo = (poolId: string) => {
     const logoMap: Record<string, string> = {
-      'foundry': 'foundryusa.png',
-      'antpool': 'antpool.png',
-      'f2pool': 'f2pool.svg',
-      'binance': 'binancepool.png',
-      'viabtc': 'viabtc.svg',
-      'slushpool': 'braiinspool.svg',
-      'poolin': 'poolin.svg',
-      'btc-com': 'btccom.svg',
-      'genesis': 'genesisdigitalassets.svg',
-      'bitfury': 'bitfury.svg',
-      'kanopool': 'kanopool.svg',
-      'pegapool': 'pegapool.svg',
-      'emcd': 'emcd.svg',
-      'unknown': 'unknown.svg'
+      'foundry': '/pool-logos/foundryusa.png',
+      'antpool': '/Antpool Bitcoin Explorer.svg',
+      'f2pool': '/Bitcoin Explorer f2pool.svg',
+      'binance': '/Binance Pool.svg',
+      'viabtc': '/Viabtc Bitcoin Explorer.svg',
+      'slushpool': '/Mempool Bitcoin Explorer.svg',
+      'poolin': '/pool-logos/poolin.svg',
+      'btc-com': '/Bitcoin Explorer.svg',
+      'genesis': '/pool-logos/genesisdigitalassets.svg',
+      'bitfury': '/pool-logos/bitfury.svg',
+      'kanopool': '/pool-logos/kanopool.svg',
+      'pegapool': '/Spiderpool Bitcoin Explorer.svg',
+      'emcd': '/Luxor Bitcoin Explorer.svg',
+      'unknown': '/Mempool Bitcoin Explorer (2).svg'
     };
     
-    const logoFileName = logoMap[poolId] || 'unknown.svg';
+    const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
     
     return (
       <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden p-0.5">
         <img 
-          src={`/pool-logos/${logoFileName}`} 
+          src={logoPath} 
           alt={`${poolId} logo`}
           className="w-full h-full object-contain"
           onError={(e) => {
-            console.log(`Error loading logo for ${poolId}: ${logoFileName}`);
-            e.currentTarget.src = '/pool-logos/unknown.svg';
+            console.log(`Error loading logo for ${poolId}: ${logoPath}`);
+            e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
           }}
         />
       </div>
