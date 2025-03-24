@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
+import { GlowEffect } from './ui/glow-effect';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
@@ -17,6 +17,9 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
   // Animate hashrate percentage
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
+  // Get color for the pool
+  const poolColor = getPoolColor(pool.id);
+  
   return (
     <div 
       className={cn(
@@ -29,6 +32,18 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Glow effect */}
+      {isSelected && (
+        <GlowEffect 
+          colors={[poolColor, '#f7931a']} 
+          mode="breathe" 
+          blur="stronger"
+          scale={1.2}
+          duration={3}
+          className="opacity-30"
+        />
+      )}
+      
       {/* Selected indicator */}
       {isSelected && (
         <div className="absolute top-0 right-0 w-0 h-0 border-t-[32px] border-r-[32px] border-t-transparent border-r-btc-orange z-10"></div>
@@ -132,6 +147,38 @@ const getDarkerTechGradient = (poolId: string): string => {
       return 'linear-gradient(135deg, #4a0e3f 0%, #24051e 100%)';
     default:
       return 'linear-gradient(135deg, #1a1a2e 0%, #0d0d16 100%)';
+  }
+};
+
+// Function to get the primary color for each pool
+const getPoolColor = (poolId: string): string => {
+  switch(poolId) {
+    case 'slushpool':
+      return '#1ABC9C';
+    case 'f2pool':
+      return '#3498DB';
+    case 'antpool':
+      return '#E74C3C';
+    case 'viabtc':
+      return '#E67E22';
+    case 'btccom':
+      return '#9B59B6';
+    case 'poolin':
+      return '#2ECC71';
+    case 'genesis':
+      return '#8E44AD';
+    case 'bitfury':
+      return '#E83E8C';
+    case 'binance':
+      return '#F1C40F';
+    case 'kano':
+      return '#7F8C8D';
+    case 'pega':
+      return '#3498DB';
+    case 'emcd':
+      return '#E84393';
+    default:
+      return '#95A5A6';
   }
 };
 
