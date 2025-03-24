@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -156,6 +157,7 @@ const BettingGrid = () => {
           alt={`${poolId} logo`}
           className="w-full h-full object-contain"
           onError={(e) => {
+            console.log(`Error loading logo for ${poolId}: ${logoFileName}`);
             e.currentTarget.src = '/pool-logos/unknown.svg';
           }}
         />
