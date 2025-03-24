@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -364,7 +365,7 @@ const BettingGrid = () => {
       
       <div className="w-full mb-6 px-2">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] text-white text-xl font-bold mb-3 shadow-[0_0_15px_rgba(139,92,246,0.5)]">
+          <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">
             BETTING CLOSES IN
           </span>
           <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
