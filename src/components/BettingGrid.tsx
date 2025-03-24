@@ -51,27 +51,6 @@ const BettingGrid = () => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
   
-  const formatTimeRemaining = () => {
-    const minutes = Math.floor(timeRemaining / 60);
-    const seconds = timeRemaining % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-  
-  const estimatedTime = (() => {
-    const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
-    const minutes = Math.floor(totalMinutes);
-    const seconds = Math.floor((totalMinutes - minutes) * 60);
-    return `${minutes}m ${seconds}s`;
-  })();
-  
-  const getUrgencyClass = () => {
-    const percentageLeft = (timeRemaining / totalTime) * 100;
-    
-    if (percentageLeft < 20) return "text-btc-orange";
-    if (percentageLeft < 50) return "text-btc-orange";
-    return "text-btc-orange";
-  };
-  
   const handlePlaceBet = (poolId: string | null) => {
     if (!selectedChip) {
       toast({
@@ -124,6 +103,27 @@ const BettingGrid = () => {
       description: `Removed bet of ${(lastBet.amount / 100000).toFixed(5)} BTC on ${poolName}`,
       variant: "default",
     });
+  };
+  
+  const formatTimeRemaining = () => {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+  
+  const estimatedTime = (() => {
+    const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
+    const minutes = Math.floor(totalMinutes);
+    const seconds = Math.floor((totalMinutes - minutes) * 60);
+    return `${minutes}m ${seconds}s`;
+  })();
+  
+  const getUrgencyClass = () => {
+    const percentageLeft = (timeRemaining / totalTime) * 100;
+    
+    if (percentageLeft < 20) return "text-btc-orange";
+    if (percentageLeft < 50) return "text-btc-orange";
+    return "text-btc-orange";
   };
   
   const handleSelectChip = (value: number) => {
@@ -199,17 +199,65 @@ const BettingGrid = () => {
     );
   };
   
-  const getChipGradient = (value: number) => {
-    if (value >= 10000) return "bg-gradient-to-r from-[#661919] to-[#3d1010]";
-    if (value >= 1000) return "bg-gradient-to-r from-[#1e1e66] to-[#141438]";
-    if (value >= 500) return "bg-gradient-to-r from-[#1e6652] to-[#143d32]";
-    return "bg-gradient-to-r from-[#7a6624] to-[#3d3312]";
+  const getChipColor = (value: number) => {
+    if (value >= 10000) return "bg-red-900";
+    if (value >= 5000) return "bg-blue-900";
+    if (value >= 1000) return "bg-green-900";
+    if (value >= 500) return "bg-purple-900";
+    return "bg-yellow-900";
+  };
+  
+  const getChipSecondaryColor = (value: number) => {
+    if (value >= 10000) return "bg-red-800";
+    if (value >= 5000) return "bg-blue-800";
+    if (value >= 1000) return "bg-green-800";
+    if (value >= 500) return "bg-purple-800";
+    return "bg-yellow-800";
   };
   
   const formatChipValue = (value: number) => {
     if (value >= 10000) return `${value/1000}K`;
     if (value >= 1000) return `${value/1000}K`;
     return value;
+  };
+  
+  const renderRouletteCasualChips = (amount: number) => {
+    // For the small chips display in the "Your Bets" section
+    const chipsToRender: number[] = [];
+    let remainingAmount = amount;
+    
+    const sortedChips = [...CHIP_VALUES].sort((a, b) => b - a);
+    
+    while (remainingAmount > 0) {
+      const chipToUse = sortedChips.find(val => val <= remainingAmount) || sortedChips[sortedChips.length - 1];
+      chipsToRender.push(chipToUse);
+      remainingAmount -= chipToUse;
+      
+      if (chipsToRender.length >= 5) break;
+    }
+    
+    return (
+      <div className="flex -space-x-2 mr-2">
+        {chipsToRender.slice(0, 3).map((chipValue, index) => (
+          <div 
+            key={index}
+            className={cn(
+              "relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border-2 border-white",
+              getChipColor(chipValue)
+            )}
+            style={{ zIndex: 5 - index }}
+          >
+            <div className="absolute inset-0 rounded-full border-2 border-white/30 border-dashed"></div>
+            {chipValue >= 1000 ? `${chipValue/1000}K` : chipValue}
+          </div>
+        ))}
+        {chipsToRender.length > 3 && (
+          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
+            +{chipsToRender.length - 3}
+          </div>
+        ))}
+      </div>
+    );
   };
   
   const renderStackedChips = (bets: Array<{ id: number; amount: number }>) => {
@@ -225,8 +273,8 @@ const BettingGrid = () => {
             <div 
               key={bet.id}
               className={cn(
-                "absolute w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg",
-                getChipGradient(bet.amount)
+                "absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+                getChipColor(bet.amount)
               )}
               style={{ 
                 bottom: `${index * 4}px`, 
@@ -235,7 +283,11 @@ const BettingGrid = () => {
                 transform: `rotate(${(index * 5) - 10}deg)`
               }}
             >
-              {bet.amount >= 10000 ? `${bet.amount/1000}k` : bet.amount}
+              <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
+              <div className="absolute inset-0.5 rounded-full border-4 border-dashed" style={{ borderColor: `${getChipSecondaryColor(bet.amount)}` }}></div>
+              <span className="relative z-10 text-white font-bold drop-shadow-md">
+                {bet.amount >= 10000 ? `${bet.amount/1000}k` : bet.amount}
+              </span>
             </div>
           ))}
         </div>
@@ -264,43 +316,6 @@ const BettingGrid = () => {
     }));
     
     return result;
-  };
-  
-  const renderSmallChips = (amount: number) => {
-    const chipsToRender: number[] = [];
-    let remainingAmount = amount;
-    
-    const sortedChips = [...CHIP_VALUES].sort((a, b) => b - a);
-    
-    while (remainingAmount > 0) {
-      const chipToUse = sortedChips.find(val => val <= remainingAmount) || sortedChips[sortedChips.length - 1];
-      chipsToRender.push(chipToUse);
-      remainingAmount -= chipToUse;
-      
-      if (chipsToRender.length >= 5) break;
-    }
-    
-    return (
-      <div className="flex -space-x-1 mr-2">
-        {chipsToRender.slice(0, 3).map((chipValue, index) => (
-          <div 
-            key={index}
-            className={cn(
-              "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border border-white shadow-sm",
-              getChipGradient(chipValue)
-            )}
-            style={{ zIndex: 5 - index }}
-          >
-            {chipValue >= 1000 ? `${chipValue/1000}K` : chipValue}
-          </div>
-        ))}
-        {chipsToRender.length > 3 && (
-          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
-            +{chipsToRender.length - 3}
-          </div>
-        )}
-      </div>
-    );
   };
   
   return (
@@ -363,7 +378,7 @@ const BettingGrid = () => {
               <div
                 key={value}
                 className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110",
+                  "w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110",
                   selectedChip === value 
                     ? "ring-3 ring-btc-orange ring-offset-2 ring-offset-[#0a0a0a] transform scale-110" 
                     : "transform scale-100"
@@ -371,10 +386,19 @@ const BettingGrid = () => {
                 onClick={() => handleSelectChip(value)}
               >
                 <div className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg",
-                  getChipGradient(value)
+                  "relative w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+                  getChipColor(value)
                 )}>
-                  {formatChipValue(value)}
+                  {/* Outer ring */}
+                  <div className="absolute inset-0 rounded-full border-4 border-dashed" style={{ borderColor: `${getChipSecondaryColor(value)}` }}></div>
+                  
+                  {/* Inner circle */}
+                  <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
+                  
+                  {/* Main text */}
+                  <span className="relative z-10 text-white font-bold drop-shadow-md">
+                    {formatChipValue(value)}
+                  </span>
                 </div>
               </div>
             ))}
@@ -434,7 +458,7 @@ const BettingGrid = () => {
                         {pool ? pool.name : 'Empty Block'}
                       </div>
                       <div className="flex items-center">
-                        {renderSmallChips(consolidatedBet.amount)}
+                        {renderRouletteCasualChips(consolidatedBet.amount)}
                         <div className="text-btc-orange font-mono">
                           {formatSats(consolidatedBet.amount)}
                         </div>
