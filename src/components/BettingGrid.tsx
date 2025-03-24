@@ -9,6 +9,7 @@ import { toast } from './ui/use-toast';
 import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
+import { SparklesText } from './ui/sparkles-text';
 
 const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
 
@@ -289,7 +290,7 @@ const BettingGrid = () => {
                 transform: `rotate(${(index * 5) - 10}deg)`
               }}
             >
-              <div className="absolute inset-1.5 rounded-full border border-white/30\"></div>
+              <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
               <div className="absolute inset-0.5 rounded-full border-4 border-dashed" style={{ borderColor: `${getChipSecondaryColor(bet.amount)}` }}></div>
               <span className="relative z-10 text-white font-bold drop-shadow-md">
                 {bet.amount >= 10000 ? `${bet.amount/1000}k` : bet.amount}
@@ -327,9 +328,12 @@ const BettingGrid = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col items-center mb-6">
-        <div className="px-6 py-3 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] text-white text-xl font-bold mb-3 shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-          Place Your Bets
-        </div>
+        <SparklesText 
+          text="Place Your Bets"
+          className="px-6 py-3 text-xl mb-3 text-white"
+          colors={{ first: "#F59E0B", second: "#D946EF" }}
+          sparklesCount={15}
+        />
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
           Predict which mining pool will mine the next block
         </p>
@@ -360,7 +364,7 @@ const BettingGrid = () => {
       
       <div className="w-full mb-6 px-2">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-btc-orange to-orange-500 bg-clip-text text-transparent">
+          <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] text-white text-xl font-bold mb-3 shadow-[0_0_15px_rgba(139,92,246,0.5)]">
             BETTING CLOSES IN
           </span>
           <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
