@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server } from 'lucide-react';
@@ -22,7 +21,6 @@ const BettingGrid = () => {
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   
-  // Calculate time progress percentage (reverse of remaining time)
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - ((timeRemaining / totalTime) * 100);
   
@@ -68,9 +66,9 @@ const BettingGrid = () => {
   const getUrgencyClass = () => {
     const percentageLeft = (timeRemaining / totalTime) * 100;
     
-    if (percentageLeft < 20) return "text-red-500";
-    if (percentageLeft < 50) return "text-yellow-500";
-    return "text-green-500";
+    if (percentageLeft < 20) return "text-btc-orange";
+    if (percentageLeft < 50) return "text-btc-orange";
+    return "text-btc-orange";
   };
   
   const handlePlaceBet = (poolId: string | null) => {
@@ -180,19 +178,18 @@ const BettingGrid = () => {
       {/* Linear buffer with label for betting time */}
       <div className="w-full mb-6 px-2">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-sm text-white/80">Betting closes in</span>
-          <span className={cn("text-sm font-mono", getUrgencyClass())}>
+          <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-btc-orange to-orange-500 bg-clip-text text-transparent">
+            BETTING CLOSES IN
+          </span>
+          <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
             {formatTimeRemaining()}
           </span>
         </div>
         <Progress 
           value={progressPercentage} 
-          className="h-2 bg-white/10"
+          className="h-3 bg-white/10 rounded-full"
           indicatorClassName={cn(
-            "transition-all duration-500 ease-linear",
-            progressPercentage > 80 ? "bg-red-500" : 
-            progressPercentage > 50 ? "bg-yellow-500" : 
-            "bg-green-500"
+            "transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500",
           )}
         />
       </div>
