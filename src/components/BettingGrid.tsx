@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -21,6 +20,7 @@ const BettingGrid = () => {
   
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
+  const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
   
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - ((timeRemaining / totalTime) * 100);
@@ -318,7 +318,7 @@ const BettingGrid = () => {
         <StatCard 
           icon={<Zap className="h-3 w-3 text-btc-orange" />}
           title="Next block"
-          value={`#${miningPools[0].blocksLast24h + 1}`}
+          value={`#${currentBlock + 1}`}
           secondaryText=""
         />
         
@@ -388,6 +388,36 @@ const BettingGrid = () => {
                 {renderStackedChips(getBetsOnPool(pool.id))}
               </div>
             ))}
+          </div>
+        </Card>
+      </div>
+      
+      <div className="mb-6">
+        <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="flex items-center p-2 rounded-lg bg-gradient-to-r from-[#121212] to-[#1a1a1a] border border-white/10">
+              <Zap className="h-5 w-5 text-btc-orange mr-3" />
+              <div>
+                <div className="text-sm text-white/70">Next block:</div>
+                <div className="text-white font-mono font-bold">#{currentBlock + 1}</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-2 rounded-lg bg-gradient-to-r from-[#121212] to-[#1a1a1a] border border-white/10">
+              <Clock className="h-5 w-5 text-btc-orange mr-3" />
+              <div>
+                <div className="text-sm text-white/70">Est. Next Block:</div>
+                <div className="text-white font-mono font-bold">{formatTimeRemaining()} <span className="text-xs text-white/50">remaining</span></div>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-2 rounded-lg bg-gradient-to-r from-[#121212] to-[#1a1a1a] border border-white/10">
+              <Server className="h-5 w-5 text-btc-orange mr-3" />
+              <div>
+                <div className="text-sm text-white/70">Pending Transactions:</div>
+                <div className="text-white font-mono font-bold">{pendingTxCount.toLocaleString()} <span className="text-xs text-white/50">mempool</span></div>
+              </div>
+            </div>
           </div>
         </Card>
       </div>
