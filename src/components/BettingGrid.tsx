@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -143,6 +144,11 @@ const BettingGrid = () => {
   
   const formatBTC = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8);
+  };
+  
+  // New function to format satoshis
+  const formatSats = (satoshis: number) => {
+    return satoshis.toLocaleString() + " sats";
   };
   
   const getPlaceholderImage = (poolId: string) => {
@@ -343,7 +349,7 @@ const BettingGrid = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="flex items-center justify-center gap-1.5 border-white/10 hover:border-btc-orange/50 hover:bg-btc-orange/5"
+              className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-btc-orange hover:bg-btc-orange/10 hover:border-btc-orange/30"
               onClick={handleCancelLastBet}
               disabled={bets.length === 0}
             >
@@ -351,9 +357,9 @@ const BettingGrid = () => {
               Cancel Last
             </Button>
             <Button 
-              variant="destructive" 
+              variant="outline"
               size="sm" 
-              className="flex items-center justify-center gap-1.5"
+              className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-btc-orange hover:bg-btc-orange/10 hover:border-btc-orange/30"
               onClick={handleClearBets}
               disabled={bets.length === 0}
             >
@@ -367,9 +373,9 @@ const BettingGrid = () => {
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>
             <Button 
-              variant="destructive" 
+              variant="outline" 
               size="sm" 
-              className="flex items-center gap-1 py-1 h-auto text-xs"
+              className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-btc-orange hover:bg-btc-orange/10 hover:border-btc-orange/30"
               onClick={handleClearBets}
               disabled={bets.length === 0}
             >
@@ -393,7 +399,7 @@ const BettingGrid = () => {
                         {pool ? pool.name : 'Empty Block'}
                       </div>
                       <div className="text-btc-orange font-mono">
-                        {formatBTC(consolidatedBet.amount)} BTC
+                        {formatSats(consolidatedBet.amount)}
                       </div>
                     </div>
                   );
@@ -403,7 +409,7 @@ const BettingGrid = () => {
               <div className="pt-2 border-t border-white/10">
                 <div className="flex justify-between text-white font-bold text-sm">
                   <div>Total Bet:</div>
-                  <div className="text-btc-orange">{formatBTC(totalBet)} BTC</div>
+                  <div className="text-btc-orange">{formatSats(totalBet)}</div>
                 </div>
               </div>
             </>
