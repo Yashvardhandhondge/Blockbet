@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
