@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -10,7 +9,7 @@ import { toast } from './ui/use-toast';
 import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
 
-const CHIP_VALUES = [1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
 
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
@@ -146,7 +145,6 @@ const BettingGrid = () => {
     return (satoshis / 100000000).toFixed(8);
   };
   
-  // New function to format satoshis
   const formatSats = (satoshis: number) => {
     return satoshis.toLocaleString() + " sats";
   };
@@ -166,9 +164,9 @@ const BettingGrid = () => {
   };
   
   const getChipGradient = (value: number) => {
-    if (value >= 500000) return "bg-gradient-to-r from-[#661919] to-[#3d1010]";
-    if (value >= 50000) return "bg-gradient-to-r from-[#1e1e66] to-[#141438]";
-    if (value >= 10000) return "bg-gradient-to-r from-[#1e6652] to-[#143d32]";
+    if (value >= 10000) return "bg-gradient-to-r from-[#661919] to-[#3d1010]";
+    if (value >= 1000) return "bg-gradient-to-r from-[#1e1e66] to-[#141438]";
+    if (value >= 500) return "bg-gradient-to-r from-[#1e6652] to-[#143d32]";
     return "bg-gradient-to-r from-[#7a6624] to-[#3d3312]";
   };
   
@@ -195,9 +193,7 @@ const BettingGrid = () => {
                 transform: `rotate(${(index * 5) - 10}deg)`
               }}
             >
-              {bet.amount >= 1000000 ? "1M" : 
-               bet.amount >= 100000 ? "100k" :
-               `${bet.amount/1000}k`}
+              {bet.amount >= 10000 ? `${bet.amount/1000}k` : bet.amount}
             </div>
           ))}
         </div>
@@ -336,10 +332,7 @@ const BettingGrid = () => {
                   "w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-lg",
                   getChipGradient(value)
                 )}>
-                  {value >= 1000000 ? "1M" : 
-                   value >= 100000 ? "100k" :
-                   value >= 10000 ? `${value/1000}k` : 
-                   value}
+                  {value >= 10000 ? `${value/1000}k` : value}
                 </div>
               </div>
             ))}
@@ -349,7 +342,7 @@ const BettingGrid = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-btc-orange hover:bg-btc-orange/10 hover:border-btc-orange/30"
+              className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30"
               onClick={handleCancelLastBet}
               disabled={bets.length === 0}
             >
@@ -359,7 +352,7 @@ const BettingGrid = () => {
             <Button 
               variant="outline"
               size="sm" 
-              className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-btc-orange hover:bg-btc-orange/10 hover:border-btc-orange/30"
+              className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30"
               onClick={handleClearBets}
               disabled={bets.length === 0}
             >
@@ -375,7 +368,7 @@ const BettingGrid = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-btc-orange hover:bg-btc-orange/10 hover:border-btc-orange/30"
+              className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30"
               onClick={handleClearBets}
               disabled={bets.length === 0}
             >
