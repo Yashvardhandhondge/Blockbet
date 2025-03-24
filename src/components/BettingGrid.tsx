@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -286,6 +285,53 @@ const BettingGrid = () => {
     return result;
   };
 
+  const renderChipSelection = () => {
+    return (
+      <div className="flex flex-wrap gap-2 justify-center mb-4">
+        {CHIP_VALUES.map(value => (
+          <div 
+            key={value} 
+            className={cn(
+              "relative w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
+              selectedChip === value 
+                ? "transform scale-110" 
+                : "transform scale-100"
+            )} 
+            onClick={() => handleSelectChip(value)}
+          >
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>
+            )}
+            
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>
+            )}
+            
+            <div 
+              className={cn(
+                "relative w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+                getChipColor(value)
+              )}
+            >
+              <div 
+                className="absolute inset-0 rounded-full border-4 border-dashed" 
+                style={{
+                  borderColor: `${getChipSecondaryColor(value)}`
+                }}
+              ></div>
+              
+              <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
+              
+              <span className="relative z-10 text-white font-bold drop-shadow-md">
+                {formatChipValue(value)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
         <SparklesText text="Place Your Bets" className="px-6 py-3 text-5xl mb-3 text-white" colors={{
@@ -316,30 +362,13 @@ const BettingGrid = () => {
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-        {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} />)}
+        {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">
         <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
-          <div className="flex flex-wrap gap-2 justify-center mb-4">
-            {CHIP_VALUES.map(value => <div key={value} className={cn("w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "ring-3 ring-btc-orange ring-offset-2 ring-offset-[#0a0a0a] transform scale-110" : "transform scale-100")} onClick={() => handleSelectChip(value)}>
-                <div className={cn("relative w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value))}>
-                  {/* Outer ring */}
-                  <div className="absolute inset-0 rounded-full border-4 border-dashed" style={{
-                borderColor: `${getChipSecondaryColor(value)}`
-              }}></div>
-                  
-                  {/* Inner circle */}
-                  <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
-                  
-                  {/* Main text */}
-                  <span className="relative z-10 text-white font-bold drop-shadow-md">
-                    {formatChipValue(value)}
-                  </span>
-                </div>
-              </div>)}
-          </div>
+          {renderChipSelection()}
           
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>

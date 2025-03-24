@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
@@ -9,9 +8,10 @@ interface MiningPoolCardProps {
   pool: MiningPool;
   onSelect: (pool: MiningPool) => void;
   isSelected: boolean;
+  bets?: Array<{id: number; amount: number}>;
 }
 
-const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => {
+const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
   // Animate hashrate percentage
@@ -23,7 +23,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
   return (
     <div 
       className={cn(
-        "relative rounded-xl overflow-hidden transition-all duration-300 border",
+        "relative rounded-xl overflow-hidden transition-all duration-300 border cursor-pointer",
         isSelected 
           ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" 
           : "border-white/10 hover:border-white/20",
@@ -31,6 +31,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => onSelect(pool)}
     >
       {/* Glow effect */}
       {isSelected && (
@@ -91,19 +92,11 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
             <span className="text-xs ml-1">payout</span>
           </div>
           
-          <Button 
-            onClick={() => onSelect(pool)}
-            variant={isSelected ? "default" : "outline"}
-            className={cn(
-              "transition-all duration-300",
-              isSelected 
-                ? "bg-btc-orange hover:bg-btc-orange/90 text-btc-dark"
-                : "border-btc-orange/40 hover:border-btc-orange text-btc-orange hover:bg-btc-orange/10"
-            )}
-            size="sm"
-          >
-            {isSelected ? 'Selected' : 'Select'}
-          </Button>
+          {isSelected && (
+            <div className="text-btc-orange text-xs font-medium px-2 py-1 rounded-full border border-btc-orange/30 bg-btc-orange/5">
+              Selected
+            </div>
+          )}
         </div>
         
         {/* Progress bar showing hashrate percentage */}
@@ -113,6 +106,9 @@ const MiningPoolCard = ({ pool, onSelect, isSelected }: MiningPoolCardProps) => 
             style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
           ></div>
         </div>
+
+        {/* Render stacked chips if there are bets */}
+        {bets.length > 0 && renderStackedChips(bets)}
       </div>
     </div>
   );
@@ -180,6 +176,71 @@ const getPoolColor = (poolId: string): string => {
     default:
       return '#95A5A6';
   }
+};
+
+// Function to render chips stacked on the pool
+const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
+  if (bets.length === 0) return null;
+  
+  const displayBets = bets.slice(-5);
+  const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
+  
+  return (
+    <div className="absolute bottom-2 right-2 flex flex-col items-end">
+      <div className="relative h-12 w-8">
+        {displayBets.map((bet, index) => (
+          <div 
+            key={bet.id} 
+            className={cn(
+              "absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+              getChipColor(bet.amount)
+            )} 
+            style={{
+              bottom: `${index * 4}px`,
+              right: `${index % 2 === 0 ? 0 : 2}px`,
+              zIndex: index,
+              transform: `rotate(${index * 5 - 10}deg)`
+            }}
+          >
+            <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
+            <div 
+              className="absolute inset-0.5 rounded-full border-4 border-dashed" 
+              style={{
+                borderColor: `${getChipSecondaryColor(bet.amount)}`
+              }}
+            ></div>
+            <span className="relative z-10 text-white font-bold drop-shadow-md">
+              {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
+            </span>
+          </div>
+        ))}
+      </div>
+      
+      {remainingCount > 0 && (
+        <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
+          +{remainingCount} more
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Function to get chip color based on value
+const getChipColor = (value: number) => {
+  if (value >= 10000) return "bg-red-900";
+  if (value >= 5000) return "bg-blue-900";
+  if (value >= 1000) return "bg-green-900";
+  if (value >= 500) return "bg-purple-900";
+  return "bg-yellow-900";
+};
+
+// Function to get chip secondary color based on value
+const getChipSecondaryColor = (value: number) => {
+  if (value >= 10000) return "bg-red-800";
+  if (value >= 5000) return "bg-blue-800";
+  if (value >= 1000) return "bg-green-800";
+  if (value >= 500) return "bg-purple-800";
+  return "bg-yellow-800";
 };
 
 export default MiningPoolCard;
