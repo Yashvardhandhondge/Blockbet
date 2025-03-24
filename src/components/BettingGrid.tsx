@@ -10,7 +10,9 @@ import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
 import { SparklesText } from './ui/sparkles-text';
+
 const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
+
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -27,6 +29,7 @@ const BettingGrid = () => {
   const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
@@ -38,6 +41,7 @@ const BettingGrid = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
   useRandomInterval(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
@@ -45,9 +49,11 @@ const BettingGrid = () => {
     });
     setTimeVariation(Math.random() * 1.5 - 0.75);
   }, 3000, 8000);
+
   useEffect(() => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
+
   const handlePlaceBet = (poolId: string | null) => {
     if (!selectedChip) {
       toast({
@@ -69,6 +75,7 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const handleClearBets = () => {
     setBets([]);
     toast({
@@ -77,6 +84,7 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const handleCancelLastBet = () => {
     if (bets.length === 0) {
       toast({
@@ -96,30 +104,36 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const formatTimeRemaining = () => {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
   const estimatedTime = (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
   })();
+
   const getUrgencyClass = () => {
     const percentageLeft = timeRemaining / totalTime * 100;
     if (percentageLeft < 20) return "text-btc-orange";
     if (percentageLeft < 50) return "text-btc-orange";
     return "text-btc-orange";
   };
+
   const handleSelectChip = (value: number) => {
     setSelectedChip(value);
   };
+
   const handleSelectPool = (pool: MiningPool) => {
     setSelectedPool(pool);
     handlePlaceBet(pool.id);
   };
+
   const getPoolLogo = (poolId: string) => {
     const logoMap: Record<string, string> = {
       'foundry': '/pool-logos/foundryusa.png',
@@ -145,6 +159,7 @@ const BettingGrid = () => {
       }} />
       </div>;
   };
+
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.id === poolId);
     if (pool) {
@@ -156,15 +171,19 @@ const BettingGrid = () => {
       background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)'
     };
   };
+
   const getBetsOnPool = (poolId: string | null) => {
     return bets.filter(bet => bet.poolId === poolId);
   };
+
   const formatBTC = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8);
   };
+
   const formatSats = (satoshis: number) => {
     return satoshis.toLocaleString() + " sats";
   };
+
   const getPlaceholderImage = (poolId: string) => {
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
@@ -175,6 +194,7 @@ const BettingGrid = () => {
         {firstLetter}
       </div>;
   };
+
   const getChipColor = (value: number) => {
     if (value >= 10000) return "bg-red-900";
     if (value >= 5000) return "bg-blue-900";
@@ -182,6 +202,7 @@ const BettingGrid = () => {
     if (value >= 500) return "bg-purple-900";
     return "bg-yellow-900";
   };
+
   const getChipSecondaryColor = (value: number) => {
     if (value >= 10000) return "bg-red-800";
     if (value >= 5000) return "bg-blue-800";
@@ -189,11 +210,13 @@ const BettingGrid = () => {
     if (value >= 500) return "bg-purple-800";
     return "bg-yellow-800";
   };
+
   const formatChipValue = (value: number) => {
     if (value >= 10000) return `${value / 1000}K`;
     if (value >= 1000) return `${value / 1000}K`;
     return value;
   };
+
   const renderRouletteCasualChips = (amount: number) => {
     const chipsToRender: number[] = [];
     let remainingAmount = amount;
@@ -216,6 +239,7 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
+
   const renderStackedChips = (bets: Array<{
     id: number;
     amount: number;
@@ -246,6 +270,7 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
+
   const getConsolidatedBets = () => {
     const consolidatedBets = new Map<string | null, number>();
     bets.forEach(bet => {
@@ -259,14 +284,15 @@ const BettingGrid = () => {
     }));
     return result;
   };
+
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
-        <SparklesText text="Place Your Bets" className="px-6 py-3 text-xl mb-3 text-white" colors={{
+        <SparklesText text="Place Your Bets" className="px-6 py-3 text-5xl mb-3 text-white" colors={{
         first: "#F59E0B",
         second: "#D946EF"
       }} sparklesCount={15} />
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
-          Predict which mining pool will mine the next block
+          Predict which mining pool will mine the next Bitcoin block
         </p>
       </div>
       
@@ -366,4 +392,5 @@ const BettingGrid = () => {
       </div>
     </div>;
 };
+
 export default BettingGrid;
