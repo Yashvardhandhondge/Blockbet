@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Progress } from './ui/progress';
 import { toast } from './ui/use-toast';
 import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -19,6 +21,10 @@ const BettingGrid = () => {
   
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
+  
+  // Calculate time progress percentage (reverse of remaining time)
+  const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
+  const progressPercentage = 100 - ((timeRemaining / totalTime) * 100);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,7 +66,6 @@ const BettingGrid = () => {
   })();
   
   const getUrgencyClass = () => {
-    const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
     const percentageLeft = (timeRemaining / totalTime) * 100;
     
     if (percentageLeft < 20) return "text-red-500";
@@ -151,14 +156,6 @@ const BettingGrid = () => {
       
       <div className="flex flex-wrap justify-center items-center gap-2 mb-6">
         <StatCard 
-          icon={<Clock className="h-3 w-3 text-btc-orange" />}
-          title="Betting closes in"
-          value={formatTimeRemaining()}
-          secondaryText=""
-          isHighlighted={true}
-        />
-        
-        <StatCard 
           icon={<Zap className="h-3 w-3 text-btc-orange" />}
           title="Next block"
           value={`#${miningPools[0].blocksLast24h + 1}`}
@@ -177,6 +174,26 @@ const BettingGrid = () => {
           title="Pending Transactions"
           value={pendingTxCount.toLocaleString()}
           secondaryText="mempool"
+        />
+      </div>
+      
+      {/* Linear buffer with label for betting time */}
+      <div className="w-full mb-6 px-2">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-sm text-white/80">Betting closes in</span>
+          <span className={cn("text-sm font-mono", getUrgencyClass())}>
+            {formatTimeRemaining()}
+          </span>
+        </div>
+        <Progress 
+          value={progressPercentage} 
+          className="h-2 bg-white/10"
+          indicatorClassName={cn(
+            "transition-all duration-500 ease-linear",
+            progressPercentage > 80 ? "bg-red-500" : 
+            progressPercentage > 50 ? "bg-yellow-500" : 
+            "bg-green-500"
+          )}
         />
       </div>
       
