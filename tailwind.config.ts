@@ -57,6 +57,7 @@ export default {
         "btc-orange": "#f7931a",
         "btc-dark": "#121212",
         "btc-darker": "#0a0a0a",
+        "btc-highlight": "#2a2a2a",
       },
       borderRadius: {
         lg: "var(--radius)",
