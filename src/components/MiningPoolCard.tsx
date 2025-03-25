@@ -196,8 +196,8 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                 marginRight: index > 0 ? '2px' : '0', // Add extra space between stacks
               }}
             >
-              {/* Stack of chips of the same denomination with increased elevation */}
-              {Array.from({ length: stackSize }).map((_, stackIndex) => (
+              {/* Show stacked chips without values for better visualization */}
+              {Array.from({ length: stackSize - 1 }).map((_, stackIndex) => (
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
@@ -219,9 +219,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                       borderColor: `${getChipSecondaryColor(amount)}`
                     }}
                   ></div>
-                  <span className="relative z-10 text-white font-bold drop-shadow-md">
-                    {amount >= 10000 ? `${amount / 1000}k` : amount}
-                  </span>
+                  {/* No text in the stacked chips below the top one */}
                 </div>
               ))}
               
@@ -232,7 +230,10 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                   getChipColor(amount)
                 )}
                 style={{
-                  boxShadow: "0 3px 6px rgba(0,0,0,0.6)"
+                  boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
+                  position: stackSize > 1 ? 'absolute' : 'relative',
+                  bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
+                  right: 0,
                 }}
               >
                 <div className="absolute rounded-full border border-white/30 inset-1"></div>
@@ -242,9 +243,9 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                     borderColor: `${getChipSecondaryColor(amount)}`
                   }}
                 ></div>
-                <span className="relative z-10 text-white font-bold drop-shadow-md">
+                <span className="relative z-10 text-white font-bold drop-shadow-md flex items-center">
                   {amount >= 10000 ? `${amount / 1000}k` : amount}
-                  {betCount > 4 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
+                  {betCount > 1 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
                 </span>
               </div>
             </div>
