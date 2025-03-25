@@ -11,9 +11,7 @@ import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
-
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
-
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -30,10 +28,8 @@ const BettingGrid = () => {
   const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const isMobile = useIsMobile();
-
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
-
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
@@ -45,7 +41,6 @@ const BettingGrid = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
-
   useRandomInterval(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
@@ -57,11 +52,9 @@ const BettingGrid = () => {
       return Math.max(9.2, Math.min(10.5, prev + variation));
     });
   }, 3000, 8000);
-
   useEffect(() => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
-
   const handlePlaceBet = (poolId: string | null) => {
     if (!selectedChip) {
       toast({
@@ -83,7 +76,6 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
-
   const handleClearBets = () => {
     setBets([]);
     toast({
@@ -92,7 +84,6 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
-
   const handleCancelLastBet = () => {
     if (bets.length === 0) {
       toast({
@@ -112,36 +103,30 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
-
   const formatTimeRemaining = () => {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
-
   const estimatedTime = (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
   })();
-
   const getUrgencyClass = () => {
     const percentageLeft = timeRemaining / totalTime * 100;
     if (percentageLeft < 20) return "text-btc-orange";
     if (percentageLeft < 50) return "text-btc-orange";
     return "text-btc-orange";
   };
-
   const handleSelectChip = (value: number) => {
     setSelectedChip(value);
   };
-
   const handleSelectPool = (pool: MiningPool) => {
     setSelectedPool(pool);
     handlePlaceBet(pool.id);
   };
-
   const getPoolLogo = (poolId: string) => {
     const logoMap: Record<string, string> = {
       'foundry': '/pool-logos/foundryusa.png',
@@ -167,7 +152,6 @@ const BettingGrid = () => {
       }} />
       </div>;
   };
-
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.id === poolId);
     if (pool) {
@@ -179,19 +163,15 @@ const BettingGrid = () => {
       background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)'
     };
   };
-
   const getBetsOnPool = (poolId: string | null) => {
     return bets.filter(bet => bet.poolId === poolId);
   };
-
   const formatBTC = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8);
   };
-
   const formatSats = (satoshis: number) => {
     return satoshis.toLocaleString() + " sats";
   };
-
   const getPlaceholderImage = (poolId: string) => {
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
@@ -202,7 +182,6 @@ const BettingGrid = () => {
         {firstLetter}
       </div>;
   };
-
   const getChipColor = (value: number) => {
     switch (value) {
       case 100:
@@ -223,7 +202,6 @@ const BettingGrid = () => {
         return "bg-gray-600";
     }
   };
-
   const getChipSecondaryColor = (value: number) => {
     switch (value) {
       case 100:
@@ -244,14 +222,12 @@ const BettingGrid = () => {
         return "bg-gray-500";
     }
   };
-
   const formatChipValue = (value: number) => {
     if (value >= 100000) return `${value / 1000}K`;
     if (value >= 10000) return `${value / 1000}K`;
     if (value >= 1000) return `${value / 1000}K`;
     return value;
   };
-
   const getConsolidatedBets = () => {
     const betsByPool = new Map<string | null, Array<number>>();
     bets.forEach(bet => {
@@ -266,7 +242,6 @@ const BettingGrid = () => {
     }));
     return result;
   };
-
   const renderRouletteCasualChips = (amounts: number[]) => {
     const groupedChips: {
       [key: number]: number;
@@ -299,7 +274,6 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
-
   const renderStackedChips = (bets: Array<{
     id: number;
     amount: number;
@@ -330,51 +304,28 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
-
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
-    return <div className={cn(
-      "flex flex-wrap gap-2 justify-center mb-4",
-      isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-0" : ""
-    )}>
-        {CHIP_VALUES.map(value => <div 
-            key={value} 
-            className={cn(
-              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
-              selectedChip === value ? "transform scale-110" : "transform scale-100",
-              isMobile ? "w-8 h-8 flex-shrink-0" : "w-14 h-14"
-            )} 
-            onClick={() => handleSelectChip(value)}
-          >
+    return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-0" : "")}>
+        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-8 h-8 flex-shrink-0" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
             {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
             
             {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
             
-            <div className={cn(
-              "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
-              getChipColor(value),
-              isMobile ? "w-7 h-7" : "w-12 h-12"
-            )}>
+            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-7 h-7" : "w-12 h-12")}>
               <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
-                borderColor: `${getChipSecondaryColor(value)}`
-              }}></div>
+            borderColor: `${getChipSecondaryColor(value)}`
+          }}></div>
               
-              <div className={cn(
-                "absolute rounded-full border border-white/30",
-                isMobile ? "inset-0.5" : "inset-1.5"
-              )}></div>
+              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
               
-              <span className={cn(
-                "relative z-10 text-white font-bold drop-shadow-md",
-                isMobile ? "text-[8px]" : ""
-              )}>
+              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[8px]" : "")}>
                 {formatChipValue(value)}
               </span>
             </div>
           </div>)}
       </div>;
   };
-
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
         <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
@@ -475,10 +426,9 @@ const BettingGrid = () => {
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white font-medium text-sm mb-3">Block Stats</h3>
+        <h3 className="text-white font-medium text-sm mb-3">Live Blockchain Stats:</h3>
         <LiveBlockData currentBlock={currentBlock} avgBlockTime={avgBlockTime} pendingTxCount={pendingTxCount} estimatedTime={estimatedTime} />
       </Card>
     </div>;
 };
-
 export default BettingGrid;
