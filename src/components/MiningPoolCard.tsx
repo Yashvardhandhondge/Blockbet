@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -57,11 +56,8 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
             <h3 className="text-lg font-medium text-white">{pool.name}</h3>
             <div className="mt-1 text-xs text-white/60">{pool.region}</div>
           </div>
-          <div className="h-10 w-10 rounded-lg flex items-center justify-center"
-               style={{ background: getDarkerTechGradient(pool.id) }}>
-            <span className="text-xs font-medium text-white">
-              {Math.round(displayedHashrate)}%
-            </span>
+          <div className="h-10 w-10 rounded-lg overflow-hidden bg-white/90 shadow-md">
+            {getPoolLogo(pool.id)}
           </div>
         </div>
         
@@ -158,7 +154,52 @@ const getPoolColor = (poolId: string): string => {
   }
 };
 
-// Using the same getChipColor and getChipSecondaryColor as in BettingGrid
+const getPoolLogo = (poolId: string) => {
+  const logoMap: Record<string, string> = {
+    'foundry': '/pool-logos/foundryusa.png',
+    'antpool': '/pool-logos/antpool.svg',
+    'f2pool': '/pool-logos/f2pool.svg',
+    'binance': '/pool-logos/binancepool.svg',
+    'viabtc': '/pool-logos/viabtc.svg',
+    'slushpool': '/pool-logos/slushpool.svg',
+    'poolin': '/pool-logos/poolin.svg',
+    'btc-com': '/pool-logos/bitcoincom.svg',
+    'genesis': '/pool-logos/genesisdigitalassets.svg',
+    'bitfury': '/pool-logos/bitfury.svg',
+    'kano': '/pool-logos/kanopool.svg',
+    'pega': '/pool-logos/pegapool.svg',
+    'emcd': '/pool-logos/luxor.svg',
+    'okkong': '/pool-logos/okkong.svg',
+    'okex': '/pool-logos/okexpool.svg',
+    'titan': '/pool-logos/titan.svg',
+    'sbicrypto': '/pool-logos/sbicrypto.svg',
+    'rawpool': '/pool-logos/rawpool.svg',
+    'sigmapool': '/pool-logos/sigmapoolcom.svg',
+    '1thash': '/pool-logos/1thash.svg',
+    'spiderpool': '/pool-logos/spiderpool.svg',
+    'prohashing': '/pool-logos/prohashing.svg',
+    'arkpool': '/pool-logos/arkpool.svg',
+    'bitcoincom': '/pool-logos/bitcoincom.svg',
+    'unknown': '/pool-logos/unknown.svg'
+  };
+
+  const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
+  
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-white rounded-lg overflow-hidden p-0.5">
+      <img 
+        src={logoPath} 
+        alt={`${pool.name} logo`} 
+        className="w-full h-full object-contain" 
+        onError={(e) => {
+          console.log(`Error loading logo for ${poolId}: ${logoPath}`);
+          e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
+        }} 
+      />
+    </div>
+  );
+};
+
 const getChipColor = (value: number) => {
   switch (value) {
     case 100:
@@ -204,7 +245,6 @@ const getChipSecondaryColor = (value: number) => {
 const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   if (bets.length === 0) return null;
   
-  // Group chips by denomination
   const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
   
   bets.forEach(bet => {
@@ -214,20 +254,16 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
     groupedBets[bet.amount].push(bet);
   });
   
-  // Sort denominations from highest to lowest
   const denominations = Object.keys(groupedBets).map(Number).sort((a, b) => b - a);
   
-  // Limit to a maximum of 5 different denominations for display
   const displayDenominations = denominations.slice(0, 5);
   const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
   
-  // Position chips with improved spacing between different denominations
   return (
     <div className="absolute bottom-3 right-0 left-0 px-4 flex justify-end">
       <div className="flex flex-row-reverse items-end gap-4 h-12">
         {displayDenominations.map((amount, index) => {
           const betCount = groupedBets[amount].length;
-          // Limit stack size for better readability
           const stackSize = Math.min(betCount, 4);
           
           return (
@@ -236,7 +272,6 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
               className="relative"
               style={{ zIndex: 10 - index }}
             >
-              {/* Show stacked chips without values for better visualization */}
               {Array.from({ length: stackSize - 1 }).map((_, stackIndex) => (
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
@@ -246,9 +281,9 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                   )}
                   style={{
                     position: 'absolute',
-                    bottom: stackIndex * 4, // Spacing between stacked chips
+                    bottom: stackIndex * 4,
                     right: 0,
-                    transform: `rotate(${(stackIndex * 5) - 7}deg)`, // Keep rotation for visual effect
+                    transform: `rotate(${(stackIndex * 5) - 7}deg)`,
                     boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
                   }}
                 >
@@ -259,11 +294,9 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                       borderColor: `${getChipSecondaryColor(amount)}`
                     }}
                   ></div>
-                  {/* No text in the stacked chips below the top one */}
                 </div>
               ))}
               
-              {/* Top chip with the count if needed */}
               <div 
                 className={cn(
                   "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
