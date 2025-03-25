@@ -1,84 +1,23 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
-import { ArrowDown } from 'lucide-react';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
   onSelect: (pool: MiningPool) => void;
   isSelected: boolean;
   bets?: Array<{id: number; amount: number}>;
-  isPlaceholder?: boolean;
 }
 
-const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [], isPlaceholder = false }: MiningPoolCardProps) => {
+const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
   const poolColor = getPoolColor(pool.id);
-
-  if (isPlaceholder) {
-    return (
-      <div 
-        className={cn(
-          "relative rounded-xl overflow-hidden transition-all duration-300 border cursor-pointer h-full",
-          "border-white/10 hover:border-btc-orange/40 hover:shadow-[0_0_20px_rgba(247,147,26,0.15)]",
-          isHovered ? "transform-gpu scale-[1.02]" : "transform-gpu scale-100"
-        )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-btc-dark to-black opacity-80"></div>
-        <GlowEffect 
-          colors={['#f7931a', '#ffa41b', '#f76e1a']} 
-          mode="breathe" 
-          blur="soft"
-          scale={1.1}
-          duration={4}
-          className="opacity-20"
-        />
-        
-        <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 text-center">
-          <div className="mb-4 bg-btc-orange/10 p-3 rounded-full border border-btc-orange/20">
-            <ArrowDown className="h-10 w-10 text-btc-orange animate-bounce" />
-          </div>
-          
-          <h3 className="text-2xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
-            Place Your Bets
-          </h3>
-          
-          <p className="text-white/60 text-sm">
-            Choose a mining pool to place your bet on who will mine the next block
-          </p>
-        </div>
-      </div>
-    );
-  }
-  
-  const getBetsByAmount = () => {
-    const grouped: Record<number, {id: number, amount: number, count: number}[]> = {};
-    
-    bets.forEach(bet => {
-      if (!grouped[bet.amount]) {
-        grouped[bet.amount] = [];
-      }
-      
-      const existingStack = grouped[bet.amount].find(stack => stack.amount === bet.amount);
-      
-      if (existingStack) {
-        existingStack.count += 1;
-      } else {
-        grouped[bet.amount].push({...bet, count: 1});
-      }
-    });
-    
-    return Object.values(grouped).flat();
-  };
-  
-  const stackedBets = getBetsByAmount();
   
   return (
     <div 
@@ -161,83 +100,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [], isPlaceholder =
           ></div>
         </div>
 
-        {stackedBets.length > 0 && renderChipStacks(stackedBets)}
-      </div>
-    </div>
-  );
-};
-
-const renderChipStacks = (bets: Array<{id: number; amount: number; count: number}>) => {
-  if (bets.length === 0) return null;
-  
-  const getChipSize = () => {
-    if (bets.length >= 5) return "w-5 h-5 text-[9px]";
-    if (bets.length >= 3) return "w-6 h-6 text-[10px]";
-    return "w-7 h-7 text-xs";
-  };
-  
-  const stackSpacing = bets.length <= 2 ? 6 : 
-                       bets.length <= 3 ? 4 : 
-                       bets.length <= 4 ? 2 : 0;
-  
-  return (
-    <div className="absolute bottom-2 right-4">
-      <div className="flex items-end justify-end space-x-1">
-        {bets.map((stack, stackIndex) => (
-          <div 
-            key={`stack-${stack.id}-${stackIndex}`}
-            className="relative"
-            style={{
-              marginRight: `${stackSpacing}px`,
-              height: `${Math.min(stack.count * 4 + 20, 40)}px`,
-              width: getChipSize().split(' ')[0],
-              zIndex: 10 - stackIndex
-            }}
-          >
-            {Array.from({ length: Math.min(stack.count, 5) }).map((_, chipIndex) => (
-              <div 
-                key={`chip-${stack.id}-${chipIndex}`} 
-                className={cn(
-                  "absolute rounded-full flex items-center justify-center font-bold text-white shadow-xl",
-                  getChipSize(),
-                  getChipColor(stack.amount)
-                )} 
-                style={{
-                  bottom: `${chipIndex * 4}px`,
-                  left: 0,
-                  transform: `rotate(${(chipIndex * 3) - 6}deg)`,
-                  zIndex: 5 - chipIndex
-                }}
-              >
-                <div className={cn(
-                  "absolute rounded-full border border-white/30",
-                  "inset-1"
-                )}></div>
-                <div 
-                  className={cn(
-                    "absolute rounded-full border-dashed",
-                    "inset-0.5 border-2"
-                  )}
-                  style={{
-                    borderColor: `${getChipSecondaryColor(stack.amount)}`
-                  }}
-                ></div>
-                
-                {chipIndex === 0 && (
-                  <span className="relative z-10 text-white font-bold drop-shadow-md">
-                    {stack.amount >= 10000 ? `${stack.amount / 1000}k` : stack.amount}
-                  </span>
-                )}
-              </div>
-            ))}
-            
-            {stack.count > 5 && (
-              <div className="absolute -right-2 -top-2 text-[10px] text-white/90 font-medium bg-black/70 px-1 py-0.5 rounded-full border border-white/20 shadow-md">
-                x{stack.count}
-              </div>
-            )}
-          </div>
-        ))}
+        {bets.length > 0 && renderStackedChips(bets)}
       </div>
     </div>
   );
@@ -303,6 +166,124 @@ const getPoolColor = (poolId: string): string => {
     default:
       return '#95A5A6';
   }
+};
+
+const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
+  if (bets.length === 0) return null;
+  
+  // Group chips by denomination
+  const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
+  
+  bets.forEach(bet => {
+    if (!groupedBets[bet.amount]) {
+      groupedBets[bet.amount] = [];
+    }
+    groupedBets[bet.amount].push(bet);
+  });
+  
+  // Sort denominations from highest to lowest
+  const denominations = Object.keys(groupedBets).map(Number).sort((a, b) => b - a);
+  
+  // Limit to a maximum of 5 different denominations for display
+  const displayDenominations = denominations.slice(0, 5);
+  const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
+  
+  // Calculate chip size based on number of denominations
+  const getChipSize = () => {
+    if (displayDenominations.length >= 5) return "w-6 h-6 text-[10px]";
+    if (displayDenominations.length >= 3) return "w-[26px] h-[26px] text-xs";
+    return "w-7 h-7 text-xs";
+  };
+  
+  // Calculate spacing between stacks
+  const chipSpacing = displayDenominations.length <= 2 ? 5 : 
+                      displayDenominations.length <= 3 ? 3 : 
+                      displayDenominations.length <= 4 ? 1 : 0;
+  
+  return (
+    <div className="absolute bottom-2 right-4 left-4">
+      <div className="flex justify-end items-center h-8">
+        {displayDenominations.map((amount, index) => {
+          const betCount = groupedBets[amount].length;
+          
+          return (
+            <div 
+              key={`stack-${amount}`} 
+              className="relative"
+              style={{
+                marginLeft: index > 0 ? `${chipSpacing}px` : '0',
+                zIndex: 10 - index,
+              }}
+            >
+              {/* Stack of chips of the same denomination */}
+              {Array.from({ length: Math.min(betCount, 3) }).map((_, stackIndex) => (
+                <div 
+                  key={`chip-${amount}-${stackIndex}`}
+                  className={cn(
+                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
+                    getChipSize(),
+                    getChipColor(amount)
+                  )}
+                  style={{
+                    position: 'absolute',
+                    bottom: stackIndex * -2,
+                    transform: `rotate(${(stackIndex * 3) - 5}deg)`,
+                  }}
+                >
+                  <div className={cn(
+                    "absolute rounded-full border border-white/30",
+                    displayDenominations.length >= 5 ? "inset-1" : "inset-1.5"
+                  )}></div>
+                  <div 
+                    className={cn(
+                      "absolute rounded-full border-dashed",
+                      displayDenominations.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
+                    )}
+                    style={{
+                      borderColor: `${getChipSecondaryColor(amount)}`
+                    }}
+                  ></div>
+                </div>
+              ))}
+              
+              {/* Top chip with the amount */}
+              <div 
+                className={cn(
+                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
+                  getChipSize(),
+                  getChipColor(amount)
+                )}
+              >
+                <div className={cn(
+                  "absolute rounded-full border border-white/30",
+                  displayDenominations.length >= 5 ? "inset-1" : "inset-1.5"
+                )}></div>
+                <div 
+                  className={cn(
+                    "absolute rounded-full border-dashed",
+                    displayDenominations.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
+                  )}
+                  style={{
+                    borderColor: `${getChipSecondaryColor(amount)}`
+                  }}
+                ></div>
+                <span className="relative z-10 text-white font-bold drop-shadow-md">
+                  {amount >= 10000 ? `${amount / 1000}k` : amount}
+                  {betCount > 1 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        
+        {remainingDenominations > 0 && (
+          <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1.5 py-0.5 rounded-full shadow-md">
+            +{remainingDenominations}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const getChipColor = (value: number) => {
