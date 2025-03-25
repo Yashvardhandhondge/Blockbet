@@ -57,7 +57,7 @@ const Index = () => {
               <span className="text-white">Roulette</span>
               
             </h1>
-            <p className="text-white/70 max-w-2xl mx-auto text-sm font-semibold">Predict which mining pool will mine the next Bitcoin block and win up to 83x your bet in Sats!</p>
+            <p className="text-white/70 max-w-2xl mx-auto text-sm font-normal">Predict which mining pool will mine the next Bitcoin block and win up to 83x your bet in Sats!</p>
           </div>
           
           {/* Blockchain visualization */}
