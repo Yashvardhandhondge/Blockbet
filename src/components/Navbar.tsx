@@ -13,6 +13,9 @@ const Navbar = () => {
   // This would typically come from an auth context
   const isLoggedIn = false;
   const walletBalance = '0.00125';
+  
+  // New wallet counter in sats (1 BTC = 100,000,000 sats)
+  const walletBalanceInSats = Math.floor(parseFloat(walletBalance) * 100000000).toLocaleString();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-btc-darker/80 backdrop-blur-md border-b border-white/5">
@@ -63,6 +66,12 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              {/* Wallet amount counter - NEW */}
+              <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5 mr-1">
+                <Wallet className="h-4 w-4 text-btc-orange" />
+                <span className="text-white font-medium text-sm">{walletBalanceInSats} sats</span>
+              </div>
+            
               {/* Withdraw button (previously Login) */}
               <Button 
                 variant="ghost" 
