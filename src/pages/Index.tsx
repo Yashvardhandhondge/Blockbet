@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
 import { BettingGrid } from '@/components/BettingGrid';
+import { RecentBlocks } from '@/components/RecentBlocks';
+import { MiningPoolStats } from '@/components/MiningPoolStats';
 import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
@@ -27,6 +29,9 @@ const Index = () => {
   });
   const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
+  });
+  const statsAnimation = useElementAppear(!isLoading, {
+    delay: 1200
   });
 
   return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
@@ -68,8 +73,14 @@ const Index = () => {
           </div>
           
           {/* Betting grid */}
-          <div style={bettingGridAnimation.style}>
+          <div style={bettingGridAnimation.style} className="mb-8">
             <BettingGrid />
+          </div>
+          
+          {/* Stats section */}
+          <div style={statsAnimation.style} className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <MiningPoolStats />
+            <RecentBlocks />
           </div>
         </main>
         
