@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown } from 'lucide-react';
@@ -13,7 +12,7 @@ import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
+const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
@@ -205,22 +204,33 @@ const BettingGrid = () => {
   };
 
   const getChipColor = (value: number) => {
-    if (value >= 10000) return "bg-red-900";
-    if (value >= 5000) return "bg-blue-900";
-    if (value >= 1000) return "bg-green-900";
-    if (value >= 500) return "bg-purple-900";
-    return "bg-yellow-900";
+    switch(value) {
+      case 100: return "bg-blue-600";
+      case 500: return "bg-green-600";
+      case 1000: return "bg-purple-600";
+      case 5000: return "bg-pink-600";
+      case 10000: return "bg-orange-600";
+      case 50000: return "bg-red-600";
+      case 100000: return "bg-yellow-600";
+      default: return "bg-gray-600";
+    }
   };
 
   const getChipSecondaryColor = (value: number) => {
-    if (value >= 10000) return "bg-red-800";
-    if (value >= 5000) return "bg-blue-800";
-    if (value >= 1000) return "bg-green-800";
-    if (value >= 500) return "bg-purple-800";
-    return "bg-yellow-800";
+    switch(value) {
+      case 100: return "bg-blue-500";
+      case 500: return "bg-green-500";
+      case 1000: return "bg-purple-500";
+      case 5000: return "bg-pink-500";
+      case 10000: return "bg-orange-500";
+      case 50000: return "bg-red-500";
+      case 100000: return "bg-yellow-500";
+      default: return "bg-gray-500";
+    }
   };
 
   const formatChipValue = (value: number) => {
+    if (value >= 100000) return `${value / 1000}K`;
     if (value >= 10000) return `${value / 1000}K`;
     if (value >= 1000) return `${value / 1000}K`;
     return value;
@@ -245,7 +255,6 @@ const BettingGrid = () => {
   };
 
   const renderRouletteCasualChips = (amounts: number[]) => {
-    // Group chips by denomination
     const groupedChips: { [key: number]: number } = {};
     
     amounts.forEach(amount => {
@@ -468,7 +477,6 @@ const BettingGrid = () => {
         </Card>
       </div>
       
-      {/* Block Stats Card at the bottom */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="text-white font-medium text-sm mb-3">Block Stats</h3>
         <LiveBlockData 
