@@ -364,22 +364,6 @@ const BettingGrid = () => {
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">
-        <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
-          <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
-          {renderChipSelection()}
-          
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-3.5 h-3.5" />
-              Cancel Last
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-3.5 h-3.5" />
-              Clear All
-            </Button>
-          </div>
-        </Card>
-        
         <Card className="flex-1 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>
@@ -416,6 +400,22 @@ const BettingGrid = () => {
                 </div>
               </div>
             </>}
+        </Card>
+        
+        <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
+          <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
+          {renderChipSelection()}
+          
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <X className="w-3.5 h-3.5" />
+              Cancel Last
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-3.5 h-3.5" />
+              Clear All
+            </Button>
+          </div>
         </Card>
       </div>
     </div>;
