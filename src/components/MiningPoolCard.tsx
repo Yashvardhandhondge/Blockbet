@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -85,12 +84,6 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
             <span className="text-lg font-bold">{pool.odds.toFixed(2)}x</span>
             <span className="text-xs ml-1">payout</span>
           </div>
-          
-          {isSelected && (
-            <div className="text-btc-orange text-xs font-medium px-2 py-1 rounded-full border border-btc-orange/30 bg-btc-orange/5">
-              Selected
-            </div>
-          )}
         </div>
         
         <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
@@ -188,57 +181,40 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   const displayDenominations = denominations.slice(0, 5);
   const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
   
-  // Calculate chip size based on number of denominations
-  const getChipSize = () => {
-    if (displayDenominations.length >= 5) return "w-6 h-6 text-[10px]";
-    if (displayDenominations.length >= 3) return "w-[26px] h-[26px] text-xs";
-    return "w-7 h-7 text-xs";
-  };
-  
-  // Calculate spacing between stacks
-  const chipSpacing = displayDenominations.length <= 2 ? 5 : 
-                      displayDenominations.length <= 3 ? 3 : 
-                      displayDenominations.length <= 4 ? 1 : 0;
-  
+  // Position chips in bottom right corner with more space for payout text
   return (
-    <div className="absolute bottom-2 right-4 left-4">
-      <div className="flex justify-end items-center h-8">
+    <div className="absolute bottom-2 right-4 left-auto">
+      <div className="flex justify-end items-center h-8 gap-1">
         {displayDenominations.map((amount, index) => {
           const betCount = groupedBets[amount].length;
+          const stackSize = Math.min(betCount, 3);
           
           return (
             <div 
               key={`stack-${amount}`} 
               className="relative"
               style={{
-                marginLeft: index > 0 ? `${chipSpacing}px` : '0',
                 zIndex: 10 - index,
               }}
             >
               {/* Stack of chips of the same denomination */}
-              {Array.from({ length: Math.min(betCount, 3) }).map((_, stackIndex) => (
+              {Array.from({ length: stackSize }).map((_, stackIndex) => (
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
-                    getChipSize(),
+                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-6 h-6 text-[10px]",
                     getChipColor(amount)
                   )}
                   style={{
                     position: 'absolute',
-                    bottom: stackIndex * -2,
-                    transform: `rotate(${(stackIndex * 3) - 5}deg)`,
+                    bottom: stackIndex * 2,
+                    right: 0,
+                    transform: `rotate(${(stackIndex * 3) - 3}deg)`,
                   }}
                 >
-                  <div className={cn(
-                    "absolute rounded-full border border-white/30",
-                    displayDenominations.length >= 5 ? "inset-1" : "inset-1.5"
-                  )}></div>
+                  <div className="absolute rounded-full border border-white/30 inset-1"></div>
                   <div 
-                    className={cn(
-                      "absolute rounded-full border-dashed",
-                      displayDenominations.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
-                    )}
+                    className="absolute rounded-full border-dashed inset-0.5 border-2"
                     style={{
                       borderColor: `${getChipSecondaryColor(amount)}`
                     }}
@@ -249,27 +225,20 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
               {/* Top chip with the amount */}
               <div 
                 className={cn(
-                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
-                  getChipSize(),
+                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-6 h-6 text-[10px]",
                   getChipColor(amount)
                 )}
               >
-                <div className={cn(
-                  "absolute rounded-full border border-white/30",
-                  displayDenominations.length >= 5 ? "inset-1" : "inset-1.5"
-                )}></div>
+                <div className="absolute rounded-full border border-white/30 inset-1"></div>
                 <div 
-                  className={cn(
-                    "absolute rounded-full border-dashed",
-                    displayDenominations.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
-                  )}
+                  className="absolute rounded-full border-dashed inset-0.5 border-2"
                   style={{
                     borderColor: `${getChipSecondaryColor(amount)}`
                   }}
                 ></div>
                 <span className="relative z-10 text-white font-bold drop-shadow-md">
                   {amount >= 10000 ? `${amount / 1000}k` : amount}
-                  {betCount > 1 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
+                  {betCount > 3 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
                 </span>
               </div>
             </div>
