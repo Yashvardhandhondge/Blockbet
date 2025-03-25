@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
@@ -7,7 +6,6 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
-
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,21 +26,7 @@ const Index = () => {
   const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
   });
-
-  return (
-    <BackgroundGradientAnimation
-      gradientBackgroundStart="rgb(0, 0, 0)"
-      gradientBackgroundEnd="rgb(7, 7, 7)"
-      firstColor="#FFCC66"
-      secondColor="#D19CFF"
-      thirdColor="#7AE5FF"
-      fourthColor="#FFBB7A"
-      fifthColor="#FFDF7A"
-      pointerColor="rgba(255, 190, 60, 0.4)"
-      blendingValue="hard-light"
-      className="w-full h-full"
-      containerClassName="min-h-screen"
-    >
+  return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
       <div className="min-h-screen pb-20">
         {/* Loading screen */}
         <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
@@ -73,9 +57,7 @@ const Index = () => {
               <span className="text-white">Roulette</span>
               
             </h1>
-            <p className="text-lg text-white/70 max-w-2xl mx-auto">
-              Predict which mining pool will mine the next Bitcoin block and win BTC rewards
-            </p>
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">Predict which mining pool will mine the next Bitcoin block and win up to 83x your bet in Sats!</p>
           </div>
           
           {/* Blockchain visualization */}
@@ -91,8 +73,6 @@ const Index = () => {
         
         <Footer />
       </div>
-    </BackgroundGradientAnimation>
-  );
+    </BackgroundGradientAnimation>;
 };
-
 export default Index;
