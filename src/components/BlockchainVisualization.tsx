@@ -1,9 +1,9 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
+import { AuroraContainer } from '@/components/ui/aurora-container';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
@@ -90,7 +90,7 @@ const BlockchainVisualization = () => {
   };
   
   return (
-    <div className="w-full bg-btc-darker/80 rounded-xl overflow-hidden border border-white/10 shadow-xl backdrop-blur-sm">
+    <AuroraContainer className="w-full group hover:border-white/20 transition-colors">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
@@ -216,7 +216,7 @@ const BlockchainVisualization = () => {
           })}
         </div>
       </div>
-    </div>
+    </AuroraContainer>
   );
 };
 
