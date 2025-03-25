@@ -14,10 +14,8 @@ interface MiningPoolCardProps {
 const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
-  // Animate hashrate percentage
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
-  // Get color for the pool
   const poolColor = getPoolColor(pool.id);
   
   return (
@@ -33,7 +31,6 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelect(pool)}
     >
-      {/* Glow effect */}
       {isSelected && (
         <GlowEffect 
           colors={[poolColor, '#f7931a']} 
@@ -45,22 +42,18 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
         />
       )}
       
-      {/* Selected indicator */}
       {isSelected && (
         <div className="absolute top-0 right-0 w-0 h-0 border-t-[32px] border-r-[32px] border-t-transparent border-r-btc-orange z-10"></div>
       )}
       
-      {/* Background gradient based on pool color - now using darker tech gradients */}
       <div className={cn(
         "absolute inset-0 opacity-30 transition-opacity duration-300",
         isSelected ? "opacity-40" : "opacity-20"
       )}
       style={{ background: getDarkerTechGradient(pool.id) }}></div>
       
-      {/* Glassmorphism overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
       
-      {/* Content */}
       <div className="relative z-10 p-4">
         <div className="flex justify-between items-start">
           <div>
@@ -99,7 +92,6 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           )}
         </div>
         
-        {/* Progress bar showing hashrate percentage */}
         <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
           <div 
             className="h-full transition-all duration-1000 ease-out"
@@ -107,14 +99,12 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           ></div>
         </div>
 
-        {/* Render stacked chips if there are bets */}
         {bets.length > 0 && renderStackedChips(bets)}
       </div>
     </div>
   );
 };
 
-// Function to get darker, more tech-oriented gradients based on pool ID
 const getDarkerTechGradient = (poolId: string): string => {
   switch(poolId) {
     case 'slushpool':
@@ -146,7 +136,6 @@ const getDarkerTechGradient = (poolId: string): string => {
   }
 };
 
-// Function to get the primary color for each pool
 const getPoolColor = (poolId: string): string => {
   switch(poolId) {
     case 'slushpool':
@@ -178,16 +167,21 @@ const getPoolColor = (poolId: string): string => {
   }
 };
 
-// Function to render chips with improved visibility and spacing
 const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   if (bets.length === 0) return null;
   
-  // For better visibility, only display the most recent 5 bets
   const displayBets = bets.slice(-5);
   const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
   
-  // Calculate optimal placement based on number of chips
-  const chipSpacing = displayBets.length <= 3 ? 0 : -5;
+  const getChipSize = () => {
+    if (displayBets.length >= 5) return "w-6 h-6 text-[10px]";
+    if (displayBets.length >= 3) return "w-[26px] h-[26px] text-xs";
+    return "w-7 h-7 text-xs";
+  };
+  
+  const chipSpacing = displayBets.length <= 2 ? 2 : 
+                      displayBets.length <= 3 ? -2 : 
+                      displayBets.length <= 4 ? -4 : -6;
   
   return (
     <div className="absolute bottom-2 right-4 left-4">
@@ -196,7 +190,8 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
           <div 
             key={bet.id} 
             className={cn(
-              "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+              "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
+              getChipSize(),
               getChipColor(bet.amount)
             )} 
             style={{
@@ -205,9 +200,15 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
               transform: `rotate(${(index * 5) - 10}deg)`
             }}
           >
-            <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
+            <div className={cn(
+              "absolute rounded-full border border-white/30",
+              displayBets.length >= 5 ? "inset-1" : "inset-1.5"
+            )}></div>
             <div 
-              className="absolute inset-0.5 rounded-full border-4 border-dashed" 
+              className={cn(
+                "absolute rounded-full border-dashed",
+                displayBets.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
+              )}
               style={{
                 borderColor: `${getChipSecondaryColor(bet.amount)}`
               }}
@@ -228,7 +229,6 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   );
 };
 
-// Function to get chip color based on value
 const getChipColor = (value: number) => {
   if (value >= 10000) return "bg-red-900";
   if (value >= 5000) return "bg-blue-900";
@@ -237,7 +237,6 @@ const getChipColor = (value: number) => {
   return "bg-yellow-900";
 };
 
-// Function to get chip secondary color based on value
 const getChipSecondaryColor = (value: number) => {
   if (value >= 10000) return "bg-red-800";
   if (value >= 5000) return "bg-blue-800";
