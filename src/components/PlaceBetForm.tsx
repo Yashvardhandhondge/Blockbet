@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool, mockUserBalance, formatBTC } from '@/utils/mockData';
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
       setLastBetAmount(betAmount);
       setIsPending(false);
       setShowAlert(true);
+      // The old toast notification was here - it's now removed
     }, 1500);
   };
 
