@@ -75,8 +75,10 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
         
         <div className="mt-4 flex justify-between items-center">
           <div className="text-white/80">
-            <span className="text-lg font-bold">{pool.odds.toFixed(2)}x</span>
-            <span className="text-xs ml-1">payout</span>
+            <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">{pool.odds.toFixed(2)}
+              <span className="ml-0.5">×</span>
+            </span>
+            <span className="text-xs ml-1 text-white/60">payout</span>
           </div>
         </div>
         
