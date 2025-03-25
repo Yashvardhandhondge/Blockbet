@@ -63,24 +63,24 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {/* Login button */}
+              {/* Withdraw button (previously Login) */}
               <Button 
                 variant="ghost" 
                 size="sm"
                 className="text-white hover:text-btc-orange hover:bg-btc-darker/40 font-semibold tracking-wide"
               >
-                <LogIn className="mr-1 h-4 w-4" />
-                <span>Login</span>
+                <ArrowUpFromLine className="mr-1 h-4 w-4" />
+                <span>Withdraw</span>
               </Button>
               
-              {/* Signup button */}
+              {/* Deposit button (previously Sign Up) */}
               <Button 
                 variant="outline" 
                 size="sm"
                 className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide"
               >
-                <UserPlus className="mr-1 h-4 w-4" />
-                <span>Sign Up</span>
+                <ArrowDownToLine className="mr-1 h-4 w-4" />
+                <span>Deposit</span>
               </Button>
             </>
           )}
