@@ -1,4 +1,3 @@
-
 'use client';
 import { cn } from '@/lib/utils';
 import { motion, Transition, MotionProps } from 'framer-motion';
@@ -31,7 +30,7 @@ export type GlowEffectProps = {
 export function GlowEffect({
   className,
   style,
-  colors = ['#FF5733', '#33FF57', '#3357FF', '#F1C40F'],
+  colors = ['#FFCC66', '#7AE5FF', '#D19CFF', '#FFBB7A'],
   mode = 'rotate',
   blur = 'medium',
   transition,

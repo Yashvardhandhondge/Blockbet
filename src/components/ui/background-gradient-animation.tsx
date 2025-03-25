@@ -24,12 +24,12 @@ interface BackgroundGradientAnimationProps {
 export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(0, 0, 0)",
   gradientBackgroundEnd = "rgb(7, 7, 7)",
-  firstColor = "#FFB347",   // Brightened from #F7931A (40% brighter)
-  secondColor = "#B885FF",  // Brightened from #8B5CF6 (40% brighter)
-  thirdColor = "#4EDCFF",   // Brightened from #0EA5E9 (40% brighter)
-  fourthColor = "#FFA04D",  // Brightened from #F97316 (40% brighter)
-  fifthColor = "#FFD54F",   // Brightened from #ffbe1e (40% brighter)
-  pointerColor = "rgba(255, 165, 26, 0.4)", // Brightened pointer color
+  firstColor = "#FFCC66",   // Further brightened from #FFB347 (20% brighter)
+  secondColor = "#D19CFF",  // Further brightened from #B885FF (20% brighter)
+  thirdColor = "#7AE5FF",   // Further brightened from #4EDCFF (20% brighter)
+  fourthColor = "#FFBB7A",  // Further brightened from #FFA04D (20% brighter)
+  fifthColor = "#FFDF7A",   // Further brightened from #FFD54F (20% brighter)
+  pointerColor = "rgba(255, 190, 60, 0.4)", // Further brightened pointer color
   size = "large",
   blendingValue = "hard-light",
   children,
