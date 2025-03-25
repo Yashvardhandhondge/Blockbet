@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
-import BettingGrid from '@/components/BettingGrid';
+import { BettingGrid } from '@/components/BettingGrid';
 import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';

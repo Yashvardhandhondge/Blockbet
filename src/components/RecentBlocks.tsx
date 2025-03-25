@@ -3,7 +3,6 @@ import React from 'react';
 import { recentBlocks } from '@/utils/mockData';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 interface RecentBlocksProps {
   className?: string;
@@ -42,11 +41,10 @@ export function RecentBlocks({ className }: RecentBlocksProps) {
           <div key={block.height} className="bg-black/40 rounded-xl p-3">
             <div className="flex items-center mb-2">
               <div className="w-8 h-8 relative mr-2">
-                <Image
+                <img
                   src={getPoolLogo(block.minedBy)}
                   alt={block.minedBy}
-                  fill
-                  className="object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div>

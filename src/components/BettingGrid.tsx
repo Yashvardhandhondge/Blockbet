@@ -2,18 +2,17 @@
 import React, { useState } from 'react';
 import { miningPools } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 
 interface BettingGridProps {
   className?: string;
 }
 
 export function BettingGrid({ className }: BettingGridProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [selectedPool, setSelectedPool] = useState<string | null>(null);
 
-  // This function now returns the path to the SVG logo from our pool-logos directory
+  // This function returns the path to the SVG logo from our pool-logos directory
   const getPoolLogo = (poolId: string): string => {
     const pool = miningPools.find(p => p.id === poolId);
     if (pool && pool.logoUrl) {
@@ -28,7 +27,7 @@ export function BettingGrid({ className }: BettingGridProps) {
 
   const handlePlaceBet = () => {
     if (selectedPool) {
-      router.push(`/place-bet?pool=${selectedPool}`);
+      navigate(`/place-bet?pool=${selectedPool}`);
     }
   };
 
@@ -49,11 +48,10 @@ export function BettingGrid({ className }: BettingGridProps) {
             onClick={() => handlePoolSelect(pool.id)}
           >
             <div className="w-12 h-12 mb-2 relative">
-              <Image
+              <img
                 src={getPoolLogo(pool.id)}
                 alt={pool.name}
-                fill
-                className="object-contain"
+                className="w-full h-full object-contain"
               />
             </div>
             <span className="text-sm font-medium text-center block">{pool.name}</span>

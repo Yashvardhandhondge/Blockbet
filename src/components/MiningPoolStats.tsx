@@ -2,18 +2,10 @@
 import React from 'react';
 import { miningPools } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
+import { Chart, ArcElement, Tooltip, Legend, CategoryScale, LinearScale } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { 
-  Chart as ChartJS, 
-  ArcElement, 
-  Tooltip, 
-  Legend,
-  CategoryScale,
-  LinearScale 
-} from 'chart.js';
 
-ChartJS.register(
+Chart.register(
   ArcElement, 
   Tooltip, 
   Legend,
@@ -94,11 +86,10 @@ export function MiningPoolStats({ className }: MiningPoolStatsProps) {
             {sortedPools.slice(0, 8).map((pool) => (
               <div key={pool.id} className="flex items-center bg-black/40 rounded-xl p-2">
                 <div className="w-8 h-8 relative mr-2">
-                  <Image
+                  <img
                     src={pool.logoUrl}
                     alt={pool.name}
-                    fill
-                    className="object-contain"
+                    className="w-full h-full object-contain"
                     onError={(e) => {
                       // Fallback to default logo if the logo fails to load
                       const target = e.target as HTMLImageElement;
