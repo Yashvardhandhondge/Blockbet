@@ -335,14 +335,14 @@ const BettingGrid = () => {
     const isMobile = window.innerWidth < 768;
     return <div className={cn(
       "flex flex-wrap gap-2 justify-center mb-4",
-      isMobile ? "flex-nowrap overflow-x-auto pb-2 hide-scrollbar" : ""
+      isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-0" : ""
     )}>
         {CHIP_VALUES.map(value => <div 
             key={value} 
             className={cn(
               "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
               selectedChip === value ? "transform scale-110" : "transform scale-100",
-              isMobile ? "w-10 h-10 flex-shrink-0" : "w-14 h-14"
+              isMobile ? "w-8 h-8 flex-shrink-0" : "w-14 h-14"
             )} 
             onClick={() => handleSelectChip(value)}
           >
@@ -353,18 +353,21 @@ const BettingGrid = () => {
             <div className={cn(
               "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
               getChipColor(value),
-              isMobile ? "w-9 h-9" : "w-12 h-12"
+              isMobile ? "w-7 h-7" : "w-12 h-12"
             )}>
-              <div className="absolute inset-0 rounded-full border-4 border-dashed" style={{
+              <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
                 borderColor: `${getChipSecondaryColor(value)}`
               }}></div>
               
               <div className={cn(
-                "absolute rounded-full border-2 border-white/30",
-                isMobile ? "inset-1" : "inset-1.5"
+                "absolute rounded-full border border-white/30",
+                isMobile ? "inset-0.5" : "inset-1.5"
               )}></div>
               
-              <span className="relative z-10 text-white font-bold drop-shadow-md">
+              <span className={cn(
+                "relative z-10 text-white font-bold drop-shadow-md",
+                isMobile ? "text-[8px]" : ""
+              )}>
                 {formatChipValue(value)}
               </span>
             </div>
