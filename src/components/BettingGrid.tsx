@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
@@ -360,77 +359,71 @@ const BettingGrid = () => {
         <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
       </div>
       
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Left column for controls and bets */}
-        <div className="w-full md:w-1/4 space-y-4">
-          <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-            <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
-            {renderChipSelection()}
-            
-            <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-3.5 h-3.5" />
-                Cancel Last
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-3.5 h-3.5" />
-                Clear All
-              </Button>
-            </div>
-          </Card>
-          
-          <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-white font-medium text-sm">Your Bets</h3>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-3 h-3" />
-                Clear All
-              </Button>
-            </div>
-            
-            {bets.length === 0 ? <div className="text-white/60 text-center py-4 text-sm">
-                No bets placed yet. Select a chip and click on a mining pool to place a bet.
-              </div> : <>
-                <div className="mb-3 space-y-1 max-h-[250px] overflow-y-auto hide-scrollbar">
-                  {getConsolidatedBets().map((consolidatedBet, index) => {
-                    const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
-                    return <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
-                        <div className="text-white">
-                          {pool ? pool.name : 'Empty Block'}
-                        </div>
-                        <div className="flex items-center">
-                          {renderRouletteCasualChips(consolidatedBet.amount)}
-                          <div className="text-btc-orange font-mono">
-                            {formatSats(consolidatedBet.amount)}
-                          </div>
-                        </div>
-                      </div>;
-                  })}
-                </div>
-                
-                <div className="pt-2 border-t border-white/10">
-                  <div className="flex justify-between text-white font-bold text-sm">
-                    <div>Total Bet:</div>
-                    <div className="text-btc-orange">{formatSats(totalBet)}</div>
-                  </div>
-                </div>
-              </>}
-          </Card>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
+        {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
         
-        {/* Right column for mining pool grid */}
-        <div className="w-full md:w-3/4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
-            
-            <MiningPoolCard 
-              pool={miningPools[0]} 
-              onSelect={() => {}} 
-              isSelected={false} 
-              isPlaceholder={true} 
-            />
+        <MiningPoolCard 
+          pool={miningPools[0]} 
+          onSelect={() => {}} 
+          isSelected={false} 
+          isPlaceholder={true} 
+        />
+      </div>
+      
+      <div className="flex flex-col md:flex-row gap-4 items-start">
+        <Card className="bg-[#0a0a0a] border-white/10 p-3 rounded-xl min-w-[260px]">
+          <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
+          {renderChipSelection()}
+          
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <X className="w-3.5 h-3.5" />
+              Cancel Last
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-3.5 h-3.5" />
+              Clear All
+            </Button>
           </div>
-        </div>
+        </Card>
+        
+        <Card className="flex-1 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-white font-medium text-sm">Your Bets</h3>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-3 h-3" />
+              Clear All
+            </Button>
+          </div>
+          
+          {bets.length === 0 ? <div className="text-white/60 text-center py-4 text-sm">
+              No bets placed yet. Select a chip and click on a mining pool to place a bet.
+            </div> : <>
+              <div className="mb-3 space-y-1 max-h-[150px] overflow-y-auto hide-scrollbar">
+                {getConsolidatedBets().map((consolidatedBet, index) => {
+              const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
+              return <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
+                      <div className="text-white">
+                        {pool ? pool.name : 'Empty Block'}
+                      </div>
+                      <div className="flex items-center">
+                        {renderRouletteCasualChips(consolidatedBet.amount)}
+                        <div className="text-btc-orange font-mono">
+                          {formatSats(consolidatedBet.amount)}
+                        </div>
+                      </div>
+                    </div>;
+            })}
+              </div>
+              
+              <div className="pt-2 border-t border-white/10">
+                <div className="flex justify-between text-white font-bold text-sm">
+                  <div>Total Bet:</div>
+                  <div className="text-btc-orange">{formatSats(totalBet)}</div>
+                </div>
+              </div>
+            </>}
+        </Card>
       </div>
     </div>;
 };
