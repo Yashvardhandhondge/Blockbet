@@ -1,105 +1,173 @@
 
-import React from 'react';
-import { Github, Twitter, Instagram, Mail, Phone, Globe } from 'lucide-react';
-import { GlowEffect } from './ui/glow-effect';
+import * as React from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-react"
 
 const Footer = () => {
+  const [isDarkMode, setIsDarkMode] = React.useState(true)
+
+  React.useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+  }, [isDarkMode])
+
   return (
-    <footer className="mt-20 border-t border-btc-orange/20 pt-12 pb-8 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <GlowEffect
-          colors={['#FFDB85', '#8DF2FF', '#DDB4FF', '#FFD294']}
-          blur="strong"
-          scale={1.5}
-          mode="rotate"
-          className="opacity-20"
-        />
-      </div>
-      
-      <div className="container max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* About */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-white">About BlockBet</h3>
-            <p className="text-white/70 mb-4">
-              BlockBet is a Bitcoin-based prediction game where players bet on which mining pool will mine the next Bitcoin block.
+    <footer className="relative border-t border-btc-orange/20 bg-background text-foreground transition-colors duration-300">
+      <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="relative">
+            <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
+            <p className="mb-6 text-muted-foreground">
+              Join our newsletter for the latest updates and exclusive offers.
             </p>
-            <div className="flex gap-4 mt-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-btc-orange transition-colors">
-                <Github size={20} />
+            <form className="relative">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                className="pr-12 backdrop-blur-sm"
+              />
+              <Button
+                type="submit"
+                size="icon"
+                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-btc-orange text-primary-foreground transition-transform hover:scale-105"
+              >
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Subscribe</span>
+              </Button>
+            </form>
+            <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-btc-orange/10 blur-2xl" />
+          </div>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
+            <nav className="space-y-2 text-sm">
+              <a href="#" className="block transition-colors hover:text-btc-orange">
+                Home
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-btc-orange transition-colors">
-                <Twitter size={20} />
+              <a href="#" className="block transition-colors hover:text-btc-orange">
+                How to Play
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-btc-orange transition-colors">
-                <Instagram size={20} />
+              <a href="#" className="block transition-colors hover:text-btc-orange">
+                Rules
               </a>
+              <a href="#" className="block transition-colors hover:text-btc-orange">
+                Leaderboard
+              </a>
+              <a href="#" className="block transition-colors hover:text-btc-orange">
+                FAQ
+              </a>
+            </nav>
+          </div>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
+            <address className="space-y-2 text-sm not-italic">
+              <p>Bitcoin Roulette HQ</p>
+              <p>Crypto Valley, CV 12345</p>
+              <p>Phone: (123) 456-7890</p>
+              <p>Email: support@blockbet.com</p>
+            </address>
+          </div>
+          <div className="relative">
+            <h3 className="mb-4 text-lg font-semibold">Follow Us</h3>
+            <div className="mb-6 flex space-x-4">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" className="rounded-full">
+                      <Facebook className="h-4 w-4" />
+                      <span className="sr-only">Facebook</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Follow us on Facebook</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" className="rounded-full">
+                      <Twitter className="h-4 w-4" />
+                      <span className="sr-only">Twitter</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Follow us on Twitter</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" className="rounded-full">
+                      <Instagram className="h-4 w-4" />
+                      <span className="sr-only">Instagram</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Follow us on Instagram</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" className="rounded-full">
+                      <Linkedin className="h-4 w-4" />
+                      <span className="sr-only">LinkedIn</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Connect with us on LinkedIn</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Sun className="h-4 w-4" />
+              <Switch
+                id="dark-mode"
+                checked={isDarkMode}
+                onCheckedChange={setIsDarkMode}
+              />
+              <Moon className="h-4 w-4" />
+              <Label htmlFor="dark-mode" className="sr-only">
+                Toggle dark mode
+              </Label>
             </div>
           </div>
-          
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-white">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">How to Play</a>
-              </li>
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Rules</a>
-              </li>
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Leaderboard</a>
-              </li>
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">FAQ</a>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Contact */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-white">Contact Us</h3>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-white/70">
-                <Mail size={16} /> support@blockbet.com
-              </li>
-              <li className="flex items-center gap-2 text-white/70">
-                <Phone size={16} /> +1 (123) 456-7890
-              </li>
-              <li className="flex items-center gap-2 text-white/70">
-                <Globe size={16} /> www.blockbet.com
-              </li>
-            </ul>
-          </div>
-          
-          {/* Legal */}
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-white">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Terms of Service</a>
-              </li>
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Privacy Policy</a>
-              </li>
-              <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Responsible Gaming</a>
-              </li>
-            </ul>
-          </div>
         </div>
-        
-        <div className="border-t border-btc-orange/20 mt-10 pt-6 text-center text-white/50 text-sm">
-          <p>
-            18+ Gambling involves risk. Only gamble with funds you can afford to lose. Gambling is not a solution to financial problems.
-          </p>
-          <p className="mt-2">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-btc-orange/20 pt-8 text-center md:flex-row">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} BlockBet. All rights reserved. Bitcoin blockchain data provided by third-party APIs.
           </p>
+          <nav className="flex gap-4 text-sm">
+            <a href="#" className="transition-colors hover:text-btc-orange">
+              Privacy Policy
+            </a>
+            <a href="#" className="transition-colors hover:text-btc-orange">
+              Terms of Service
+            </a>
+            <a href="#" className="transition-colors hover:text-btc-orange">
+              Responsible Gaming
+            </a>
+          </nav>
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
