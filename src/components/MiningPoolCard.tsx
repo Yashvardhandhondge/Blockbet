@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -56,7 +57,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
             <h3 className="text-lg font-medium text-white">{pool.name}</h3>
             <div className="mt-1 text-xs text-white/60">{pool.region}</div>
           </div>
-          <div className="h-10 w-10 rounded-lg overflow-hidden bg-white/90 shadow-md">
+          <div className="h-10 w-10 rounded-lg overflow-hidden bg-transparent">
             {getPoolLogo(pool.id)}
           </div>
         </div>
@@ -186,7 +187,7 @@ const getPoolLogo = (poolId: string) => {
   const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
   
   return (
-    <div className="w-full h-full flex items-center justify-center bg-white rounded-lg overflow-hidden p-0.5">
+    <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
       <img 
         src={logoPath} 
         alt={`${poolId} logo`} 
