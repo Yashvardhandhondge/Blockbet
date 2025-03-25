@@ -349,16 +349,6 @@ const BettingGrid = () => {
         <StatCard icon={<Server className="h-3 w-3 text-btc-orange" />} title="Pending Transactions" value={pendingTxCount.toLocaleString()} secondaryText="mempool" />
       </div>
       
-      <div className="w-full mb-6 px-2">
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
-          <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
-            {formatTimeRemaining()}
-          </span>
-        </div>
-        <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
-      </div>
-      
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
         {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
         
@@ -377,6 +367,16 @@ const BettingGrid = () => {
             <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-btc-orange/5 to-purple-500/5 animate-pulse-slow blur-xl"></div>
           </div>
         </div>
+      </div>
+      
+      <div className="w-full mb-6 px-2">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
+          <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
+            {formatTimeRemaining()}
+          </span>
+        </div>
+        <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">
