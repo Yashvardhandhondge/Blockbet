@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -40,10 +41,6 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           duration={3}
           className="opacity-30"
         />
-      )}
-      
-      {isSelected && (
-        <div className="absolute top-0 right-0 w-0 h-0 border-t-[32px] border-r-[32px] border-t-transparent border-r-btc-orange z-10"></div>
       )}
       
       <div className={cn(
@@ -187,7 +184,8 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
       <div className="flex justify-end items-center h-8 gap-1">
         {displayDenominations.map((amount, index) => {
           const betCount = groupedBets[amount].length;
-          const stackSize = Math.min(betCount, 3);
+          // Increase max stack size for better visualization
+          const stackSize = Math.min(betCount, 4);
           
           return (
             <div 
@@ -197,7 +195,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                 zIndex: 10 - index,
               }}
             >
-              {/* Stack of chips of the same denomination */}
+              {/* Stack of chips of the same denomination with increased elevation */}
               {Array.from({ length: stackSize }).map((_, stackIndex) => (
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
@@ -207,9 +205,9 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                   )}
                   style={{
                     position: 'absolute',
-                    bottom: stackIndex * 2,
+                    bottom: stackIndex * 3, // Increased from 2 to 3 for more pronounced stacking
                     right: 0,
-                    transform: `rotate(${(stackIndex * 3) - 3}deg)`,
+                    transform: `rotate(${(stackIndex * 5) - 7}deg)`, // Increased rotation for more visual stack effect
                   }}
                 >
                   <div className="absolute rounded-full border border-white/30 inset-1"></div>
@@ -228,6 +226,10 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                   "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-6 h-6 text-[10px]",
                   getChipColor(amount)
                 )}
+                style={{
+                  // Add slight shadow effect for better stacking appearance
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.5)"
+                }}
               >
                 <div className="absolute rounded-full border border-white/30 inset-1"></div>
                 <div 
@@ -238,7 +240,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                 ></div>
                 <span className="relative z-10 text-white font-bold drop-shadow-md">
                   {amount >= 10000 ? `${amount / 1000}k` : amount}
-                  {betCount > 3 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
+                  {betCount > 4 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
                 </span>
               </div>
             </div>
