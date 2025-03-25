@@ -156,7 +156,7 @@ const getPoolColor = (poolId: string): string => {
 
 const getPoolLogo = (poolId: string) => {
   const logoMap: Record<string, string> = {
-    'foundry': '/pool-logos/foundryusa.png',
+    'foundry': '/pool-logos/foundryusa.svg',
     'antpool': '/pool-logos/antpool.svg',
     'f2pool': '/pool-logos/f2pool.svg',
     'binance': '/pool-logos/binancepool.svg',
@@ -189,7 +189,7 @@ const getPoolLogo = (poolId: string) => {
     <div className="w-full h-full flex items-center justify-center bg-white rounded-lg overflow-hidden p-0.5">
       <img 
         src={logoPath} 
-        alt={`${pool.name} logo`} 
+        alt={`${poolId} logo`} 
         className="w-full h-full object-contain" 
         onError={(e) => {
           console.log(`Error loading logo for ${poolId}: ${logoPath}`);
