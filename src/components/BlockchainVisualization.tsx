@@ -4,7 +4,6 @@ import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } 
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
-import { BorderTrail } from '@/components/ui/border-trail';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
@@ -169,66 +168,48 @@ const BlockchainVisualization = () => {
             // Get the mining pool info for this block
             const pool = miningPools.find(p => p.name === block.minedBy);
             
-            // Determine if this is the latest block
-            const isLatestBlock = index === 0;
-            
             return (
               <div 
                 key={`${block.height}-${block.hash.substring(0, 10)}`} 
                 className={cn(
-                  "flex-shrink-0 w-16 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
-                  isLatestBlock ? "animate-block-appear" : ""
+                  "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
+                  index === 0 ? "animate-block-appear" : ""
                 )}
               >
-                {/* Border trail effect for the latest block only */}
-                {isLatestBlock && (
-                  <div className="absolute inset-0 rounded-md overflow-hidden">
-                    <BorderTrail 
-                      className="bg-btc-orange" 
-                      size={16}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 2,
-                        ease: "linear",
-                      }}
-                    />
-                  </div>
-                )}
-                
                 {/* 3D Box Effect - Top */}
-                <div className="h-2 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-1.5 left-1"></div>
+                <div className="h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2"></div>
                 
                 {/* 3D Box Effect - Side */}
-                <div className="h-full w-2 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-2 top-0"></div>
+                <div className="h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0"></div>
                 
                 {/* Block header with height - cyan color */}
-                <div className="h-3 flex items-center justify-center bg-black text-[#7EB5FF] text-xs font-bold">
+                <div className="h-6 flex items-center justify-center bg-black text-[#7EB5FF] text-sm font-bold">
                   {block.height}
                 </div>
                 
                 {/* Block content with gradient based on pool */}
                 <div 
-                  className="p-1.5 flex flex-col h-12 relative overflow-hidden text-center"
+                  className="p-3 flex flex-col h-24 relative overflow-hidden text-center"
                   style={getPoolGradientStyle(block.minedBy)}
                 >
                   {/* Content layout with centered text */}
-                  <div className="text-white text-[8px] font-medium">{block.feesRangeText}</div>
-                  <div className="text-yellow-300 text-[6px] font-medium">{block.feeRange}</div>
+                  <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
+                  <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
                   
-                  <div className="text-white font-bold text-[8px]">{block.totalBtc} BTC</div>
+                  <div className="text-white font-bold text-sm mb-1">{block.totalBtc} BTC</div>
                   
-                  <div className="text-white/90 text-[6px]">{block.transactionCount.toLocaleString()} txs</div>
-                  <div className="mt-auto text-white/80 text-[6px]">{formatTimeAgo(block.timestamp)}</div>
+                  <div className="text-white/90 text-[10px] mb-1">{block.transactionCount.toLocaleString()} txs</div>
+                  <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
                 </div>
                 
                 {/* Pool info with black background */}
-                <div className="bg-black py-0.5 px-1 flex items-center justify-center space-x-0.5 border-t border-black/50">
-                  <div className="w-1.5 h-1.5 rounded-full overflow-hidden flex items-center justify-center text-[4px] font-bold bg-opacity-80"
+                <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
+                  <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center text-[8px] font-bold bg-opacity-80"
                     style={{ background: getPoolGradientStyle(block.minedBy).background }}
                   >
                     {block.minedBy.charAt(0)}
                   </div>
-                  <span className="text-white text-[6px] font-medium truncate">{block.minedBy}</span>
+                  <span className="text-white text-[10px] font-medium truncate">{block.minedBy}</span>
                 </div>
               </div>
             );
