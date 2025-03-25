@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ const BetAlert = ({
 }: BetAlertProps) => {
   if (!isVisible) return null;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
     }, 5000);
