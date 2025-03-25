@@ -1,18 +1,15 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { AuroraContainer } from '@/components/ui/aurora-container';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
   const [pendingBlock, setPendingBlock] = useState<number>(50); // Animation progress 0-100
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
   
   // Simulate pending block progress
   useEffect(() => {
@@ -173,24 +170,17 @@ const BlockchainVisualization = () => {
             
             return (
               <div 
-                key={`${block.height}-${index}`} 
+                key={`${block.height}-${block.hash.substring(0, 10)}`} 
                 className={cn(
-                  "flex-shrink-0 transition-all duration-300 hover:transform hover:scale-[1.03]",
-                  isMobile ? "w-24" : "w-32",
+                  "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
                   index === 0 ? "animate-block-appear" : ""
                 )}
               >
                 {/* 3D Box Effect - Top */}
-                <div className={cn(
-                  "bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2",
-                  isMobile ? "h-3 w-full" : "h-4 w-full"
-                )}></div>
+                <div className="h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2"></div>
                 
                 {/* 3D Box Effect - Side */}
-                <div className={cn(
-                  "bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0",
-                  isMobile ? "h-full w-3" : "h-full w-4"
-                )}></div>
+                <div className="h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0"></div>
                 
                 {/* Block header with height - cyan color */}
                 <div className="h-6 flex items-center justify-center bg-black text-[#7EB5FF] text-sm font-bold">
@@ -199,20 +189,17 @@ const BlockchainVisualization = () => {
                 
                 {/* Block content with gradient based on pool */}
                 <div 
-                  className={cn(
-                    "p-3 flex flex-col relative overflow-hidden text-center",
-                    isMobile ? "h-20" : "h-24"
-                  )}
+                  className="p-3 flex flex-col h-24 relative overflow-hidden text-center"
                   style={getPoolGradientStyle(block.minedBy)}
                 >
                   {/* Content layout with centered text */}
-                  <div className={cn("text-white font-medium mb-1", isMobile ? "text-[9px]" : "text-xs")}>{block.feesRangeText}</div>
-                  <div className={cn("text-yellow-300 font-medium mb-1", isMobile ? "text-[8px]" : "text-[10px]")}>{block.feeRange}</div>
+                  <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
+                  <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
                   
-                  <div className={cn("text-white font-bold mb-1", isMobile ? "text-xs" : "text-sm")}>{block.totalBtc} BTC</div>
+                  <div className="text-white font-bold text-sm mb-1">{block.totalBtc} BTC</div>
                   
-                  <div className={cn("text-white/90 mb-1", isMobile ? "text-[8px]" : "text-[10px]")}>{block.transactionCount.toLocaleString()} txs</div>
-                  <div className={cn("mt-auto text-white/80", isMobile ? "text-[8px]" : "text-[10px]")}>{formatTimeAgo(block.timestamp)}</div>
+                  <div className="text-white/90 text-[10px] mb-1">{block.transactionCount.toLocaleString()} txs</div>
+                  <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
                 </div>
                 
                 {/* Pool info with black background */}
@@ -222,7 +209,7 @@ const BlockchainVisualization = () => {
                   >
                     {block.minedBy.charAt(0)}
                   </div>
-                  <span className={cn("text-white font-medium truncate", isMobile ? "text-[8px]" : "text-[10px]")}>{block.minedBy}</span>
+                  <span className="text-white text-[10px] font-medium truncate">{block.minedBy}</span>
                 </div>
               </div>
             );
