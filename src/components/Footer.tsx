@@ -27,13 +27,13 @@ const Footer = () => {
   return (
     <footer className="relative border-t border-btc-orange/20 bg-background text-foreground transition-colors duration-300">
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="relative">
             <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
             <p className="mb-6 text-muted-foreground">
               Join our newsletter for the latest updates and exclusive offers.
             </p>
-            <form className="relative max-w-[50%]">
+            <form className="relative">
               <Input
                 type="email"
                 placeholder="Enter your email"
@@ -69,6 +69,15 @@ const Footer = () => {
                 FAQ
               </a>
             </nav>
+          </div>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
+            <address className="space-y-2 text-sm not-italic">
+              <p>Bitcoin Roulette HQ</p>
+              <p>Crypto Valley, CV 12345</p>
+              <p>Phone: (123) 456-7890</p>
+              <p>Email: support@blockbet.com</p>
+            </address>
           </div>
           <div className="relative">
             <h3 className="mb-4 text-lg font-semibold">Follow Us</h3>
