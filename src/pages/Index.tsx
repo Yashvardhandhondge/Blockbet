@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
 import BettingGrid from '@/components/BettingGrid';
 import { useElementAppear } from '@/lib/animations';
@@ -43,7 +42,7 @@ const Index = () => {
       className="w-full h-full"
       containerClassName="min-h-screen"
     >
-      <div className="min-h-screen">
+      <div className="min-h-screen pb-20">
         {/* Loading screen */}
         <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
           <div className="relative h-20 w-20 mb-6">
@@ -88,8 +87,6 @@ const Index = () => {
             <BettingGrid />
           </div>
         </main>
-        
-        <Footer />
       </div>
     </BackgroundGradientAnimation>
   );
