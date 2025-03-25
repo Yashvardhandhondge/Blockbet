@@ -332,18 +332,37 @@ const BettingGrid = () => {
   };
 
   const renderChipSelection = () => {
-    return <div className="flex flex-wrap gap-2 justify-center mb-4">
-        {CHIP_VALUES.map(value => <div key={value} className={cn("relative w-14 h-14 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100")} onClick={() => handleSelectChip(value)}>
+    const isMobile = window.innerWidth < 768;
+    return <div className={cn(
+      "flex flex-wrap gap-2 justify-center mb-4",
+      isMobile ? "flex-nowrap overflow-x-auto pb-2 hide-scrollbar" : ""
+    )}>
+        {CHIP_VALUES.map(value => <div 
+            key={value} 
+            className={cn(
+              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
+              selectedChip === value ? "transform scale-110" : "transform scale-100",
+              isMobile ? "w-10 h-10 flex-shrink-0" : "w-14 h-14"
+            )} 
+            onClick={() => handleSelectChip(value)}
+          >
             {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
             
             {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
             
-            <div className={cn("relative w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value))}>
+            <div className={cn(
+              "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+              getChipColor(value),
+              isMobile ? "w-9 h-9" : "w-12 h-12"
+            )}>
               <div className="absolute inset-0 rounded-full border-4 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(value)}`
-          }}></div>
+                borderColor: `${getChipSecondaryColor(value)}`
+              }}></div>
               
-              <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
+              <div className={cn(
+                "absolute rounded-full border-2 border-white/30",
+                isMobile ? "inset-1" : "inset-1.5"
+              )}></div>
               
               <span className="relative z-10 text-white font-bold drop-shadow-md">
                 {formatChipValue(value)}
