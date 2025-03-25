@@ -397,7 +397,7 @@ const BettingGrid = () => {
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
-        <Card className="w-full md:flex-1 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>
             <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
@@ -441,7 +441,7 @@ const BettingGrid = () => {
           )}
         </Card>
         
-        <Card className="w-full md:min-w-[260px] bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
           {renderChipSelection()}
           
@@ -468,7 +468,7 @@ const BettingGrid = () => {
         </Card>
       </div>
       
-      {/* New Stats Card at the bottom */}
+      {/* Block Stats Card at the bottom */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="text-white font-medium text-sm mb-3">Block Stats</h3>
         <LiveBlockData 
