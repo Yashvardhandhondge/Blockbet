@@ -178,10 +178,10 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   const displayDenominations = denominations.slice(0, 5);
   const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
   
-  // Position chips in bottom right corner with more space
+  // Position chips with better spacing between different denominations
   return (
     <div className="absolute bottom-3 right-4 left-auto">
-      <div className="flex justify-end items-center h-12 gap-2">
+      <div className="flex justify-end items-center h-12 gap-2.5">
         {displayDenominations.map((amount, index) => {
           const betCount = groupedBets[amount].length;
           // Limit stack size for better readability
@@ -193,7 +193,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
               className="relative"
               style={{
                 zIndex: 10 - index,
-                marginRight: index > 0 ? '2px' : '0', // Add extra space between stacks
+                marginRight: index > 0 ? '4px' : '0', // Increased spacing between different denominations
               }}
             >
               {/* Show stacked chips without values for better visualization */}
