@@ -26,6 +26,7 @@ const BettingGrid = () => {
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
+  const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
 
@@ -47,6 +48,11 @@ const BettingGrid = () => {
       return Math.max(1000, Math.floor(prev + variation));
     });
     setTimeVariation(Math.random() * 1.5 - 0.75);
+    
+    setAvgBlockTime(prev => {
+      const variation = (Math.random() * 0.4) - 0.2;
+      return Math.max(9.2, Math.min(10.5, prev + variation));
+    });
   }, 3000, 8000);
 
   useEffect(() => {
@@ -368,6 +374,8 @@ const BettingGrid = () => {
           <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Est. Next Block" value={estimatedTime} secondaryText="avg" />
           
           <StatCard icon={<Server className="h-3 w-3 text-btc-orange" />} title="Pending Transactions" value={pendingTxCount.toLocaleString()} secondaryText="mempool" />
+          
+          <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Average Block Time" value={`${avgBlockTime.toFixed(1)}m`} secondaryText="last 24h" />
         </div>
         
         <div className="flex justify-between items-center mb-1">
