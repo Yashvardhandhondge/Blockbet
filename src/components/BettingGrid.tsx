@@ -1,434 +1,80 @@
-import { useState, useEffect } from 'react';
-import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X, ArrowDown } from 'lucide-react';
+
+import React, { useState } from 'react';
+import { miningPools } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
-import { Card } from './ui/card';
-import { Progress } from './ui/progress';
-import { toast } from './ui/use-toast';
-import { StatCard } from './LiveBlockData';
-import { useRandomInterval } from '@/lib/animations';
-import MiningPoolCard from './MiningPoolCard';
-import LiveBlockData from './LiveBlockData';
-import { useIsMobile } from '@/hooks/use-mobile';
-const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
-const BettingGrid = () => {
-  const [selectedChip, setSelectedChip] = useState<number | null>(null);
-  const [bets, setBets] = useState<{
-    poolId: string | null;
-    amount: number;
-    id: number;
-  }[]>([]);
-  const [nextBetId, setNextBetId] = useState(1);
-  const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
-  const [totalBet, setTotalBet] = useState(0);
-  const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
-  const [timeVariation, setTimeVariation] = useState(0);
-  const [pendingTxCount, setPendingTxCount] = useState(12483);
-  const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
-  const [avgBlockTime, setAvgBlockTime] = useState(9.8);
-  const isMobile = useIsMobile();
-  const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
-  const progressPercentage = 100 - timeRemaining / totalTime * 100;
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 0) {
-          return nextBlockEstimate.estimatedTimeMinutes * 60;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  useRandomInterval(() => {
-    setPendingTxCount(prev => {
-      const variation = Math.random() * 100 - 20;
-      return Math.max(1000, Math.floor(prev + variation));
-    });
-    setTimeVariation(Math.random() * 1.5 - 0.75);
-    setAvgBlockTime(prev => {
-      const variation = Math.random() * 0.4 - 0.2;
-      return Math.max(9.2, Math.min(10.5, prev + variation));
-    });
-  }, 3000, 8000);
-  useEffect(() => {
-    setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
-  }, [bets]);
-  const handlePlaceBet = (poolId: string | null) => {
-    if (!selectedChip) {
-      toast({
-        title: "Select a chip first",
-        description: "Please select a chip value before placing a bet",
-        variant: "destructive"
-      });
-      return;
-    }
-    setBets([...bets, {
-      poolId,
-      amount: selectedChip,
-      id: nextBetId
-    }]);
-    setNextBetId(prev => prev + 1);
-    toast({
-      title: "Bet placed!",
-      description: `${(selectedChip / 100000).toFixed(5)} BTC on ${poolId ? miningPools.find(p => p.id === poolId)?.name : 'Empty Block'}`,
-      variant: "default"
-    });
-  };
-  const handleClearBets = () => {
-    setBets([]);
-    toast({
-      title: "Bets cleared",
-      description: "All your bets have been cleared",
-      variant: "default"
-    });
-  };
-  const handleCancelLastBet = () => {
-    if (bets.length === 0) {
-      toast({
-        title: "No bets to cancel",
-        description: "You haven't placed any bets yet",
-        variant: "destructive"
-      });
-      return;
-    }
-    const lastBet = bets[bets.length - 1];
-    const newBets = bets.slice(0, -1);
-    setBets(newBets);
-    const poolName = lastBet.poolId ? miningPools.find(p => p.id === lastBet.poolId)?.name : 'Empty Block';
-    toast({
-      title: "Last bet cancelled",
-      description: `Removed bet of ${(lastBet.amount / 100000).toFixed(5)} BTC on ${poolName}`,
-      variant: "default"
-    });
-  };
-  const formatTimeRemaining = () => {
-    const minutes = Math.floor(timeRemaining / 60);
-    const seconds = timeRemaining % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-  const estimatedTime = (() => {
-    const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
-    const minutes = Math.floor(totalMinutes);
-    const seconds = Math.floor((totalMinutes - minutes) * 60);
-    return `${minutes}m ${seconds}s`;
-  })();
-  const getUrgencyClass = () => {
-    const percentageLeft = timeRemaining / totalTime * 100;
-    if (percentageLeft < 20) return "text-btc-orange";
-    if (percentageLeft < 50) return "text-btc-orange";
-    return "text-btc-orange";
-  };
-  const handleSelectChip = (value: number) => {
-    setSelectedChip(value);
-  };
-  const handleSelectPool = (pool: MiningPool) => {
-    setSelectedPool(pool);
-    handlePlaceBet(pool.id);
-  };
-  const getPoolLogo = (poolId: string) => {
-    const logoMap: Record<string, string> = {
-      'foundry': '/pool-logos/foundryusa.png',
-      'antpool': '/Antpool Bitcoin Explorer.svg',
-      'f2pool': '/Bitcoin Explorer f2pool.svg',
-      'binance': '/Binance Pool.svg',
-      'viabtc': '/Viabtc Bitcoin Explorer.svg',
-      'slushpool': '/Mempool Bitcoin Explorer.svg',
-      'poolin': '/pool-logos/poolin.svg',
-      'btc-com': '/Bitcoin Explorer.svg',
-      'genesis': '/pool-logos/genesisdigitalassets.svg',
-      'bitfury': '/pool-logos/bitfury.svg',
-      'kanopool': '/pool-logos/kanopool.svg',
-      'pegapool': '/Spiderpool Bitcoin Explorer.svg',
-      'emcd': '/Luxor Bitcoin Explorer.svg',
-      'unknown': '/Mempool Bitcoin Explorer (2).svg'
-    };
-    const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
-    return <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden p-0.5">
-        <img src={logoPath} alt={`${poolId} logo`} className="w-full h-full object-contain" onError={e => {
-        console.log(`Error loading logo for ${poolId}: ${logoPath}`);
-        e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
-      }} />
-      </div>;
-  };
-  const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+interface BettingGridProps {
+  className?: string;
+}
+
+export function BettingGrid({ className }: BettingGridProps) {
+  const router = useRouter();
+  const [selectedPool, setSelectedPool] = useState<string | null>(null);
+
+  // This function now returns the path to the SVG logo from our pool-logos directory
+  const getPoolLogo = (poolId: string): string => {
     const pool = miningPools.find(p => p.id === poolId);
-    if (pool) {
-      return {
-        background: pool.gradient
-      };
+    if (pool && pool.logoUrl) {
+      return pool.logoUrl;
     }
-    return {
-      background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)'
-    };
+    return '/pool-logos/default.svg'; // Default fallback logo
   };
-  const getBetsOnPool = (poolId: string | null) => {
-    return bets.filter(bet => bet.poolId === poolId);
+
+  const handlePoolSelect = (poolId: string) => {
+    setSelectedPool(poolId === selectedPool ? null : poolId);
   };
-  const formatBTC = (satoshis: number) => {
-    return (satoshis / 100000000).toFixed(8);
-  };
-  const formatSats = (satoshis: number) => {
-    return satoshis.toLocaleString() + " sats";
-  };
-  const getPlaceholderImage = (poolId: string) => {
-    const pool = miningPools.find(p => p.id === poolId);
-    const firstLetter = pool?.name.charAt(0) || '?';
-    const textColor = poolId === 'unknown' ? '#FFFFFF' : '#FFFFFF';
-    return <div className="w-full h-full flex items-center justify-center bg-white text-sm font-bold" style={{
-      color: textColor
-    }}>
-        {firstLetter}
-      </div>;
-  };
-  const getChipColor = (value: number) => {
-    switch (value) {
-      case 100:
-        return "bg-blue-600";
-      case 500:
-        return "bg-green-600";
-      case 1000:
-        return "bg-purple-600";
-      case 5000:
-        return "bg-pink-600";
-      case 10000:
-        return "bg-orange-600";
-      case 50000:
-        return "bg-red-600";
-      case 100000:
-        return "bg-yellow-600";
-      default:
-        return "bg-gray-600";
+
+  const handlePlaceBet = () => {
+    if (selectedPool) {
+      router.push(`/place-bet?pool=${selectedPool}`);
     }
   };
-  const getChipSecondaryColor = (value: number) => {
-    switch (value) {
-      case 100:
-        return "bg-blue-500";
-      case 500:
-        return "bg-green-500";
-      case 1000:
-        return "bg-purple-500";
-      case 5000:
-        return "bg-pink-500";
-      case 10000:
-        return "bg-orange-500";
-      case 50000:
-        return "bg-red-500";
-      case 100000:
-        return "bg-yellow-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-  const formatChipValue = (value: number) => {
-    if (value >= 100000) return `${value / 1000}K`;
-    if (value >= 10000) return `${value / 1000}K`;
-    if (value >= 1000) return `${value / 1000}K`;
-    return value;
-  };
-  const getConsolidatedBets = () => {
-    const betsByPool = new Map<string | null, Array<number>>();
-    bets.forEach(bet => {
-      const poolKey = bet.poolId !== null ? bet.poolId : 'empty';
-      const existingBets = betsByPool.get(poolKey) || [];
-      betsByPool.set(poolKey, [...existingBets, bet.amount]);
-    });
-    const result = Array.from(betsByPool).map(([poolKey, amounts]) => ({
-      poolId: poolKey === 'empty' ? null : poolKey,
-      amounts: amounts,
-      totalAmount: amounts.reduce((sum, amount) => sum + amount, 0)
-    }));
-    return result;
-  };
-  const renderRouletteCasualChips = (amounts: number[]) => {
-    const groupedChips: {
-      [key: number]: number;
-    } = {};
-    amounts.forEach(amount => {
-      groupedChips[amount] = (groupedChips[amount] || 0) + 1;
-    });
-    const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
-      amount: parseInt(amount),
-      count
-    })).sort((a, b) => b.amount - a.amount);
-    const chipsToShow = chipGroups.slice(0, 3);
-    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
-    return <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", getChipColor(chipGroup.amount))} style={{
-        zIndex: 5 - index,
-        transform: `translateX(${index * 4}px)`
-      }}>
-            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
-            <div className="flex items-center">
-              {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
+
+  return (
+    <div className={cn("bg-black/20 backdrop-blur-sm rounded-xl p-4", className)}>
+      <h2 className="text-xl font-bold mb-4">Choose a Mining Pool</h2>
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+        {miningPools.map((pool) => (
+          <div
+            key={pool.id}
+            className={cn(
+              "relative flex flex-col items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-200 border-2",
+              selectedPool === pool.id 
+                ? "border-orange-500 bg-orange-500/10" 
+                : "border-gray-700 hover:border-gray-500 bg-black/40"
+            )}
+            onClick={() => handlePoolSelect(pool.id)}
+          >
+            <div className="w-12 h-12 mb-2 relative">
+              <Image
+                src={getPoolLogo(pool.id)}
+                alt={pool.name}
+                fill
+                className="object-contain"
+              />
             </div>
-          </div>)}
-        {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
-        zIndex: 1,
-        transform: `translateX(${chipsToShow.length * 4}px)`
-      }}>
-            +{remainingDenoms}
-          </div>}
-      </div>;
-  };
-  const renderStackedChips = (bets: Array<{
-    id: number;
-    amount: number;
-  }>) => {
-    if (bets.length === 0) return null;
-    const displayBets = bets.slice(-5);
-    const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
-    return <div className="absolute bottom-1 right-1 flex flex-col items-end">
-        <div className="relative h-12 w-8">
-          {displayBets.map((bet, index) => <div key={bet.id} className={cn("absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(bet.amount))} style={{
-          bottom: `${index * 4}px`,
-          right: `${index % 2 === 0 ? 0 : 2}px`,
-          zIndex: index,
-          transform: `rotate(${index * 5 - 10}deg)`
-        }}>
-              <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
-              <div className="absolute inset-0.5 rounded-full border-4 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(bet.amount)}`
-          }}></div>
-              <span className="relative z-10 text-white font-bold drop-shadow-md">
-                {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
-              </span>
-            </div>)}
-        </div>
-        
-        {remainingCount > 0 && <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
-            +{remainingCount} more
-          </div>}
-      </div>;
-  };
-  const renderChipSelection = () => {
-    const isMobile = window.innerWidth < 768;
-    return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-0" : "")}>
-        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-8 h-8 flex-shrink-0" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
-            {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
-            
-            {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
-            
-            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-7 h-7" : "w-12 h-12")}>
-              <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(value)}`
-          }}></div>
-              
-              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
-              
-              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[8px]" : "")}>
-                {formatChipValue(value)}
-              </span>
-            </div>
-          </div>)}
-      </div>;
-  };
-  return <div className="w-full">
-      <div className="flex flex-col items-center mb-6">
-        <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
-          Place Your Bets
-        </h1>
-        <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">Place your chips on the mining pool that you think will mine the next Bitcoin block.</p>
+            <span className="text-sm font-medium text-center block">{pool.name}</span>
+            <span className="text-xs text-gray-400 block text-center">{pool.hashRatePercent}%</span>
+            <span className="text-xs text-gray-400 block text-center">1:{pool.odds.toFixed(2)}</span>
+          </div>
+        ))}
       </div>
       
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
-        {renderChipSelection()}
-      </Card>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-        {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
-        
-        <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-black/80 to-black/40 border border-white/5 p-4 flex flex-col items-center justify-center min-h-[220px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-btc-orange/20 to-purple-500/10 opacity-30"></div>
-          <div className="relative z-10 flex flex-col items-center justify-center text-center">
-            <h3 className="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange via-yellow-500 to-btc-orange animate-pulse-subtle">
-              Place Your Bets!
-            </h3>
-            <p className="text-white/70 text-sm mb-4">
-              Select mining pool & win BTC
-            </p>
-            <div className="animate-bounce mt-2">
-              <ArrowDown className="h-6 w-6 text-btc-orange" />
-            </div>
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-btc-orange/5 to-purple-500/5 animate-pulse-slow blur-xl"></div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
-        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-white font-medium text-sm">Your Bets</h3>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-3 h-3" />
-              Clear All
-            </Button>
-          </div>
-          
-          {bets.length === 0 ? <div className="text-white/60 text-center py-4 text-sm">
-              No bets placed yet. Select a chip and click on a mining pool to place a bet.
-            </div> : <>
-              <div className="mb-3 space-y-1 max-h-[150px] overflow-y-auto hide-scrollbar">
-                {getConsolidatedBets().map((consolidatedBet, index) => {
-              const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
-              return <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
-                      <div className="text-white">
-                        {pool ? pool.name : 'Empty Block'}
-                      </div>
-                      <div className="flex items-center">
-                        {renderRouletteCasualChips(consolidatedBet.amounts)}
-                        <div className="text-btc-orange font-mono">
-                          {formatSats(consolidatedBet.totalAmount)}
-                        </div>
-                      </div>
-                    </div>;
-            })}
-              </div>
-              
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex justify-between text-white font-bold text-sm">
-                  <div>Total Bet:</div>
-                  <div className="text-btc-orange">{formatSats(totalBet)}</div>
-                </div>
-              </div>
-            </>}
-        </Card>
-        
-        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-          <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
-          {renderChipSelection()}
-          
-          <div className="w-full px-2 mt-5">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
-              <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
-                {formatTimeRemaining()}
-              </span>
-            </div>
-            <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-3.5 h-3.5" />
-              Cancel Last
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-3.5 h-3.5" />
-              Clear All
-            </Button>
-          </div>
-        </Card>
-      </div>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white font-medium text-sm mb-3">Live Blockchain Stats:</h3>
-        <LiveBlockData currentBlock={currentBlock} avgBlockTime={avgBlockTime} pendingTxCount={pendingTxCount} estimatedTime={estimatedTime} />
-      </Card>
-    </div>;
-};
-export default BettingGrid;
+      <button
+        className={cn(
+          "w-full py-3 rounded-xl text-center font-bold transition-all duration-200",
+          selectedPool 
+            ? "bg-orange-500 hover:bg-orange-600 text-black" 
+            : "bg-gray-800 text-gray-500 cursor-not-allowed"
+        )}
+        disabled={!selectedPool}
+        onClick={handlePlaceBet}
+      >
+        {selectedPool ? "Place Bet" : "Select a Pool"}
+      </button>
+    </div>
+  );
+}

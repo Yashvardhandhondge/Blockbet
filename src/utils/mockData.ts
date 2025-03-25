@@ -34,7 +34,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-orange-500',
     odds: 3.77,
     region: 'North America',
-    logoUrl: '/pool-logos/foundryusa.png',
+    logoUrl: '/pool-logos/foundryusa.svg',
     gradient: 'linear-gradient(135deg, #F97316, #7C2D12)'
   },
   {
@@ -46,7 +46,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-red-600',
     odds: 5.99,
     region: 'Asia',
-    logoUrl: '/pool-logos/antpool.png',
+    logoUrl: '/pool-logos/antpool.svg',
     gradient: 'linear-gradient(135deg, #DC2626, #7F1D1D)'
   },
   {
@@ -70,7 +70,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-yellow-500',
     odds: 11.36,
     region: 'Asia',
-    logoUrl: '/pool-logos/binancepool.png',
+    logoUrl: '/pool-logos/binancepool.svg',
     gradient: 'linear-gradient(135deg, #EAB308, #854D0E)'
   },
   {
@@ -94,7 +94,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-cyan-600',
     odds: 19.23,
     region: 'Europe',
-    logoUrl: '/pool-logos/braiinspool.svg',
+    logoUrl: '/pool-logos/slushpool.svg',
     gradient: 'linear-gradient(135deg, #0891B2, #164E63)'
   },
   {
@@ -130,7 +130,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-indigo-500',
     odds: 25.0,
     region: 'Europe',
-    logoUrl: '/pool-logos/genesisdigitalassets.svg',
+    logoUrl: '/pool-logos/sbicrypto.svg',
     gradient: 'linear-gradient(135deg, #6366F1, #4338CA)'
   },
   {
@@ -154,7 +154,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-amber-600',
     odds: 33.33,
     region: 'North America',
-    logoUrl: '/pool-logos/kanopool.svg',
+    logoUrl: '/pool-logos/luxor.svg',
     gradient: 'linear-gradient(135deg, #D97706, #78350F)'
   },
   {
@@ -178,7 +178,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-rose-600',
     odds: 52.63,
     region: 'Europe',
-    logoUrl: '/pool-logos/emcd.svg',
+    logoUrl: '/pool-logos/emcdpool.svg',
     gradient: 'linear-gradient(135deg, #E11D48, #9F1239)'
   },
   {
@@ -190,7 +190,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-gray-600',
     odds: 83.33,
     region: 'Unknown',
-    logoUrl: '/pool-logos/unknown.svg',
+    logoUrl: '/pool-logos/default.svg',
     gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
   }
 ];
@@ -200,7 +200,7 @@ export const recentBlocks: Block[] = [
     height: 888561,
     hash: '000000000000000000026e2c5c201e0963aad79f8ff21f282b468a343c153267',
     minedBy: 'SBI Crypto',
-    timestamp: Date.now() - 840000, // 14 minutes ago
+    timestamp: Date.now() - 840000,
     size: 1283452,
     transactionCount: 1796,
     fees: 0.32,
@@ -212,7 +212,7 @@ export const recentBlocks: Block[] = [
     height: 888560,
     hash: '000000000000000000012a7e9d96e8642682f2187b2da245da49d7226e8a82a5',
     minedBy: 'Foundry USA',
-    timestamp: Date.now() - 1440000, // 24 minutes ago
+    timestamp: Date.now() - 1440000,
     size: 1485213,
     transactionCount: 2372,
     fees: 0.45,
@@ -224,7 +224,7 @@ export const recentBlocks: Block[] = [
     height: 888559,
     hash: '0000000000000000000ab7c1f29ae8127a89d833a0545823480e9c8e304fa8b6',
     minedBy: 'WhitePool',
-    timestamp: Date.now() - 2280000, // 38 minutes ago
+    timestamp: Date.now() - 2280000,
     size: 932641,
     transactionCount: 1343,
     fees: 0.21,
@@ -236,7 +236,7 @@ export const recentBlocks: Block[] = [
     height: 888558,
     hash: '000000000000000000024a1c85a839be89da34f691cff26356e7c12a2c111fd1',
     minedBy: 'ViaBTC',
-    timestamp: Date.now() - 2700000, // 45 minutes ago
+    timestamp: Date.now() - 2700000,
     size: 1129574,
     transactionCount: 1736,
     fees: 0.28,
@@ -248,7 +248,7 @@ export const recentBlocks: Block[] = [
     height: 888557,
     hash: '000000000000000000019ce64c08ea78b923812f9da28ceec53b69c9985d918f',
     minedBy: 'Foundry USA',
-    timestamp: Date.now() - 3060000, // 51 minutes ago
+    timestamp: Date.now() - 3060000,
     size: 1398732,
     transactionCount: 489,
     fees: 0.36,
@@ -260,7 +260,7 @@ export const recentBlocks: Block[] = [
     height: 888556,
     hash: '0000000000000000000d54cda836ad0817b731bc07c6d76b1d982347129968b1',
     minedBy: 'Binance Pool',
-    timestamp: Date.now() - 3900000, // 65 minutes ago
+    timestamp: Date.now() - 3900000,
     size: 1012574,
     transactionCount: 1834,
     fees: 0.28,
@@ -272,7 +272,7 @@ export const recentBlocks: Block[] = [
     height: 888555,
     hash: '0000000000000000000e76f31f24cd3c202dafbb9e37d192df650a4bf3a2fba9',
     minedBy: 'AntPool',
-    timestamp: Date.now() - 4680000, // 78 minutes ago
+    timestamp: Date.now() - 4680000,
     size: 1385632,
     transactionCount: 2216,
     fees: 0.32,
@@ -284,7 +284,7 @@ export const recentBlocks: Block[] = [
     height: 888554,
     hash: '000000000000000000012a7e9d96e8642682f2187b2da245da49d7226e8a82a5',
     minedBy: 'F2Pool',
-    timestamp: Date.now() - 5520000, // 92 minutes ago
+    timestamp: Date.now() - 5520000,
     size: 1485213,
     transactionCount: 2372,
     fees: 0.45,
@@ -296,7 +296,7 @@ export const recentBlocks: Block[] = [
     height: 888553,
     hash: '0000000000000000000ab7c1f29ae8127a89d833a0545823480e9c8e304fa8b6',
     minedBy: 'SlushPool',
-    timestamp: Date.now() - 6360000, // 106 minutes ago
+    timestamp: Date.now() - 6360000,
     size: 932641,
     transactionCount: 1343,
     fees: 0.21,
@@ -308,7 +308,7 @@ export const recentBlocks: Block[] = [
     height: 888552,
     hash: '000000000000000000024a1c85a839be89da34f691cff26356e7c12a2c111fd1',
     minedBy: 'Poolin',
-    timestamp: Date.now() - 7920000, // 132 minutes ago
+    timestamp: Date.now() - 7920000,
     size: 1129574,
     transactionCount: 1736,
     fees: 0.28,
