@@ -56,7 +56,7 @@ const Navbar = () => {
               {/* Deposit/Withdraw dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold">
+                  <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
                     <Wallet className="mr-1 h-4 w-4 text-btc-orange" />
                     <span>Wallet</span>
                   </Button>
@@ -83,11 +83,11 @@ const Navbar = () => {
             
               {/* Desktop buttons */}
               <div className="hidden md:flex space-x-2">
-                {/* Deposit button */}
+                {/* Deposit button - Updated with rounded corners */}
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide"
+                  className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide rounded-full"
                 >
                   <ArrowDownToLine className="mr-1 h-4 w-4" />
                   <span>Deposit</span>
@@ -97,7 +97,7 @@ const Navbar = () => {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="text-white hover:text-btc-orange hover:bg-btc-darker/40 font-semibold tracking-wide"
+                  className="text-white hover:text-btc-orange hover:bg-btc-darker/40 font-semibold tracking-wide rounded-full"
                 >
                   <ArrowUpFromLine className="mr-1 h-4 w-4" />
                   <span>Withdraw</span>
@@ -108,7 +108,7 @@ const Navbar = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="md:hidden text-white hover:text-btc-orange"
+                className="md:hidden text-white hover:text-btc-orange rounded-full"
                 onClick={toggleMobileMenu}
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -138,12 +138,12 @@ const Navbar = () => {
                 <span className="text-white font-medium">{walletBalanceInSats} sats</span>
               </div>
               
-              {/* Buttons */}
+              {/* Buttons - Updated with rounded corners */}
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide w-full"
+                  className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide w-full rounded-full"
                 >
                   <ArrowDownToLine className="mr-1 h-4 w-4" />
                   <span>Deposit</span>
@@ -152,7 +152,7 @@ const Navbar = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-btc-darker border-white/10 text-white hover:text-btc-orange hover:border-btc-orange/40 font-semibold tracking-wide w-full"
+                  className="bg-btc-darker border-white/10 text-white hover:text-btc-orange hover:border-btc-orange/40 font-semibold tracking-wide w-full rounded-full"
                 >
                   <ArrowUpFromLine className="mr-1 h-4 w-4" />
                   <span>Withdraw</span>

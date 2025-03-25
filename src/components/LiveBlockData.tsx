@@ -88,7 +88,7 @@ interface StatCardProps {
 export const StatCard = ({ icon, title, value, secondaryText, isHighlighted = false }: StatCardProps) => {
   return (
     <div className={cn(
-      "rounded-lg px-3 py-1 flex items-center",
+      "rounded-xl px-3 py-1 flex items-center", // Changed to rounded-xl for more rounded corners
       isHighlighted 
         ? "bg-gradient-to-r from-[#8B5CF6]/30 to-[#0EA5E9]/30 border border-[#8B5CF6]/40" 
         : "bg-gradient-to-r from-[#121212] to-[#1a1a1a] border border-white/10"
