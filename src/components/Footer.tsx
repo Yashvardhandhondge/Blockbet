@@ -33,7 +33,7 @@ const Footer = () => {
             <p className="mb-6 text-muted-foreground">
               Join our newsletter for the latest updates and exclusive offers.
             </p>
-            <form className="relative">
+            <form className="relative max-w-[50%]">
               <Input
                 type="email"
                 placeholder="Enter your email"
