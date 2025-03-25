@@ -9,7 +9,6 @@ import { toast } from './ui/use-toast';
 import { StatCard } from './LiveBlockData';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
-import { SparklesText } from './ui/sparkles-text';
 
 const CHIP_VALUES = [50, 100, 500, 1000, 5000, 10000, 50000];
 
@@ -334,10 +333,9 @@ const BettingGrid = () => {
 
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
-        <SparklesText text="Place Your Bets" className="px-6 py-3 text-5xl mb-3 text-white" colors={{
-        first: "#9E7AFF",
-        second: "#FE8BBB"
-      }} sparklesCount={15} />
+        <h1 className="text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
+          Place Your Bets
+        </h1>
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
           Predict which mining pool will mine the next Bitcoin block
         </p>
