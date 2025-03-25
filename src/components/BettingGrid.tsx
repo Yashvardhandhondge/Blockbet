@@ -367,7 +367,27 @@ const BettingGrid = () => {
         </div>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
+      <div className="w-full mb-6 px-2">
+        <div className="flex flex-wrap justify-center items-center gap-2 mb-3">
+          <StatCard icon={<Zap className="h-3 w-3 text-btc-orange" />} title="Next block" value={`#${currentBlock + 1}`} secondaryText="" />
+          
+          <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Est. Next Block" value={estimatedTime} secondaryText="avg" />
+          
+          <StatCard icon={<Server className="h-3 w-3 text-btc-orange" />} title="Pending Transactions" value={pendingTxCount.toLocaleString()} secondaryText="mempool" />
+          
+          <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Average Block Time" value={`${avgBlockTime.toFixed(1)}m`} secondaryText="last 24h" />
+        </div>
+        
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
+          <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
+            {formatTimeRemaining()}
+          </span>
+        </div>
+        <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
+      </div>
+      
+      <div className="flex flex-col md:flex-row gap-4 items-start">
         <Card className="flex-1 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>
@@ -410,7 +430,7 @@ const BettingGrid = () => {
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
           {renderChipSelection()}
           
-          <div className="grid grid-cols-2 gap-2 mb-4">
+          <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
               <X className="w-3.5 h-3.5" />
               Cancel Last
@@ -420,24 +440,7 @@ const BettingGrid = () => {
               Clear All
             </Button>
           </div>
-          
-          <div className="flex flex-wrap justify-center items-center gap-2">
-            <StatCard icon={<Zap className="h-3 w-3 text-btc-orange" />} title="Next block" value={`#${currentBlock + 1}`} secondaryText="" />
-            <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Est. Next Block" value={estimatedTime} secondaryText="avg" />
-            <StatCard icon={<Server className="h-3 w-3 text-btc-orange" />} title="Pending Transactions" value={pendingTxCount.toLocaleString()} secondaryText="mempool" />
-            <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Average Block Time" value={`${avgBlockTime.toFixed(1)}m`} secondaryText="last 24h" />
-          </div>
         </Card>
-      </div>
-      
-      <div className="w-full mb-6 px-2">
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
-          <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
-            {formatTimeRemaining()}
-          </span>
-        </div>
-        <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
       </div>
     </div>;
 };
