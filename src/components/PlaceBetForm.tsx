@@ -1,11 +1,9 @@
-
 import { useState } from 'react';
 import { MiningPool, mockUserBalance, formatBTC } from '@/utils/mockData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
 import { Bitcoin, ChevronUp, ChevronDown, Wallet, Info, Trophy } from 'lucide-react';
 import BetAlert from './BetAlert';
 
@@ -14,7 +12,6 @@ interface PlaceBetFormProps {
 }
 
 const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
-  const { toast } = useToast();
   const [betAmount, setBetAmount] = useState(0.001);
   const [isPending, setIsPending] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -42,11 +39,6 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
   
   const handlePlaceBet = () => {
     if (betAmount <= 0) {
-      toast({
-        title: "Invalid bet amount",
-        description: "Please enter a bet amount greater than 0.",
-        variant: "destructive"
-      });
       return;
     }
     
@@ -63,10 +55,6 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
 
   const handleUndoBet = () => {
     // Logic to undo the last bet
-    toast({
-      title: "Bet cancelled",
-      description: `Your bet of ${formatBTC(lastBetAmount)} on ${selectedPool.name} was cancelled.`,
-    });
     setShowAlert(false);
   };
   
