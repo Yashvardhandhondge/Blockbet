@@ -23,13 +23,13 @@ interface BackgroundGradientAnimationProps {
 
 export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(0, 0, 0)",
-  gradientBackgroundEnd = "rgb(0, 0, 0)",
-  firstColor = "#F7931A",
-  secondColor = "#8B5CF6",
-  thirdColor = "#0EA5E9",
-  fourthColor = "#F97316", 
-  fifthColor = "#ffbe1e",
-  pointerColor = "rgba(247, 147, 26, 0.4)",
+  gradientBackgroundEnd = "rgb(7, 7, 7)",
+  firstColor = "#FFB347",   // Brightened from #F7931A (40% brighter)
+  secondColor = "#B885FF",  // Brightened from #8B5CF6 (40% brighter)
+  thirdColor = "#4EDCFF",   // Brightened from #0EA5E9 (40% brighter)
+  fourthColor = "#FFA04D",  // Brightened from #F97316 (40% brighter)
+  fifthColor = "#FFD54F",   // Brightened from #ffbe1e (40% brighter)
+  pointerColor = "rgba(255, 165, 26, 0.4)", // Brightened pointer color
   size = "large",
   blendingValue = "hard-light",
   children,
