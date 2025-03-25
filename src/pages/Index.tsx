@@ -60,11 +60,10 @@ const Index = () => {
                 className="text-white" 
                 duration={3} 
                 spread={1.5}
-                // Override the default shimmer colors to match our theme
                 style={{
-                  '--base-color': '#ffffff',
-                  '--base-gradient-color': '#f7931a',
-                }}
+                  "--base-color": "#ffffff",
+                  "--base-gradient-color": "#f7931a",
+                } as React.CSSProperties}
               >
                 Roulette
               </TextShimmer>
