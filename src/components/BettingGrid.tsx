@@ -224,27 +224,50 @@ const BettingGrid = () => {
     return value;
   };
 
-  const renderRouletteCasualChips = (amount: number) => {
-    const chipsToRender: number[] = [];
-    let remainingAmount = amount;
-    const sortedChips = [...CHIP_VALUES].sort((a, b) => b - a);
-    while (remainingAmount > 0) {
-      const chipToUse = sortedChips.find(val => val <= remainingAmount) || sortedChips[sortedChips.length - 1];
-      chipsToRender.push(chipToUse);
-      remainingAmount -= chipToUse;
-      if (chipsToRender.length >= 5) break;
-    }
-    return <div className="flex -space-x-2 mr-2">
-        {chipsToRender.slice(0, 3).map((chipValue, index) => <div key={index} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border-2 border-white", getChipColor(chipValue))} style={{
-        zIndex: 5 - index
-      }}>
+  const getConsolidatedBets = () => {
+    const betsByPool = new Map<string | null, Array<number>>();
+    
+    bets.forEach(bet => {
+      const poolKey = bet.poolId !== null ? bet.poolId : 'empty';
+      const existingBets = betsByPool.get(poolKey) || [];
+      betsByPool.set(poolKey, [...existingBets, bet.amount]);
+    });
+    
+    const result = Array.from(betsByPool).map(([poolKey, amounts]) => ({
+      poolId: poolKey === 'empty' ? null : poolKey,
+      amounts: amounts,
+      totalAmount: amounts.reduce((sum, amount) => sum + amount, 0)
+    }));
+    
+    return result;
+  };
+
+  const renderRouletteCasualChips = (amounts: number[]) => {
+    const chipsToShow = amounts.slice(0, 3);
+    const remainingCount = amounts.length > 3 ? amounts.length - 3 : 0;
+    
+    return (
+      <div className="flex -space-x-2 mr-2">
+        {chipsToShow.map((chipValue, index) => (
+          <div 
+            key={index} 
+            className={cn(
+              "relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border-2 border-white", 
+              getChipColor(chipValue)
+            )} 
+            style={{ zIndex: 5 - index }}
+          >
             <div className="absolute inset-0 rounded-full border-2 border-white/30 border-dashed"></div>
             {chipValue >= 1000 ? `${chipValue / 1000}K` : chipValue}
-          </div>)}
-        {chipsToRender.length > 3 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
-            +{chipsToRender.length - 3}
-          </div>}
-      </div>;
+          </div>
+        ))}
+        {remainingCount > 0 && (
+          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
+            +{remainingCount}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderStackedChips = (bets: Array<{
@@ -262,7 +285,7 @@ const BettingGrid = () => {
           zIndex: index,
           transform: `rotate(${index * 5 - 10}deg)`
         }}>
-              <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
+              <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
               <div className="absolute inset-0.5 rounded-full border-4 border-dashed" style={{
             borderColor: `${getChipSecondaryColor(bet.amount)}`
           }}></div>
@@ -276,20 +299,6 @@ const BettingGrid = () => {
             +{remainingCount} more
           </div>}
       </div>;
-  };
-
-  const getConsolidatedBets = () => {
-    const consolidatedBets = new Map<string | null, number>();
-    bets.forEach(bet => {
-      const poolKey = bet.poolId !== null ? bet.poolId : 'empty';
-      const currentAmount = consolidatedBets.get(poolKey) || 0;
-      consolidatedBets.set(poolKey, currentAmount + bet.amount);
-    });
-    const result = Array.from(consolidatedBets).map(([poolKey, amount]) => ({
-      poolId: poolKey === 'empty' ? null : poolKey,
-      amount
-    }));
-    return result;
   };
 
   const renderChipSelection = () => {
@@ -341,7 +350,7 @@ const BettingGrid = () => {
 
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
-        <h1 className="text-3xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
+        <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
           Place Your Bets
         </h1>
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">
@@ -379,24 +388,29 @@ const BettingGrid = () => {
             </Button>
           </div>
           
-          {bets.length === 0 ? <div className="text-white/60 text-center py-4 text-sm">
+          {bets.length === 0 ? (
+            <div className="text-white/60 text-center py-4 text-sm">
               No bets placed yet. Select a chip and click on a mining pool to place a bet.
-            </div> : <>
+            </div>
+          ) : (
+            <>
               <div className="mb-3 space-y-1 max-h-[150px] overflow-y-auto hide-scrollbar">
                 {getConsolidatedBets().map((consolidatedBet, index) => {
-              const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
-              return <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
+                  const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
+                  return (
+                    <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
                       <div className="text-white">
                         {pool ? pool.name : 'Empty Block'}
                       </div>
                       <div className="flex items-center">
-                        {renderRouletteCasualChips(consolidatedBet.amount)}
+                        {renderRouletteCasualChips(consolidatedBet.amounts)}
                         <div className="text-btc-orange font-mono">
-                          {formatSats(consolidatedBet.amount)}
+                          {formatSats(consolidatedBet.totalAmount)}
                         </div>
                       </div>
-                    </div>;
-            })}
+                    </div>
+                  );
+                })}
               </div>
               
               <div className="pt-2 border-t border-white/10">
@@ -405,7 +419,8 @@ const BettingGrid = () => {
                   <div className="text-btc-orange">{formatSats(totalBet)}</div>
                 </div>
               </div>
-            </>}
+            </>
+          )}
         </Card>
         
         <Card className="w-full md:min-w-[260px] bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
@@ -448,3 +463,4 @@ const BettingGrid = () => {
 };
 
 export default BettingGrid;
+
