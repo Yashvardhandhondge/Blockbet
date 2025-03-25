@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -78,19 +79,19 @@ const BlockchainVisualization = () => {
   // Scroll handlers
   const scrollLeft = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
   
   return (
     <div className="w-full bg-btc-darker/80 rounded-xl overflow-hidden border border-white/10 shadow-xl backdrop-blur-sm">
-      <div className="p-4 border-b border-white/10 flex justify-between items-center">
+      <div className="p-3 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
@@ -98,13 +99,13 @@ const BlockchainVisualization = () => {
               onClick={scrollLeft}
               className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
             >
-              <ArrowLeft className="h-5 w-5 text-white/70" />
+              <ArrowLeft className="h-4 w-4 text-white/70" />
             </button>
             <button 
               onClick={scrollRight}
               className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
             >
-              <ArrowRight className="h-5 w-5 text-white/70" />
+              <ArrowRight className="h-4 w-4 text-white/70" />
             </button>
           </div>
           <div className="flex items-center space-x-2">
@@ -151,16 +152,16 @@ const BlockchainVisualization = () => {
           "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500",
           isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
         )}>
-          <div className="bg-btc-dark glass-panel rounded-xl p-6 transform transition-all duration-500 animate-block-appear">
-            <h3 className="text-lg font-medium text-white mb-2">New Block Found!</h3>
-            <p className="text-sm text-white/70">Block #{blocks[0].height + 1} has been mined.</p>
+          <div className="bg-btc-dark glass-panel rounded-xl p-4 transform transition-all duration-500 animate-block-appear">
+            <h3 className="text-base font-medium text-white mb-1">New Block Found!</h3>
+            <p className="text-xs text-white/70">Block #{blocks[0].height + 1} has been mined.</p>
           </div>
         </div>
         
         {/* Horizontal blocks scrolling area */}
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto hide-scrollbar py-8 pl-8 pr-8 space-x-8 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707]"
+          className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-4 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707]"
           style={{ scrollbarWidth: 'none' }}
         >
           {blocks.map((block, index) => {
@@ -171,44 +172,44 @@ const BlockchainVisualization = () => {
               <div 
                 key={`${block.height}-${block.hash.substring(0, 10)}`} 
                 className={cn(
-                  "flex-shrink-0 w-64 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
+                  "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
                   index === 0 ? "animate-block-appear" : ""
                 )}
               >
                 {/* 3D Box Effect - Top */}
-                <div className="h-8 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-6 left-4"></div>
+                <div className="h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2"></div>
                 
                 {/* 3D Box Effect - Side */}
-                <div className="h-full w-8 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-8 top-0"></div>
+                <div className="h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0"></div>
                 
-                {/* Block header with height - cyan color to match screenshot */}
-                <div className="h-12 flex items-center justify-center bg-black text-[#7EB5FF] text-2xl font-bold">
+                {/* Block header with height - cyan color */}
+                <div className="h-6 flex items-center justify-center bg-black text-[#7EB5FF] text-sm font-bold">
                   {block.height}
                 </div>
                 
                 {/* Block content with gradient based on pool */}
                 <div 
-                  className="p-6 flex flex-col h-48 relative overflow-hidden text-center"
+                  className="p-3 flex flex-col h-24 relative overflow-hidden text-center"
                   style={getPoolGradientStyle(block.minedBy)}
                 >
-                  {/* Content layout matching screenshot with centered text */}
-                  <div className="text-white text-lg font-medium mb-2">{block.feesRangeText}</div>
-                  <div className="text-yellow-300 text-lg font-medium mb-3">{block.feeRange}</div>
+                  {/* Content layout with centered text */}
+                  <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
+                  <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
                   
-                  <div className="text-white font-bold text-3xl mb-4">{block.totalBtc} BTC</div>
+                  <div className="text-white font-bold text-sm mb-1">{block.totalBtc} BTC</div>
                   
-                  <div className="text-white/90 text-lg mb-1">{block.transactionCount.toLocaleString()} transactions</div>
-                  <div className="mt-auto text-white/80 text-lg">{formatTimeAgo(block.timestamp)}</div>
+                  <div className="text-white/90 text-[10px] mb-1">{block.transactionCount.toLocaleString()} txs</div>
+                  <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
                 </div>
                 
                 {/* Pool info with black background */}
-                <div className="bg-black py-3 px-4 flex items-center justify-center space-x-3 border-t border-black/50">
-                  <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold bg-opacity-80"
+                <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
+                  <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center text-[8px] font-bold bg-opacity-80"
                     style={{ background: getPoolGradientStyle(block.minedBy).background }}
                   >
                     {block.minedBy.charAt(0)}
                   </div>
-                  <span className="text-white font-medium">{block.minedBy}</span>
+                  <span className="text-white text-[10px] font-medium truncate">{block.minedBy}</span>
                 </div>
               </div>
             );
