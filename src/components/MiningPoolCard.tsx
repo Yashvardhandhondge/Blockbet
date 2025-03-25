@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -178,10 +177,10 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   const displayDenominations = denominations.slice(0, 5);
   const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
   
-  // Position chips with better spacing between different denominations
+  // Position chips with improved spacing between different denominations
   return (
-    <div className="absolute bottom-3 right-4 left-auto">
-      <div className="flex justify-end items-center h-12 gap-2.5">
+    <div className="absolute bottom-3 right-0 left-0 px-4 flex justify-end">
+      <div className="flex flex-row-reverse items-end gap-4 h-12">
         {displayDenominations.map((amount, index) => {
           const betCount = groupedBets[amount].length;
           // Limit stack size for better readability
@@ -191,10 +190,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
             <div 
               key={`stack-${amount}`} 
               className="relative"
-              style={{
-                zIndex: 10 - index,
-                marginRight: index > 0 ? '4px' : '0', // Increased spacing between different denominations
-              }}
+              style={{ zIndex: 10 - index }}
             >
               {/* Show stacked chips without values for better visualization */}
               {Array.from({ length: stackSize - 1 }).map((_, stackIndex) => (
@@ -206,7 +202,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                   )}
                   style={{
                     position: 'absolute',
-                    bottom: stackIndex * 4, // Increased from 3 to 4 for more space between chips
+                    bottom: stackIndex * 4, // Spacing between stacked chips
                     right: 0,
                     transform: `rotate(${(stackIndex * 5) - 7}deg)`, // Keep rotation for visual effect
                     boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
@@ -231,7 +227,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                 )}
                 style={{
                   boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
-                  position: stackSize > 1 ? 'absolute' : 'relative',
+                  position: stackSize > 1 ? 'relative' : 'relative',
                   bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
                   right: 0,
                 }}

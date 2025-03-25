@@ -243,27 +243,45 @@ const BettingGrid = () => {
   };
 
   const renderRouletteCasualChips = (amounts: number[]) => {
-    const chipsToShow = amounts.slice(0, 3);
-    const remainingCount = amounts.length > 3 ? amounts.length - 3 : 0;
+    const groupedChips: Record<number, number> = {};
+    
+    amounts.forEach(amount => {
+      if (!groupedChips[amount]) {
+        groupedChips[amount] = 0;
+      }
+      groupedChips[amount]++;
+    });
+    
+    const chipGroups = Object.entries(groupedChips)
+      .map(([amount, count]) => ({ amount: parseInt(amount), count }))
+      .sort((a, b) => b.amount - a.amount);
+    
+    const chipsToShow = chipGroups.slice(0, 3);
+    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
     
     return (
-      <div className="flex -space-x-2 mr-2">
-        {chipsToShow.map((chipValue, index) => (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
           <div 
-            key={index} 
+            key={`chip-${chipGroup.amount}-${index}`} 
             className={cn(
-              "relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border-2 border-white", 
-              getChipColor(chipValue)
+              "relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", 
+              getChipColor(chipGroup.amount)
             )} 
-            style={{ zIndex: 5 - index }}
+            style={{ zIndex: 5 - index, transform: `translateX(${index * 4}px)` }}
           >
-            <div className="absolute inset-0 rounded-full border-2 border-white/30 border-dashed"></div>
-            {chipValue >= 1000 ? `${chipValue / 1000}K` : chipValue}
+            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
+            <div className="flex items-center">
+              {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
+              {chipGroup.count > 1 && (
+                <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>
+              )}
+            </div>
           </div>
         ))}
-        {remainingCount > 0 && (
-          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white shadow-sm">
-            +{remainingCount}
+        {remainingDenoms > 0 && (
+          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{ zIndex: 1, transform: `translateX(${chipsToShow.length * 4}px)` }}>
+            +{remainingDenoms}
           </div>
         )}
       </div>
@@ -463,4 +481,3 @@ const BettingGrid = () => {
 };
 
 export default BettingGrid;
-
