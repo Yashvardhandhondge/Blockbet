@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+import { TextShimmer } from '@/components/ui/text-shimmer';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +55,19 @@ const Index = () => {
           <div style={headerAnimation.style} className="mb-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               <span className="text-gradient">Bitcoin</span>
-              <span className="text-white">Roulette</span>
+              <TextShimmer 
+                as="span" 
+                className="text-white" 
+                duration={3} 
+                spread={1.5}
+                // Override the default shimmer colors to match our theme
+                style={{
+                  '--base-color': '#ffffff',
+                  '--base-gradient-color': '#f7931a',
+                }}
+              >
+                Roulette
+              </TextShimmer>
             </h1>
             <div className="inline-block px-3 py-1 rounded-full bg-btc-orange/10 border border-btc-orange/20 text-btc-orange text-sm font-medium mb-4">
               Bitcoin Mining Pool Prediction Game
