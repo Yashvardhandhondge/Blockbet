@@ -361,6 +361,13 @@ const BettingGrid = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
         {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
+        
+        <MiningPoolCard 
+          pool={miningPools[0]} 
+          onSelect={() => {}} 
+          isSelected={false} 
+          isPlaceholder={true} 
+        />
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">
