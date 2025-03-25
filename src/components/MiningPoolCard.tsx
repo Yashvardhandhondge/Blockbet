@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -179,7 +178,7 @@ const getPoolColor = (poolId: string): string => {
   }
 };
 
-// Function to render chips stacked on the pool
+// Function to render chips stacked on the pool - UPDATED to display horizontally
 const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   if (bets.length === 0) return null;
   
@@ -187,19 +186,18 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
   
   return (
-    <div className="absolute bottom-2 right-2 flex flex-col items-end">
-      <div className="relative h-12 w-8">
+    <div className="absolute bottom-2 left-2 right-2">
+      <div className="relative flex justify-start items-center h-8">
         {displayBets.map((bet, index) => (
           <div 
             key={bet.id} 
             className={cn(
-              "absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+              "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
               getChipColor(bet.amount)
             )} 
             style={{
-              bottom: `${index * 4}px`,
-              right: `${index % 2 === 0 ? 0 : 2}px`,
-              zIndex: index,
+              marginLeft: index > 0 ? '-8px' : '0',
+              zIndex: 5 - index,
               transform: `rotate(${index * 5 - 10}deg)`
             }}
           >
@@ -215,13 +213,13 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
             </span>
           </div>
         ))}
+        
+        {remainingCount > 0 && (
+          <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1 rounded">
+            +{remainingCount} more
+          </div>
+        )}
       </div>
-      
-      {remainingCount > 0 && (
-        <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
-          +{remainingCount} more
-        </div>
-      )}
     </div>
   );
 };
