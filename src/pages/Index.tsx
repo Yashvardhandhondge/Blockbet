@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BlockchainVisualization from '@/components/BlockchainVisualization';
@@ -6,6 +7,7 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,6 +28,7 @@ const Index = () => {
   const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
   });
+
   return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
       <div className="min-h-screen pb-20">
         {/* Loading screen */}
@@ -49,14 +52,13 @@ const Index = () => {
         <main className="container max-w-7xl mx-auto px-4 pt-24">
           {/* Header */}
           <div style={headerAnimation.style} className="mb-8 text-center">
-            <div className="inline-block px-3 py-1 rounded-full bg-btc-orange/10 border border-btc-orange/20 text-btc-orange text-sm font-medium mb-4">
-              Bitcoin Mining Pool Prediction Game
-            </div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               <span className="text-gradient">Bitcoin</span>
               <span className="text-white">Roulette</span>
-              
             </h1>
+            <div className="inline-block px-3 py-1 rounded-full bg-btc-orange/10 border border-btc-orange/20 text-btc-orange text-sm font-medium mb-4">
+              Bitcoin Mining Pool Prediction Game
+            </div>
             <p className="text-white/70 max-w-2xl mx-auto text-sm font-normal">Predict which mining pool will mine the next Bitcoin block and win up to 83x your bet in Sats!</p>
           </div>
           
@@ -75,4 +77,5 @@ const Index = () => {
       </div>
     </BackgroundGradientAnimation>;
 };
+
 export default Index;
