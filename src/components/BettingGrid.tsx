@@ -11,9 +11,7 @@ import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
-
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
-
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -32,7 +30,6 @@ const BettingGrid = () => {
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
-
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
@@ -44,7 +41,6 @@ const BettingGrid = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
-
   useRandomInterval(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
@@ -56,11 +52,9 @@ const BettingGrid = () => {
       return Math.max(9.2, Math.min(10.5, prev + variation));
     });
   }, 3000, 8000);
-
   useEffect(() => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
-
   const handlePlaceBet = (poolId: string | null) => {
     if (!selectedChip) {
       toast({
@@ -82,7 +76,6 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
-
   const handleClearBets = () => {
     setBets([]);
     toast({
@@ -91,7 +84,6 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
-
   const handleCancelLastBet = () => {
     if (bets.length === 0) {
       toast({
@@ -111,36 +103,30 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
-
   const formatTimeRemaining = () => {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
-
   const estimatedTime = (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
   })();
-
   const getUrgencyClass = () => {
     const percentageLeft = timeRemaining / totalTime * 100;
     if (percentageLeft < 20) return "text-btc-orange";
     if (percentageLeft < 50) return "text-btc-orange";
     return "text-btc-orange";
   };
-
   const handleSelectChip = (value: number) => {
     setSelectedChip(value);
   };
-
   const handleSelectPool = (pool: MiningPool) => {
     setSelectedPool(pool);
     handlePlaceBet(pool.id);
   };
-
   const getPoolLogo = (poolId: string) => {
     const logoMap: Record<string, string> = {
       'foundry': '/pool-logos/foundryusa.png',
@@ -166,7 +152,6 @@ const BettingGrid = () => {
       }} />
       </div>;
   };
-
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.id === poolId);
     if (pool) {
@@ -178,19 +163,15 @@ const BettingGrid = () => {
       background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)'
     };
   };
-
   const getBetsOnPool = (poolId: string | null) => {
     return bets.filter(bet => bet.poolId === poolId);
   };
-
   const formatBTC = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8);
   };
-
   const formatSats = (satoshis: number) => {
     return satoshis.toLocaleString() + " sats";
   };
-
   const getPlaceholderImage = (poolId: string) => {
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
@@ -201,7 +182,6 @@ const BettingGrid = () => {
         {firstLetter}
       </div>;
   };
-
   const getChipColor = (value: number) => {
     switch (value) {
       case 100:
@@ -222,7 +202,6 @@ const BettingGrid = () => {
         return "bg-gray-600";
     }
   };
-
   const getChipSecondaryColor = (value: number) => {
     switch (value) {
       case 100:
@@ -243,14 +222,12 @@ const BettingGrid = () => {
         return "bg-gray-500";
     }
   };
-
   const formatChipValue = (value: number) => {
     if (value >= 100000) return `${value / 1000}K`;
     if (value >= 10000) return `${value / 1000}K`;
     if (value >= 1000) return `${value / 1000}K`;
     return value;
   };
-
   const getConsolidatedBets = () => {
     const betsByPool = new Map<string | null, Array<number>>();
     bets.forEach(bet => {
@@ -265,7 +242,6 @@ const BettingGrid = () => {
     }));
     return result;
   };
-
   const renderRouletteCasualChips = (amounts: number[]) => {
     const groupedChips: {
       [key: number]: number;
@@ -298,7 +274,6 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
-
   const renderStackedChips = (bets: Array<{
     id: number;
     amount: number;
@@ -329,7 +304,6 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
-
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
     return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-0" : "")}>
@@ -352,7 +326,6 @@ const BettingGrid = () => {
           </div>)}
       </div>;
   };
-
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
         <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
@@ -367,7 +340,7 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="text-white font-medium text-sm mb-4">Select Mining Pool</h3>
+        <h3 className="text-white font-medium text-sm mb-4">Step 2: Select mining Pool</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
           
@@ -461,5 +434,4 @@ const BettingGrid = () => {
       </Card>
     </div>;
 };
-
 export default BettingGrid;
