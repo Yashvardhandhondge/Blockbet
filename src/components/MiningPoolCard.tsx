@@ -178,16 +178,20 @@ const getPoolColor = (poolId: string): string => {
   }
 };
 
-// Function to render chips stacked on the pool - UPDATED to display horizontally
+// Function to render chips with improved visibility and spacing
 const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   if (bets.length === 0) return null;
   
+  // For better visibility, only display the most recent 5 bets
   const displayBets = bets.slice(-5);
   const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
   
+  // Calculate optimal placement based on number of chips
+  const chipSpacing = displayBets.length <= 3 ? 0 : -5;
+  
   return (
-    <div className="absolute bottom-2 left-2 right-2">
-      <div className="relative flex justify-start items-center h-8">
+    <div className="absolute bottom-2 right-4 left-4">
+      <div className="flex justify-end items-center h-8">
         {displayBets.map((bet, index) => (
           <div 
             key={bet.id} 
@@ -196,9 +200,9 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
               getChipColor(bet.amount)
             )} 
             style={{
-              marginLeft: index > 0 ? '-8px' : '0',
-              zIndex: 5 - index,
-              transform: `rotate(${index * 5 - 10}deg)`
+              marginLeft: index > 0 ? `${chipSpacing}px` : '0',
+              zIndex: 10 - index,
+              transform: `rotate(${(index * 5) - 10}deg)`
             }}
           >
             <div className="absolute inset-1.5 rounded-full border border-white/30"></div>
@@ -215,8 +219,8 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
         ))}
         
         {remainingCount > 0 && (
-          <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1 rounded">
-            +{remainingCount} more
+          <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1.5 py-0.5 rounded-full shadow-md">
+            +{remainingCount}
           </div>
         )}
       </div>
