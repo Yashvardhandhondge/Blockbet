@@ -3,25 +3,41 @@ import { useState } from 'react';
 import { nextBlockEstimate } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
-import { Clock, Timer } from 'lucide-react';
+import { Clock, Timer, Zap, Server } from 'lucide-react';
 
-export const LiveBlockData = () => {
+export const LiveBlockData = ({ currentBlock, avgBlockTime, pendingTxCount, estimatedTime }: {
+  currentBlock?: number;
+  avgBlockTime?: number;
+  pendingTxCount?: number;
+  estimatedTime?: string;
+}) => {
   const [timeVariation, setTimeVariation] = useState(0);
-  const [avgBlockTime, setAvgBlockTime] = useState(9.8); // Average block time in minutes
+  const [localAvgBlockTime, setLocalAvgBlockTime] = useState(avgBlockTime || 9.8); // Average block time in minutes
+  const [localPendingTxCount, setLocalPendingTxCount] = useState(pendingTxCount || 12483);
+  const [localCurrentBlock, setLocalCurrentBlock] = useState(currentBlock || 0);
   
-  // Random updates to simulate live data
+  // Random updates to simulate live data if props not provided
   useRandomInterval(() => {
-    setTimeVariation(Math.random() * 1.5 - 0.75); // -0.75 to +0.75 minutes
+    if (avgBlockTime === undefined) {
+      setTimeVariation(Math.random() * 1.5 - 0.75); // -0.75 to +0.75 minutes
+      
+      // Slightly randomize average block time
+      setLocalAvgBlockTime(prev => {
+        const variation = (Math.random() * 0.4) - 0.2; // -0.2 to +0.2 minutes
+        return Math.max(9.2, Math.min(10.5, prev + variation));
+      });
+    }
     
-    // Slightly randomize average block time
-    setAvgBlockTime(prev => {
-      const variation = (Math.random() * 0.4) - 0.2; // -0.2 to +0.2 minutes
-      return Math.max(9.2, Math.min(10.5, prev + variation));
-    });
+    if (pendingTxCount === undefined) {
+      setLocalPendingTxCount(prev => {
+        const variation = Math.random() * 100 - 20;
+        return Math.max(1000, Math.floor(prev + variation));
+      });
+    }
   }, 3000, 8000);
   
-  // Calculate next block estimate with variation
-  const estimatedTime = (() => {
+  // Calculate next block estimate with variation if not provided
+  const displayEstimatedTime = estimatedTime || (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
@@ -29,18 +45,32 @@ export const LiveBlockData = () => {
   })();
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+      <StatCard 
+        icon={<Zap className="h-5 w-5 text-btc-orange" />}
+        title="Next block"
+        value={`#${(localCurrentBlock || currentBlock) + 1}`}
+        secondaryText=""
+      />
+      
       <StatCard 
         icon={<Clock className="h-5 w-5 text-btc-orange" />}
         title="Est. Next Block"
-        value={estimatedTime}
+        value={displayEstimatedTime}
         secondaryText="average time"
+      />
+      
+      <StatCard 
+        icon={<Server className="h-5 w-5 text-btc-orange" />}
+        title="Pending Transactions"
+        value={(localPendingTxCount || pendingTxCount).toLocaleString()}
+        secondaryText="mempool"
       />
       
       <StatCard 
         icon={<Timer className="h-5 w-5 text-btc-orange" />}
         title="Average Block Time"
-        value={`${avgBlockTime.toFixed(1)}m`}
+        value={`${(localAvgBlockTime || avgBlockTime).toFixed(1)}m`}
         secondaryText="last 24h"
       />
     </div>
