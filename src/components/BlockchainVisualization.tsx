@@ -73,8 +73,33 @@ const BlockchainVisualization = () => {
 
   // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
-    const pool = miningPools.find(p => p.name === poolName);
-    return pool?.logoUrl || '';
+    // Lowercase the pool name and remove spaces, special characters
+    const normalizedName = poolName.toLowerCase()
+      .replace(/\s+/g, '')
+      .replace(/\./g, '')
+      .replace(/-/g, '');
+    
+    // Check common mining pool names and return the correct SVG path
+    if (poolName === 'Foundry USA') return '/pool-logos/foundryusa.svg';
+    if (poolName === 'AntPool') return '/pool-logos/antpool.svg';
+    if (poolName === 'F2Pool') return '/pool-logos/f2pool.svg';
+    if (poolName === 'Binance Pool') return '/pool-logos/binancepool.svg';
+    if (poolName === 'ViaBTC') return '/pool-logos/viabtc.svg';
+    if (poolName === 'SlushPool') return '/pool-logos/braiinspool.svg';
+    if (poolName === 'Poolin') return '/pool-logos/poolin.svg';
+    if (poolName === 'BTC.com') return '/pool-logos/btccom.svg';
+    if (poolName === 'SBI Crypto') return '/pool-logos/sbicrypto.svg';
+    if (poolName === 'EMCD') return '/pool-logos/emcdpool.svg';
+    if (poolName === 'Luxor') return '/pool-logos/luxor.svg';
+    if (poolName === 'KanoPool') return '/pool-logos/kucoinpool.svg';
+    if (poolName === 'PEGA Pool') return '/pool-logos/pegapool.svg';
+    if (poolName === 'WhitePool') return '/pool-logos/ultimuspool.svg';
+    if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
+    if (poolName === 'Titan') return '/pool-logos/titan.svg';
+    if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
+    
+    // Return a default logo if no match is found
+    return '/pool-logos/default.svg';
   };
 
   // Scroll handlers
@@ -205,10 +230,12 @@ const BlockchainVisualization = () => {
                 
                 {/* Pool info with black background */}
                 <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
-                  <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center text-[8px] font-bold bg-opacity-80"
-                    style={{ background: getPoolGradientStyle(block.minedBy).background }}
-                  >
-                    {block.minedBy.charAt(0)}
+                  <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center">
+                    <img 
+                      src={getPoolLogo(block.minedBy)} 
+                      alt={block.minedBy}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                   <span className="text-white text-[10px] font-medium truncate">{block.minedBy}</span>
                 </div>
