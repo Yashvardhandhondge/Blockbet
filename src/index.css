@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,9 +49,6 @@
 
   body {
     @apply bg-btc-dark text-foreground overflow-x-hidden;
-    background-image: 
-      radial-gradient(circle at 25% 15%, rgba(247, 147, 26, 0.05) 0%, transparent 40%),
-      radial-gradient(circle at 75% 85%, rgba(247, 147, 26, 0.03) 0%, transparent 30%);
   }
 
   input[type="number"]::-webkit-inner-spin-button,
@@ -103,6 +101,24 @@
   100% {
     opacity: 0;
     transform: scale(0) rotate(150deg);
+  }
+}
+
+@keyframes moveBackground {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(5%, 5%) rotate(90deg);
+  }
+  50% {
+    transform: translate(0, 10%) rotate(180deg);
+  }
+  75% {
+    transform: translate(-5%, 5%) rotate(270deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(360deg);
   }
 }
 
