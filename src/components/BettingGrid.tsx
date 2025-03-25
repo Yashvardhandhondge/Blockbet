@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -361,6 +361,22 @@ const BettingGrid = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
         {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
+        
+        <div className="relative rounded-xl overflow-hidden bg-gradient-to-br from-black/80 to-black/40 border border-white/5 p-4 flex flex-col items-center justify-center min-h-[220px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-btc-orange/20 to-purple-500/10 opacity-30"></div>
+          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+            <h3 className="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange via-yellow-500 to-btc-orange animate-pulse-subtle">
+              Place Your Bets!
+            </h3>
+            <p className="text-white/70 text-sm mb-4">
+              Select mining pool & win BTC
+            </p>
+            <div className="animate-bounce mt-2">
+              <ArrowDown className="h-6 w-6 text-btc-orange" />
+            </div>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-btc-orange/5 to-purple-500/5 animate-pulse-slow blur-xl"></div>
+          </div>
+        </div>
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 items-start">
