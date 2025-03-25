@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -90,7 +91,7 @@ const BlockchainVisualization = () => {
   };
   
   return (
-    <AuroraContainer className="w-full group hover:border-white/20 transition-colors">
+    <AuroraContainer className="w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
@@ -161,7 +162,7 @@ const BlockchainVisualization = () => {
         {/* Horizontal blocks scrolling area */}
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-4 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707]"
+          className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-4 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
           style={{ scrollbarWidth: 'none' }}
         >
           {blocks.map((block, index) => {
