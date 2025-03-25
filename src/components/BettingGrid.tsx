@@ -341,14 +341,6 @@ const BettingGrid = () => {
         </p>
       </div>
       
-      <div className="flex flex-wrap justify-center items-center gap-2 mb-6">
-        <StatCard icon={<Zap className="h-3 w-3 text-btc-orange" />} title="Next block" value={`#${currentBlock + 1}`} secondaryText="" />
-        
-        <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Est. Next Block" value={estimatedTime} secondaryText="avg" />
-        
-        <StatCard icon={<Server className="h-3 w-3 text-btc-orange" />} title="Pending Transactions" value={pendingTxCount.toLocaleString()} secondaryText="mempool" />
-      </div>
-      
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
         {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
         
@@ -370,6 +362,14 @@ const BettingGrid = () => {
       </div>
       
       <div className="w-full mb-6 px-2">
+        <div className="flex flex-wrap justify-center items-center gap-2 mb-3">
+          <StatCard icon={<Zap className="h-3 w-3 text-btc-orange" />} title="Next block" value={`#${currentBlock + 1}`} secondaryText="" />
+          
+          <StatCard icon={<Clock className="h-3 w-3 text-btc-orange" />} title="Est. Next Block" value={estimatedTime} secondaryText="avg" />
+          
+          <StatCard icon={<Server className="h-3 w-3 text-btc-orange" />} title="Pending Transactions" value={pendingTxCount.toLocaleString()} secondaryText="mempool" />
+        </div>
+        
         <div className="flex justify-between items-center mb-1">
           <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
           <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
