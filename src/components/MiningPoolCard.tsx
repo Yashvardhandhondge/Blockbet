@@ -178,13 +178,13 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   const displayDenominations = denominations.slice(0, 5);
   const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
   
-  // Position chips in bottom right corner with more space for payout text
+  // Position chips in bottom right corner with more space
   return (
-    <div className="absolute bottom-2 right-4 left-auto">
-      <div className="flex justify-end items-center h-8 gap-1">
+    <div className="absolute bottom-3 right-4 left-auto">
+      <div className="flex justify-end items-center h-12 gap-2">
         {displayDenominations.map((amount, index) => {
           const betCount = groupedBets[amount].length;
-          // Increase max stack size for better visualization
+          // Limit stack size for better readability
           const stackSize = Math.min(betCount, 4);
           
           return (
@@ -193,6 +193,7 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
               className="relative"
               style={{
                 zIndex: 10 - index,
+                marginRight: index > 0 ? '2px' : '0', // Add extra space between stacks
               }}
             >
               {/* Stack of chips of the same denomination with increased elevation */}
@@ -200,14 +201,15 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-6 h-6 text-[10px]",
+                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
                     getChipColor(amount)
                   )}
                   style={{
                     position: 'absolute',
-                    bottom: stackIndex * 3, // Increased from 2 to 3 for more pronounced stacking
+                    bottom: stackIndex * 4, // Increased from 3 to 4 for more space between chips
                     right: 0,
-                    transform: `rotate(${(stackIndex * 5) - 7}deg)`, // Increased rotation for more visual stack effect
+                    transform: `rotate(${(stackIndex * 5) - 7}deg)`, // Keep rotation for visual effect
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
                   }}
                 >
                   <div className="absolute rounded-full border border-white/30 inset-1"></div>
@@ -217,18 +219,20 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
                       borderColor: `${getChipSecondaryColor(amount)}`
                     }}
                   ></div>
+                  <span className="relative z-10 text-white font-bold drop-shadow-md">
+                    {amount >= 10000 ? `${amount / 1000}k` : amount}
+                  </span>
                 </div>
               ))}
               
-              {/* Top chip with the amount */}
+              {/* Top chip with the count if needed */}
               <div 
                 className={cn(
-                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-6 h-6 text-[10px]",
+                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
                   getChipColor(amount)
                 )}
                 style={{
-                  // Add slight shadow effect for better stacking appearance
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.5)"
+                  boxShadow: "0 3px 6px rgba(0,0,0,0.6)"
                 }}
               >
                 <div className="absolute rounded-full border border-white/30 inset-1"></div>
