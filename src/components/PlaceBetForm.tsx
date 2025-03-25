@@ -49,7 +49,6 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
       setLastBetAmount(betAmount);
       setIsPending(false);
       setShowAlert(true);
-      // No toast notification here anymore
     }, 1500);
   };
 

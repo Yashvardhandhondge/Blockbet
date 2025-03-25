@@ -40,9 +40,9 @@ const BetAlert = ({
         className
       )}
     >
-      <Alert className="bg-btc-darker border-btc-orange/30 p-0 overflow-hidden">
+      <Alert className="bg-btc-dark border-btc-orange/30 p-0 overflow-hidden shadow-lg">
         <div className="flex flex-col w-full">
-          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-btc-orange/10 to-transparent">
+          <div className="flex items-center gap-3 p-4 bg-btc-orange/20">
             <CheckCircle className="h-5 w-5 text-btc-orange shrink-0" />
             <div className="flex-1">
               <AlertTitle className="text-white font-medium">{title}</AlertTitle>
@@ -56,7 +56,7 @@ const BetAlert = ({
             <Button 
               variant="outline" 
               size="sm" 
-              className="text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30"
+              className="text-xs border-btc-orange/20 bg-btc-orange/10 text-white hover:bg-btc-orange/20 hover:border-btc-orange/30"
               onClick={onUndo}
             >
               <Undo className="h-3 w-3 mr-1" />
