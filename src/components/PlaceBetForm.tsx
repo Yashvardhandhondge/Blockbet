@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 import { Bitcoin, ChevronUp, ChevronDown, Wallet, Info, Trophy } from 'lucide-react';
+import BetAlert from './BetAlert';
 
 interface PlaceBetFormProps {
   selectedPool: MiningPool;
@@ -16,6 +17,8 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
   const [betAmount, setBetAmount] = useState(0.001);
   const [isPending, setIsPending] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [lastBetAmount, setLastBetAmount] = useState(0);
   
   const maxBet = mockUserBalance.availableBalance;
   const potentialWin = betAmount * selectedPool.odds;
@@ -50,12 +53,23 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
     
     // Simulate API call
     setTimeout(() => {
-      toast({
-        title: "Bet placed successfully!",
-        description: `You placed ${formatBTC(betAmount)} on ${selectedPool.name}.`,
-      });
+      setLastBetAmount(betAmount);
       setIsPending(false);
+      setShowAlert(true);
     }, 1500);
+  };
+
+  const handleUndoBet = () => {
+    // Logic to undo the last bet
+    toast({
+      title: "Bet cancelled",
+      description: `Your bet of ${formatBTC(lastBetAmount)} on ${selectedPool.name} was cancelled.`,
+    });
+    setShowAlert(false);
+  };
+  
+  const handleCloseAlert = () => {
+    setShowAlert(false);
   };
   
   // Get a darker gradient based on the pool's color
@@ -246,6 +260,14 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
           )}
         </div>
       </div>
+
+      <BetAlert
+        title="Bet Placed Successfully"
+        description={`You placed ${formatBTC(lastBetAmount)} on ${selectedPool.name}.`}
+        isVisible={showAlert}
+        onUndo={handleUndoBet}
+        onClose={handleCloseAlert}
+      />
     </div>
   );
 };
