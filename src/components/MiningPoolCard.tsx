@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -171,114 +170,58 @@ const getPoolColor = (poolId: string): string => {
 const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   if (bets.length === 0) return null;
   
-  // Group chips by denomination
-  const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
+  const displayBets = bets.slice(-5);
+  const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
   
-  bets.forEach(bet => {
-    if (!groupedBets[bet.amount]) {
-      groupedBets[bet.amount] = [];
-    }
-    groupedBets[bet.amount].push(bet);
-  });
-  
-  // Sort denominations from highest to lowest
-  const denominations = Object.keys(groupedBets).map(Number).sort((a, b) => b - a);
-  
-  // Limit to a maximum of 5 different denominations for display
-  const displayDenominations = denominations.slice(0, 5);
-  const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
-  
-  // Calculate chip size based on number of denominations
   const getChipSize = () => {
-    if (displayDenominations.length >= 5) return "w-6 h-6 text-[10px]";
-    if (displayDenominations.length >= 3) return "w-[26px] h-[26px] text-xs";
+    if (displayBets.length >= 5) return "w-6 h-6 text-[10px]";
+    if (displayBets.length >= 3) return "w-[26px] h-[26px] text-xs";
     return "w-7 h-7 text-xs";
   };
   
-  // Calculate spacing between stacks
-  const chipSpacing = displayDenominations.length <= 2 ? 5 : 
-                      displayDenominations.length <= 3 ? 3 : 
-                      displayDenominations.length <= 4 ? 1 : 0;
+  const chipSpacing = displayBets.length <= 2 ? 2 : 
+                      displayBets.length <= 3 ? -2 : 
+                      displayBets.length <= 4 ? -4 : -6;
   
   return (
     <div className="absolute bottom-2 right-4 left-4">
       <div className="flex justify-end items-center h-8">
-        {displayDenominations.map((amount, index) => {
-          const betCount = groupedBets[amount].length;
-          
-          return (
+        {displayBets.map((bet, index) => (
+          <div 
+            key={bet.id} 
+            className={cn(
+              "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
+              getChipSize(),
+              getChipColor(bet.amount)
+            )} 
+            style={{
+              marginLeft: index > 0 ? `${chipSpacing}px` : '0',
+              zIndex: 10 - index,
+              transform: `rotate(${(index * 5) - 10}deg)`
+            }}
+          >
+            <div className={cn(
+              "absolute rounded-full border border-white/30",
+              displayBets.length >= 5 ? "inset-1" : "inset-1.5"
+            )}></div>
             <div 
-              key={`stack-${amount}`} 
-              className="relative"
+              className={cn(
+                "absolute rounded-full border-dashed",
+                displayBets.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
+              )}
               style={{
-                marginLeft: index > 0 ? `${chipSpacing}px` : '0',
-                zIndex: 10 - index,
+                borderColor: `${getChipSecondaryColor(bet.amount)}`
               }}
-            >
-              {/* Stack of chips of the same denomination */}
-              {Array.from({ length: Math.min(betCount, 3) }).map((_, stackIndex) => (
-                <div 
-                  key={`chip-${amount}-${stackIndex}`}
-                  className={cn(
-                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
-                    getChipSize(),
-                    getChipColor(amount)
-                  )}
-                  style={{
-                    position: 'absolute',
-                    bottom: stackIndex * -2,
-                    transform: `rotate(${(stackIndex * 3) - 5}deg)`,
-                  }}
-                >
-                  <div className={cn(
-                    "absolute rounded-full border border-white/30",
-                    displayDenominations.length >= 5 ? "inset-1" : "inset-1.5"
-                  )}></div>
-                  <div 
-                    className={cn(
-                      "absolute rounded-full border-dashed",
-                      displayDenominations.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
-                    )}
-                    style={{
-                      borderColor: `${getChipSecondaryColor(amount)}`
-                    }}
-                  ></div>
-                </div>
-              ))}
-              
-              {/* Top chip with the amount */}
-              <div 
-                className={cn(
-                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl",
-                  getChipSize(),
-                  getChipColor(amount)
-                )}
-              >
-                <div className={cn(
-                  "absolute rounded-full border border-white/30",
-                  displayDenominations.length >= 5 ? "inset-1" : "inset-1.5"
-                )}></div>
-                <div 
-                  className={cn(
-                    "absolute rounded-full border-dashed",
-                    displayDenominations.length >= 5 ? "inset-0.5 border-3" : "inset-0.5 border-4"
-                  )}
-                  style={{
-                    borderColor: `${getChipSecondaryColor(amount)}`
-                  }}
-                ></div>
-                <span className="relative z-10 text-white font-bold drop-shadow-md">
-                  {amount >= 10000 ? `${amount / 1000}k` : amount}
-                  {betCount > 1 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+            ></div>
+            <span className="relative z-10 text-white font-bold drop-shadow-md">
+              {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
+            </span>
+          </div>
+        ))}
         
-        {remainingDenominations > 0 && (
+        {remainingCount > 0 && (
           <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1.5 py-0.5 rounded-full shadow-md">
-            +{remainingDenominations}
+            +{remainingCount}
           </div>
         )}
       </div>
