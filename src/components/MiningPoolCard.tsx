@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -157,6 +158,49 @@ const getPoolColor = (poolId: string): string => {
   }
 };
 
+// Using the same getChipColor and getChipSecondaryColor as in BettingGrid
+const getChipColor = (value: number) => {
+  switch (value) {
+    case 100:
+      return "bg-blue-600";
+    case 500:
+      return "bg-green-600";
+    case 1000:
+      return "bg-purple-600";
+    case 5000:
+      return "bg-pink-600";
+    case 10000:
+      return "bg-orange-600";
+    case 50000:
+      return "bg-red-600";
+    case 100000:
+      return "bg-yellow-600";
+    default:
+      return "bg-gray-600";
+  }
+};
+
+const getChipSecondaryColor = (value: number) => {
+  switch (value) {
+    case 100:
+      return "bg-blue-500";
+    case 500:
+      return "bg-green-500";
+    case 1000:
+      return "bg-purple-500";
+    case 5000:
+      return "bg-pink-500";
+    case 10000:
+      return "bg-orange-500";
+    case 50000:
+      return "bg-red-500";
+    case 100000:
+      return "bg-yellow-500";
+    default:
+      return "bg-gray-500";
+  }
+};
+
 const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
   if (bets.length === 0) return null;
   
@@ -256,22 +300,6 @@ const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
       </div>
     </div>
   );
-};
-
-const getChipColor = (value: number) => {
-  if (value >= 10000) return "bg-red-900";
-  if (value >= 5000) return "bg-blue-900";
-  if (value >= 1000) return "bg-green-900";
-  if (value >= 500) return "bg-purple-900";
-  return "bg-yellow-900";
-};
-
-const getChipSecondaryColor = (value: number) => {
-  if (value >= 10000) return "bg-red-800";
-  if (value >= 5000) return "bg-blue-800";
-  if (value >= 1000) return "bg-green-800";
-  if (value >= 500) return "bg-purple-800";
-  return "bg-yellow-800";
 };
 
 export default MiningPoolCard;
