@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -239,4 +240,3 @@ const BlockchainVisualization = () => {
 };
 
 export default BlockchainVisualization;
-
