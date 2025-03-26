@@ -102,14 +102,18 @@ const BlockchainVisualization = () => {
     // Map of known pool names to their logo paths
     const poolLogoMap: { [key: string]: string } = {
       'foundry usa': '/pool-logos/foundryusa.svg',
+      'foundry': '/pool-logos/foundryusa.svg',
       'antpool': '/pool-logos/antpool.svg',
       'f2pool': '/pool-logos/f2pool.svg',
       'binance pool': '/pool-logos/binancepool.svg',
+      'binance': '/pool-logos/binancepool.svg',
       'viabtc': '/pool-logos/viabtc.svg',
       'slushpool': '/pool-logos/slushpool.svg',
       'braiins pool': '/pool-logos/braiinspool.svg',
+      'braiins': '/pool-logos/braiinspool.svg',
       'poolin': '/pool-logos/poolin.svg',
       'btc.com': '/pool-logos/btccom.svg',
+      'btccom': '/pool-logos/btccom.svg',
       'sbi crypto': '/pool-logos/sbicrypto.svg',
       'emcd': '/pool-logos/emcdpool.svg',
       'luxor': '/pool-logos/luxor.svg',
@@ -121,6 +125,16 @@ const BlockchainVisualization = () => {
       'bitfury': '/pool-logos/bitfury.svg',
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
+      'whitepool': '/Whitepool Bitcoin Explorer.svg',
+      'spiderpool': '/Spiderpool Bitcoin Explorer.svg',
+      'luxor mining': '/Luxor Bitcoin Explorer.svg',
+      'mempool': '/Mempool Bitcoin Explorer.svg',
+      'mempool.space': '/Mempool Bitcoin Explorer.svg',
+      'mempool.com': '/Mempool Bitcoin Explorer.svg',
+      'antpool#0': '/Antpool Bitcoin Explorer.svg',
+      'f2pool#0': '/Bitcoin Explorer f2pool.svg',
+      'binance#0': '/Binance Pool.svg',
+      'unknown': '/pool-logos/default.svg',
     };
     
     // Check if we have a logo for this pool
@@ -189,6 +203,17 @@ const BlockchainVisualization = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
+  };
+  
+  // Format number of transactions for display
+  const formatTransactionCount = (count: number): string => {
+    return count ? count.toLocaleString() : '0';
+  };
+
+  // Format BTC with fixed decimals
+  const formatBTC = (amount: number | undefined): string => {
+    if (!amount) return '0.000 BTC';
+    return `${amount.toFixed(3)} BTC`;
   };
   
   return (
@@ -268,106 +293,70 @@ const BlockchainVisualization = () => {
         {blocks.length > 0 && (
           <div 
             ref={scrollRef}
-            className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-4 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
+            className="flex overflow-x-auto hide-scrollbar py-4 px-4 space-x-4 bg-black"
             style={{ scrollbarWidth: 'none' }}
           >
-            {blocks.map((block, index) => {
-              // Determine if this is the most recent block
-              const isLatestBlock = index === 0;
-              // Check if this was the previous latest block that just got pushed
-              const wasPreviousLatest = previousLatestBlock === block.hash;
-              
-              return (
-                <div 
-                  key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
-                  className={cn(
-                    "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
-                    index === 0 ? "animate-block-appear" : ""
-                  )}
-                >
-                  {/* Add outer sparkles for the latest block */}
-                  {isLatestBlock && (
-                    <div className="absolute -inset-2 pointer-events-none opacity-70 z-10">
-                      <SparklesText 
-                        text="" 
-                        colors={{ first: "#FFD700", second: "#FFF8E1" }}
-                        className="absolute inset-0 w-full h-full"
-                        sparklesCount={30}
-                      />
-                    </div>
-                  )}
-                  
-                  {/* 3D Box Effect - Top */}
-                  <div className={cn(
-                    "h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2",
-                    isLatestBlock && "bg-[#2A2000]"
-                  )}></div>
-                  
-                  {/* 3D Box Effect - Side */}
-                  <div className={cn(
-                    "h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0",
-                    isLatestBlock && "bg-[#1A1500]"
-                  )}></div>
-                  
-                  {/* Block header with height - cyan color for all except latest */}
-                  <div className={cn(
-                    "h-6 flex items-center justify-center text-sm font-bold",
-                    isLatestBlock ? "bg-black text-yellow-300" : "bg-black text-[#7EB5FF]"
-                  )}>
-                     {block.height}
+            {blocks.map((block, index) => (
+              <div 
+                key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
+                className="flex-shrink-0 flex flex-col min-w-[220px] max-w-[220px]"
+              >
+                {/* Block height */}
+                <div className="text-center py-2">
+                  <span className="text-2xl font-bold text-cyan-400">
+                    {block.height.toLocaleString()}
+                  </span>
+                </div>
+                
+                {/* Block content */}
+                <div className="bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 p-4 rounded-t-md flex flex-col h-[220px]">
+                  {/* Fee rate median */}
+                  <div className="text-center mb-2">
+                    <span className="text-lg font-medium text-white">{block.feesRangeText}</span>
                   </div>
                   
-                  {/* Block content with gradient */}
-                  <div 
-                    className={cn(
-                      "p-3 flex flex-col h-24 relative overflow-hidden text-center",
-                      isLatestBlock 
-                        ? "bg-gradient-to-b from-yellow-500/90 via-yellow-600/80 to-amber-700/80" 
-                        : wasPreviousLatest
-                          ? "bg-gradient-to-b from-purple-500/90 via-indigo-600/80 to-blue-700/80 transition-colors duration-1000"
-                          : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
-                    )}
-                  >
-                    {/* Sparkles effect only for the latest block */}
-                    {isLatestBlock && (
-                      <div className="absolute inset-0 pointer-events-none opacity-80">
-                        <SparklesText 
-                          text="" 
-                          colors={{ first: "#FFD700", second: "#FFF8E1" }}
-                          className="absolute inset-0 w-full h-full"
-                          sparklesCount={25}
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Content layout with centered text */}
-                    <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
-                    <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
-                    
-                    <div className="text-white font-bold text-sm mb-1">{block.totalBtc?.toFixed(2) || '0'} BTC</div>
-                    
-                    <div className="text-white/90 text-[10px] mb-1">{block.transactionCount?.toLocaleString() || 0} txs</div>
-                    <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
+                  {/* Fee range */}
+                  <div className="text-center mb-4">
+                    <span className="text-yellow-300 font-medium">{block.feeRange}</span>
                   </div>
                   
-                  {/* Pool info with black background */}
-                  <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
-                    <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center">
-                      <img 
-                        src={getPoolLogo(block.minedBy)} 
-                        alt={block.minedBy}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          console.error(`Error loading logo for ${block.minedBy}`);
-                          (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
-                        }}
-                      />
-                    </div>
-                    <span className="text-white text-[10px] font-medium truncate">{block.minedBy}</span>
+                  {/* Total BTC */}
+                  <div className="text-center mb-4">
+                    <span className="text-3xl font-bold text-white">{formatBTC(block.totalBtc)}</span>
+                  </div>
+                  
+                  {/* Transaction count */}
+                  <div className="text-center mb-4">
+                    <span className="text-lg font-medium text-white">
+                      {formatTransactionCount(block.transactionCount)} transactions
+                    </span>
+                  </div>
+                  
+                  {/* Time ago */}
+                  <div className="text-center mt-auto">
+                    <span className="text-lg font-medium text-white">
+                      {block.minutesAgo ? `${block.minutesAgo} minutes ago` : formatTimeAgo(block.timestamp)}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
+                
+                {/* Mining pool */}
+                <div className="bg-black py-3 px-2 rounded-b-md flex items-center justify-center space-x-2">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                    <img 
+                      src={getPoolLogo(block.minedBy)} 
+                      alt={block.minedBy}
+                      className="w-5 h-5 object-contain"
+                      onError={(e) => {
+                        console.error(`Error loading logo for ${block.minedBy}`);
+                        (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
+                      }}
+                    />
+                  </div>
+                  <span className="text-white font-medium">{block.minedBy}</span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

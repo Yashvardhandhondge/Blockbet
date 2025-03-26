@@ -77,8 +77,27 @@ export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
     }
     
     const blocks = await response.json();
-    console.log('Fetched blocks:', blocks);
-    return blocks;
+    
+    // For each block, get extra data that contains fee information
+    const blocksWithExtras = await Promise.all(
+      blocks.map(async (block: MempoolBlock) => {
+        try {
+          const extraResponse = await fetch(`${BASE_URL}/v1/block/${block.id}`);
+          if (extraResponse.ok) {
+            const extraData = await extraResponse.json();
+            // Merge the extra data into the block
+            return { ...block, extras: extraData.extras };
+          }
+          return block;
+        } catch (error) {
+          console.error(`Error fetching extra data for block ${block.id}:`, error);
+          return block;
+        }
+      })
+    );
+    
+    console.log('Fetched blocks with extras:', blocksWithExtras);
+    return blocksWithExtras;
   } catch (error) {
     console.error('Error fetching recent blocks:', error);
     throw error;
