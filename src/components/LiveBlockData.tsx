@@ -15,17 +15,26 @@ const LiveBlockData = () => {
   const [estimatedTime, setEstimatedTime] = useState<string>('Calculating...');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         
+        console.log('Fetching block data, attempt:', retryCount + 1);
+        
         // Fetch block data with retry logic
         const blockData = await fetchWithRetry(() => fetchLatestBlockData());
-        setCurrentBlock(blockData.latestBlock.height);
-        setAvgBlockTime(blockData.avgBlockTime);
-        setEstimatedTime(blockData.estimatedNextBlock);
+        console.log('Block data fetched successfully:', blockData);
+        
+        if (blockData.latestBlock) {
+          setCurrentBlock(blockData.latestBlock.height);
+          setAvgBlockTime(blockData.avgBlockTime);
+          setEstimatedTime(blockData.estimatedNextBlock);
+        } else {
+          console.warn('Block data missing latest block');
+        }
         
         // Fetch pending transaction data with retry logic
         const txData = await fetchWithRetry(() => fetchPendingTransactionsData());
@@ -37,9 +46,11 @@ const LiveBlockData = () => {
         setError('Failed to load data');
         toast({
           title: "Data fetch error",
-          description: "Could not update blockchain data",
+          description: "Could not update blockchain data. Retrying...",
           variant: "destructive"
         });
+        // Increment retry count to trigger a retry
+        setRetryCount(prev => prev + 1);
       } finally {
         setIsLoading(false);
       }
@@ -51,7 +62,11 @@ const LiveBlockData = () => {
     const intervalId = setInterval(fetchData, 30000);
     
     return () => clearInterval(intervalId);
-  }, []);
+  }, [retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   if (isLoading) {
     return (
@@ -76,7 +91,7 @@ const LiveBlockData = () => {
       <div className="bg-[#0f0f0f] border-white/5 rounded-xl p-4 text-center">
         <p className="text-red-400 mb-2">{error}</p>
         <button 
-          onClick={() => window.location.reload()}
+          onClick={handleRetry}
           className="px-4 py-2 bg-btc-orange/20 hover:bg-btc-orange/30 text-btc-orange rounded transition-colors"
         >
           Retry

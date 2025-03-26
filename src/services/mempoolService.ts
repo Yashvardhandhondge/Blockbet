@@ -69,7 +69,13 @@ export interface MiningPoolStats {
  */
 export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
   try {
-    const response = await fetch(`${BASE_URL}/blocks`);
+    // Add a cache-busting query parameter to avoid browser caching
+    const response = await fetch(`${BASE_URL}/v1/blocks`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to fetch blocks: ${response.status} ${response.statusText}`);
@@ -88,7 +94,12 @@ export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
  */
 export const fetchPendingTransactions = async (): Promise<MempoolTransaction[]> => {
   try {
-    const response = await fetch(`${BASE_URL}/mempool/recent`);
+    const response = await fetch(`${BASE_URL}/v1/mempool/recent`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to fetch pending transactions: ${response.status} ${response.statusText}`);

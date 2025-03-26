@@ -1,3 +1,4 @@
+
 import { fetchRecentBlocks, calculateAverageBlockTime, estimateNextBlockTime } from '../services/mempoolService';
 import { Block } from '@/utils/mockData';
 
@@ -53,6 +54,9 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
       throw new Error('No blocks returned from API');
     }
     
+    console.log('API responded with blocks:', mempoolBlocks.length);
+    console.log('First block sample:', JSON.stringify(mempoolBlocks[0], null, 2));
+    
     // Calculate average block time
     const avgBlockTime = calculateAverageBlockTime(mempoolBlocks);
     
@@ -60,20 +64,30 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
     const estimatedNextBlock = estimateNextBlockTime(mempoolBlocks);
     
     // Map the Mempool API responses to our Block interface
-    const mappedBlocks: Block[] = mempoolBlocks.map(block => ({
-      height: block.height,
-      hash: block.id,
-      minedBy: block.extras?.pool?.name || 'Unknown',
-      timestamp: block.timestamp * 1000, // Convert from seconds to milliseconds
-      size: block.size,
-      transactionCount: block.tx_count,
-      fees: block.extras?.totalFees || 0,
-      feesRangeText: `~${formatToOneDecimal(block.extras?.medianFee || 0)} sat/vB`,
-      feeRange: block.extras?.feeRange 
-        ? formatFeeRange(block.extras.feeRange)
-        : '0 - 0 sat/vB',
-      totalBtc: ((block.extras?.reward || 0) + (block.extras?.totalFees || 0)) / 100000000 // Convert sats to BTC
-    }));
+    const mappedBlocks: Block[] = mempoolBlocks.map(block => {
+      // Safely access nested properties with optional chaining and fallbacks
+      const medianFee = block.extras?.medianFee ?? 0;
+      const feeRange = block.extras?.feeRange ?? [];
+      const totalFees = block.extras?.totalFees ?? 0;
+      const reward = block.extras?.reward ?? 0;
+      const poolName = block.extras?.pool?.name ?? 'Unknown';
+      
+      return {
+        height: block.height,
+        hash: block.id,
+        minedBy: poolName,
+        timestamp: block.timestamp * 1000, // Convert from seconds to milliseconds
+        size: block.size,
+        transactionCount: block.tx_count,
+        fees: totalFees,
+        feesRangeText: `~${formatToOneDecimal(medianFee)} sat/vB`,
+        feeRange: formatFeeRange(feeRange),
+        totalBtc: (reward + totalFees) / 100000000 // Convert sats to BTC
+      };
+    });
+    
+    // Log to make sure we have transformed data correctly
+    console.log('Mapped first block:', JSON.stringify(mappedBlocks[0], null, 2));
     
     return {
       latestBlock: mappedBlocks[0],
