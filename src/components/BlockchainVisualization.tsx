@@ -203,19 +203,19 @@ const BlockchainVisualization = () => {
                 {/* 3D Box Effect - Top */}
                 <div className={cn(
                   "h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2",
-                  isLatestBlock && "bg-[#2A2000] border-t border-yellow-500/30"
+                  isLatestBlock && "bg-[#2A2000]"
                 )}></div>
                 
                 {/* 3D Box Effect - Side */}
                 <div className={cn(
                   "h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0",
-                  isLatestBlock && "bg-[#1A1500] border-l border-yellow-500/30"
+                  isLatestBlock && "bg-[#1A1500]"
                 )}></div>
                 
                 {/* Block header with height - cyan color for all except latest */}
                 <div className={cn(
                   "h-6 flex items-center justify-center text-sm font-bold",
-                  isLatestBlock ? "bg-black text-yellow-300 border border-yellow-500/40" : "bg-black text-[#7EB5FF]"
+                  isLatestBlock ? "bg-black text-yellow-300" : "bg-black text-[#7EB5FF]"
                 )}>
                    {block.height}
                 </div>
@@ -225,7 +225,7 @@ const BlockchainVisualization = () => {
                   className={cn(
                     "p-3 flex flex-col h-24 relative overflow-hidden text-center",
                     isLatestBlock 
-                      ? "bg-gradient-to-b from-yellow-500/90 via-yellow-600/80 to-amber-700/80 border border-yellow-500/40" 
+                      ? "bg-gradient-to-b from-yellow-500/90 via-yellow-600/80 to-amber-700/80" 
                       : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
                   )}
                 >
@@ -252,10 +252,7 @@ const BlockchainVisualization = () => {
                 </div>
                 
                 {/* Pool info with black background */}
-                <div className={cn(
-                  "bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50",
-                  isLatestBlock && "border border-yellow-500/40 border-t-0"
-                )}>
+                <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
                   <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center">
                     <img 
                       src={getPoolLogo(block.minedBy)} 
