@@ -6,13 +6,11 @@ import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { AuroraContainer } from '@/components/ui/aurora-container';
 import { SparklesText } from '@/components/ui/sparkles-text';
-import { Confetti } from '@/components/ui/confetti';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
   const [pendingBlock, setPendingBlock] = useState<number>(50); // Animation progress 0-100
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -32,7 +30,6 @@ const BlockchainVisualization = () => {
   
   const addNewBlock = () => {
     setIsNewBlockAppearing(true);
-    setShowConfetti(true);
     
     const randomHash = `000000000000000000${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 30)}`;
     
@@ -93,36 +90,11 @@ const BlockchainVisualization = () => {
       scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
-
-  const handleConfettiComplete = () => {
-    setShowConfetti(false);
-  };
   
   return (
     <AuroraContainer 
-      className={cn(
-        "w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden relative",
-        showConfetti && "border-2 border-yellow-500/50 shadow-[0_0_15px_2px_rgba(255,215,0,0.5)]"
-      )}
+      className="w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden relative"
     >
-      {showConfetti && (
-        <Confetti 
-          onAnimationComplete={handleConfettiComplete}
-          config={{
-            elementCount: 150,
-            spread: 160,
-            startVelocity: 45,
-            duration: 4000,
-            origin: "left",
-            colors: [
-              "#FEDA78", "#FFD700", "#FFF4CF", "#D4AF37", "#FFDF00",
-              "#f44336", "#e91e63", "#9c27b0", "#2196f3", "#03a9f4", 
-              "#4CAF50", "#8BC34A", "#FFEB3B", "#FFC107", "#FF9800"
-            ]
-          }}
-        />
-      )}
-      
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
