@@ -72,7 +72,17 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
         <div className="flex flex-col items-center mb-3">
           {/* Centered, Larger Logo */}
           <div className="h-16 w-16 rounded-lg overflow-hidden bg-transparent mb-2">
-            {getPoolLogo(pool.id)}
+            <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
+              <img 
+                src={pool.logoUrl} 
+                alt={`${pool.name} logo`} 
+                className="w-full h-full object-contain" 
+                onError={(e) => {
+                  console.log(`Error loading logo for ${pool.id}: ${pool.logoUrl}`);
+                  e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
+                }} 
+              />
+            </div>
           </div>
           
           {/* Pool Name and Region below logo */}
@@ -200,45 +210,6 @@ const getPoolColor = (poolId: string): string => {
   }
 };
 
-const getPoolLogo = (poolId: string) => {
-  const logoMap: Record<string, string> = {
-    'foundry': '/pool-logos/foundryusa.svg',
-    'antpool': '/pool-logos/antpool.svg',
-    'f2pool': '/pool-logos/f2pool.svg',
-    'binance': '/pool-logos/binancepool.svg',
-    'viabtc': '/pool-logos/viabtc.svg',
-    'braiinspool': '/pool-logos/braiinspool.svg',
-    'poolin': '/pool-logos/poolin.svg',
-    'bitcoincom': '/pool-logos/bitcoincom.svg',
-    'sbicrypto': '/pool-logos/sbicrypto.svg',
-    'spiderpool': '/pool-logos/spiderpool.svg',
-    'luxor': '/pool-logos/luxor.svg',
-    'ultimuspool': '/pool-logos/ultimuspool.svg',
-    'ocean': '/pool-logos/Ocean.svg',
-    'secpool': '/pool-logos/secpool.svg',
-    'carbonnegative': '/pool-logos/carbonnegative.svg',
-    'bitfufupool': '/pool-logos/bitfufupool.svg',
-    'whitepool': '/pool-logos/whitepool.svg',
-    'unknown': '/pool-logos/unknown.svg'
-  };
-
-  const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
-  
-  return (
-    <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
-      <img 
-        src={logoPath} 
-        alt={`${poolId} logo`} 
-        className="w-full h-full object-contain" 
-        onError={(e) => {
-          console.log(`Error loading logo for ${poolId}: ${logoPath}`);
-          e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
-        }} 
-      />
-    </div>
-  );
-};
-
 const getChipColor = (value: number) => {
   switch (value) {
     case 100:
@@ -281,7 +252,10 @@ const getChipSecondaryColor = (value: number) => {
   }
 };
 
-const renderStackedChips = (bets: Array<{id: number; amount: number}>) => {
+const renderStackedChips = (bets: Array<{
+    id: number;
+    amount: number;
+  }>) => {
   if (bets.length === 0) return null;
   
   const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
