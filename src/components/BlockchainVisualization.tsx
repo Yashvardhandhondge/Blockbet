@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Block, formatTimeAgo } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
@@ -7,6 +7,7 @@ import { AuroraContainer } from '@/components/ui/aurora-container';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { useToast } from '@/hooks/use-toast';
+import { fetchWithRetry, hasNewBlock } from '@/utils/errorUtils';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
@@ -15,61 +16,65 @@ const BlockchainVisualization = () => {
   const [previousLatestBlock, setPreviousLatestBlock] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshTimer, setRefreshTimer] = useState<number>(0);
+  const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Fetch block data on component mount and periodically
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchLatestBlockData();
+  // Memoize the fetch data function to prevent recreating it on each render
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchWithRetry(() => fetchLatestBlockData());
+      
+      // Check if we have a new block
+      if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
+        // Store the hash of the current latest block before updating
+        setPreviousLatestBlock(blocks[0].hash);
+        setIsNewBlockAppearing(true);
         
-        // Check if we have a new block
-        if (blocks.length > 0 && data.latestBlock.height > blocks[0].height) {
-          // Store the hash of the current latest block before updating
-          setPreviousLatestBlock(blocks[0].hash);
-          setIsNewBlockAppearing(true);
-          
-          // Show toast notification for new block
-          toast({
-            title: "New Block Found!",
-            description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
-          });
-          
-          // After a short delay, update the blocks
-          setTimeout(() => {
-            setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
-            setIsNewBlockAppearing(false);
-          }, 500);
-        } else if (blocks.length === 0) {
-          // Initial load
+        // Show toast notification for new block
+        toast({
+          title: "New Block Found!",
+          description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
+        });
+        
+        // After a short delay, update the blocks
+        setTimeout(() => {
           setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
-        }
-        
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch blockchain data');
-        console.error('Error fetching blockchain data:', err);
-      } finally {
-        setIsLoading(false);
+          setIsNewBlockAppearing(false);
+        }, 500);
+      } else if (blocks.length === 0) {
+        // Initial load
+        setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
       }
-    };
+      
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch blockchain data');
+      console.error('Error fetching blockchain data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [blocks, toast]); // Depend on blocks and toast for memoization
+  
+  // Setup periodic refresh
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      setShouldRefresh(prev => !prev);
+    }, 30000); // 30 seconds
     
-    // Initial fetch
+    return () => clearInterval(refreshInterval);
+  }, []);
+  
+  // Fetch when refresh is triggered
+  useEffect(() => {
     fetchData();
-    
-    // Set up refresh timer (every 30 seconds)
-    const intervalId = setInterval(() => {
-      setRefreshTimer(prev => (prev + 1) % 30);
-      if (refreshTimer === 0) {
-        fetchData();
-      }
-    }, 1000);
-    
-    return () => clearInterval(intervalId);
-  }, [refreshTimer]);
+  }, [fetchData, shouldRefresh]);
+  
+  // Initial fetch
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   
   // Simulate pending block progress
   useEffect(() => {
@@ -122,10 +127,10 @@ const BlockchainVisualization = () => {
   const handleManualRefresh = async () => {
     try {
       setIsLoading(true);
-      const data = await fetchLatestBlockData();
+      const data = await fetchWithRetry(() => fetchLatestBlockData());
       
       // Check if we have a new block
-      if (blocks.length > 0 && data.latestBlock.height > blocks[0].height) {
+      if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
         
@@ -191,6 +196,7 @@ const BlockchainVisualization = () => {
                 "p-1.5 rounded-full hover:bg-white/10 transition-colors",
                 isLoading && "animate-spin"
               )}
+              disabled={isLoading}
             >
               <RefreshCw className="h-4 w-4 text-white/70" />
             </button>

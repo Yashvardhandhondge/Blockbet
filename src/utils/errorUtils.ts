@@ -61,3 +61,14 @@ export const formatRelativeTime = (timestamp: number): string => {
   const diffDays = Math.floor(diffHours / 24);
   return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
 };
+
+/**
+ * Compare two arrays of blocks to check if there is a new block
+ * @param currentBlocks Current array of blocks
+ * @param newBlocks New array of blocks
+ * @returns Boolean indicating if there is a new block
+ */
+export const hasNewBlock = (currentBlocks: any[], newBlocks: any[]): boolean => {
+  if (currentBlocks.length === 0 || newBlocks.length === 0) return false;
+  return newBlocks[0]?.height > currentBlocks[0]?.height;
+};
