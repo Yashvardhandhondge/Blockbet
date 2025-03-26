@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
@@ -33,21 +33,25 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelect(pool)}
     >
-      {isHovered && (
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <BackgroundGradientAnimation 
-            firstColor={poolColor}
-            secondColor="#121212"
-            thirdColor={poolColor}
-            fourthColor="#232323"
-            fifthColor={poolColor}
-            size="small"
-            blendingValue="overlay"
-            interactive={false}
-            className="opacity-20"
-          />
-        </div>
-      )}
+      {/* Background effect on hover */}
+      <div 
+        className={cn(
+          "absolute inset-0 z-0 overflow-hidden transition-opacity duration-300",
+          isHovered ? "opacity-100" : "opacity-0"
+        )}
+      >
+        <BackgroundGradientAnimation 
+          firstColor={poolColor}
+          secondColor="#121212"
+          thirdColor={poolColor}
+          fourthColor="#232323"
+          fifthColor={poolColor}
+          size="small"
+          blendingValue="overlay"
+          interactive={false}
+          className="opacity-20"
+        />
+      </div>
       
       {isSelected && (
         <GlowEffect 
