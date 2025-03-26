@@ -389,7 +389,7 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white font-medium text-sm mb-3">Step 1: Select playing chip value.</h3>
+        <h3 className="text-white font-medium text-sm mb-3">Step 2: Select chip value.</h3>
         <div className="px-1 py-4">
           {renderChipSelection()}
         </div>
