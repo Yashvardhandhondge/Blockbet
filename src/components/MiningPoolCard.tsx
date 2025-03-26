@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -121,7 +120,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
 
 const getDarkerTechGradient = (poolId: string): string => {
   switch(poolId) {
-    case 'slushpool':
+    case 'braiinspool':
       return 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)';
     case 'f2pool':
       return 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)';
@@ -129,22 +128,32 @@ const getDarkerTechGradient = (poolId: string): string => {
       return 'linear-gradient(135deg, #4a0e0e 0%, #2a0606 100%)';
     case 'viabtc':
       return 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)';
-    case 'btccom':
+    case 'bitcoincom':
       return 'linear-gradient(135deg, #2a1f5e 0%, #16102d 100%)';
     case 'poolin':
       return 'linear-gradient(135deg, #0a4a30 0%, #052218 100%)';
-    case 'genesis':
-      return 'linear-gradient(135deg, #3a1e5e 0%, #1c0e2d 100%)';
-    case 'bitfury':
-      return 'linear-gradient(135deg, #4f1a2e 0%, #290e18 100%)';
+    case 'sbicrypto':
+      return 'linear-gradient(135deg, #1a3366 0%, #0d1b33 100%)';
+    case 'spiderpool':
+      return 'linear-gradient(135deg, #664d1a 0%, #33260d 100%)';
+    case 'luxor':
+      return 'linear-gradient(135deg, #664d1a 0%, #33270d 100%)';
+    case 'ultimuspool':
+      return 'linear-gradient(135deg, #1a1a66 0%, #0d0d33 100%)';
+    case 'ocean':
+      return 'linear-gradient(135deg, #1a3366 0%, #0d1933 100%)';
+    case 'secpool':
+      return 'linear-gradient(135deg, #33195e 0%, #1a0d2f 100%)';
+    case 'carbonnegative':
+      return 'linear-gradient(135deg, #1a4d33 0%, #0d2619 100%)';
+    case 'bitfufupool':
+      return 'linear-gradient(135deg, #4d1a33 0%, #260d19 100%)';
+    case 'whitepool':
+      return 'linear-gradient(135deg, #474747 0%, #242424 100%)';
     case 'binance':
       return 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)';
-    case 'kano':
-      return 'linear-gradient(135deg, #354a0e 0%, #1a2405 100%)';
-    case 'pega':
-      return 'linear-gradient(135deg, #1a344f 0%, #0e1a29 100%)';
-    case 'emcd':
-      return 'linear-gradient(135deg, #4a0e3f 0%, #24051e 100%)';
+    case 'foundry':
+      return 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)';
     default:
       return 'linear-gradient(135deg, #1a1a2e 0%, #0d0d16 100%)';
   }
@@ -152,7 +161,7 @@ const getDarkerTechGradient = (poolId: string): string => {
 
 const getPoolColor = (poolId: string): string => {
   switch(poolId) {
-    case 'slushpool':
+    case 'braiinspool':
       return '#1ABC9C';
     case 'f2pool':
       return '#3498DB';
@@ -160,22 +169,32 @@ const getPoolColor = (poolId: string): string => {
       return '#E74C3C';
     case 'viabtc':
       return '#E67E22';
-    case 'btccom':
+    case 'bitcoincom':
       return '#9B59B6';
     case 'poolin':
       return '#2ECC71';
-    case 'genesis':
-      return '#8E44AD';
-    case 'bitfury':
-      return '#E83E8C';
+    case 'sbicrypto':
+      return '#0065F5';
+    case 'spiderpool':
+      return '#FFBE1E';
+    case 'luxor':
+      return '#F0BB31';
+    case 'ultimuspool':
+      return '#1652EE';
+    case 'ocean':
+      return '#72BBFF';
+    case 'secpool':
+      return '#9333EA';
+    case 'carbonnegative':
+      return '#15803D';
+    case 'bitfufupool':
+      return '#DB2777';
+    case 'whitepool':
+      return '#FFFFFF';
     case 'binance':
       return '#F1C40F';
-    case 'kano':
-      return '#7F8C8D';
-    case 'pega':
-      return '#3498DB';
-    case 'emcd':
-      return '#E84393';
+    case 'foundry':
+      return '#F97316';
     default:
       return '#95A5A6';
   }
@@ -188,25 +207,18 @@ const getPoolLogo = (poolId: string) => {
     'f2pool': '/pool-logos/f2pool.svg',
     'binance': '/pool-logos/binancepool.svg',
     'viabtc': '/pool-logos/viabtc.svg',
-    'slushpool': '/pool-logos/slushpool.svg',
+    'braiinspool': '/pool-logos/braiinspool.svg',
     'poolin': '/pool-logos/poolin.svg',
-    'btc-com': '/pool-logos/bitcoincom.svg',
-    'genesis': '/pool-logos/genesisdigitalassets.svg',
-    'bitfury': '/pool-logos/bitfury.svg',
-    'kano': '/pool-logos/kanopool.svg',
-    'pega': '/pool-logos/pegapool.svg',
-    'emcd': '/pool-logos/luxor.svg',
-    'okkong': '/pool-logos/okkong.svg',
-    'okex': '/pool-logos/okexpool.svg',
-    'titan': '/pool-logos/titan.svg',
-    'sbicrypto': '/pool-logos/sbicrypto.svg',
-    'rawpool': '/pool-logos/rawpool.svg',
-    'sigmapool': '/pool-logos/sigmapoolcom.svg',
-    '1thash': '/pool-logos/1thash.svg',
-    'spiderpool': '/pool-logos/spiderpool.svg',
-    'prohashing': '/pool-logos/prohashing.svg',
-    'arkpool': '/pool-logos/arkpool.svg',
     'bitcoincom': '/pool-logos/bitcoincom.svg',
+    'sbicrypto': '/pool-logos/sbicrypto.svg',
+    'spiderpool': '/pool-logos/spiderpool.svg',
+    'luxor': '/pool-logos/luxor.svg',
+    'ultimuspool': '/pool-logos/ultimuspool.svg',
+    'ocean': '/pool-logos/Ocean.svg',
+    'secpool': '/pool-logos/secpool.svg',
+    'carbonnegative': '/pool-logos/carbonnegative.svg',
+    'bitfufupool': '/pool-logos/bitfufupool.svg',
+    'whitepool': '/pool-logos/whitepool.svg',
     'unknown': '/pool-logos/unknown.svg'
   };
 
