@@ -4,6 +4,7 @@ import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
+import { BackgroundGradientAnimation } from './ui/background-gradient-animation';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
@@ -32,6 +33,22 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelect(pool)}
     >
+      {isHovered && (
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <BackgroundGradientAnimation 
+            firstColor={poolColor}
+            secondColor="#121212"
+            thirdColor={poolColor}
+            fourthColor="#232323"
+            fifthColor={poolColor}
+            size="small"
+            blendingValue="overlay"
+            interactive={false}
+            className="opacity-20"
+          />
+        </div>
+      )}
+      
       {isSelected && (
         <GlowEffect 
           colors={[poolColor, '#f7931a']} 
