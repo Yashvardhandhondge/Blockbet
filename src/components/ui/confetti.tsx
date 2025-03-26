@@ -16,6 +16,7 @@ interface ConfettiConfig {
   height?: string;
   perspective?: string;
   colors?: string[];
+  origin?: "left" | "right" | "top" | "bottom" | "center";
 }
 
 const defaultConfettiConfig: ConfettiConfig = {
@@ -29,6 +30,7 @@ const defaultConfettiConfig: ConfettiConfig = {
   width: "10px",
   height: "10px",
   perspective: "500px",
+  origin: "center",
   colors: [
     "#FEDA78", // Gold
     "#FFD700", // Yellow Gold
@@ -89,6 +91,7 @@ export function Confetti({
       startVelocity,
       dragFriction,
       stagger,
+      origin
     } = mergedConfig;
 
     // Reset animation state
@@ -116,14 +119,36 @@ export function Confetti({
 
     setConfetti(confettiElements);
 
+    // Determine starting position based on origin
+    let initialX: number;
+    let initialY: number;
+
+    switch (origin) {
+      case "left":
+        initialX = 0;
+        initialY = container.clientHeight / 2;
+        break;
+      case "right":
+        initialX = container.clientWidth;
+        initialY = container.clientHeight / 2;
+        break;
+      case "top":
+        initialX = container.clientWidth / 2;
+        initialY = 0;
+        break;
+      case "bottom":
+        initialX = container.clientWidth / 2;
+        initialY = container.clientHeight;
+        break;
+      case "center":
+      default:
+        initialX = container.clientWidth / 2;
+        initialY = container.clientHeight / 2;
+        break;
+    }
+
     // Initial position
-    confettiElements.forEach((confettiElement, index) => {
-      const spinValue = Math.random() > 0.5 ? 180 : -180;
-      const tiltValue = Math.random() > 0.5 ? 180 : -180;
-      
-      const initialX = container.clientWidth / 2;
-      const initialY = container.clientHeight;
-      
+    confettiElements.forEach((confettiElement) => {
       confettiElement.style.visibility = "visible";
       confettiElement.style.transform = `translate3d(${initialX}px, ${initialY}px, 0) rotate(0deg)`;
     });
@@ -136,7 +161,6 @@ export function Confetti({
         const velocity = (startVelocity || 0) + Math.random() * ((startVelocity || 0) * 0.5);
         
         const spinValue = Math.random() > 0.5 ? 360 : -360;
-        const tiltValue = Math.random() > 0.5 ? 360 : -360;
         
         // Calculate the end position based on the angle and velocity
         const radians = randomAngle * (Math.PI / 180);
@@ -148,11 +172,11 @@ export function Confetti({
         confettiElement.animate(
           [
             {
-              transform: `translate3d(${container.clientWidth / 2}px, ${container.clientHeight}px, 0) rotate(0deg)`,
+              transform: `translate3d(${initialX}px, ${initialY}px, 0) rotate(0deg)`,
               opacity: 1,
             },
             {
-              transform: `translate3d(${container.clientWidth / 2 + x}px, ${container.clientHeight + y}px, 0) rotate3d(1, 1, 1, ${spinValue}deg)`,
+              transform: `translate3d(${initialX + x}px, ${initialY + y}px, 0) rotate3d(1, 1, 1, ${spinValue}deg)`,
               opacity: 0,
             },
           ],
