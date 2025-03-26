@@ -106,6 +106,10 @@ const BlockchainVisualization = () => {
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 mr-4">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs text-white/70">Live</span>
+          </div>
           <div className="flex items-center space-x-2">
             <button 
               onClick={scrollLeft}
@@ -119,10 +123,6 @@ const BlockchainVisualization = () => {
             >
               <ArrowRight className="h-4 w-4 text-white/70" />
             </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-white/70">Live</span>
           </div>
         </div>
       </div>
