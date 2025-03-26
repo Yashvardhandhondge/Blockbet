@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown } from 'lucide-react';
@@ -6,7 +7,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Progress } from './ui/progress';
 import { toast } from './ui/use-toast';
-import { StatCard } from './LiveBlockData';
+import StatCard from './StatCard';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
