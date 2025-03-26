@@ -1,8 +1,9 @@
-
 /**
  * Service for interacting with the Mempool.space API
  */
 
+// Use a CORS proxy to bypass CORS restrictions
+const CORS_PROXY = 'https://corsproxy.io/?';
 // Base URL for the Mempool.space API
 const BASE_URL = 'https://mempool.space/api';
 
@@ -69,8 +70,8 @@ export interface MiningPoolStats {
  */
 export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
   try {
-    // Add a cache-busting query parameter to avoid browser caching
-    const response = await fetch(`${BASE_URL}/v1/blocks`, {
+    // Use the CORS proxy to make the request
+    const response = await fetch(`${CORS_PROXY}${encodeURIComponent(`${BASE_URL}/v1/blocks`)}`, {
       headers: {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
@@ -94,7 +95,8 @@ export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
  */
 export const fetchPendingTransactions = async (): Promise<MempoolTransaction[]> => {
   try {
-    const response = await fetch(`${BASE_URL}/v1/mempool/recent`, {
+    // Use the CORS proxy to make the request
+    const response = await fetch(`${CORS_PROXY}${encodeURIComponent(`${BASE_URL}/v1/mempool/recent`)}`, {
       headers: {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'

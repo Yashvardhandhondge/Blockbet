@@ -1,4 +1,3 @@
-
 import { fetchRecentBlocks, calculateAverageBlockTime, estimateNextBlockTime } from '../services/mempoolService';
 import { Block } from '@/utils/mockData';
 
