@@ -1,9 +1,11 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { AuroraContainer } from '@/components/ui/aurora-container';
+import { SparklesText } from '@/components/ui/sparkles-text';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
@@ -53,21 +55,6 @@ const BlockchainVisualization = () => {
       setBlocks(prev => [newBlock, ...prev.slice(0, 9)]);
       setIsNewBlockAppearing(false);
     }, 500);
-  };
-  
-  // Function to get pool gradient style based on the pool name
-  const getPoolGradientStyle = (poolName: string): React.CSSProperties => {
-    const pool = miningPools.find(p => p.name === poolName);
-    if (pool) {
-      return { background: pool.gradient };
-    }
-    return { background: 'linear-gradient(135deg, #333, #000000)' };
-  };
-
-  // Function to get pool color class (for header)
-  const getPoolColorClass = (poolName: string): string => {
-    const pool = miningPools.find(p => p.name === poolName);
-    return pool?.colorClass || 'bg-gray-600';
   };
 
   // Function to get pool logo
@@ -190,8 +177,8 @@ const BlockchainVisualization = () => {
           style={{ scrollbarWidth: 'none' }}
         >
           {blocks.map((block, index) => {
-            // Get the mining pool info for this block
-            const pool = miningPools.find(p => p.name === block.minedBy);
+            // Determine if this is the most recent block
+            const isLatestBlock = index === 0;
             
             return (
               <div 
@@ -207,16 +194,35 @@ const BlockchainVisualization = () => {
                 {/* 3D Box Effect - Side */}
                 <div className="h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0"></div>
                 
-                {/* Block header with height - cyan color */}
-                <div className="h-6 flex items-center justify-center bg-black text-[#7EB5FF] text-sm font-bold">
+                {/* Block header with height - cyan color for all except latest */}
+                <div className={cn(
+                  "h-6 flex items-center justify-center text-sm font-bold",
+                  isLatestBlock ? "bg-black text-yellow-300" : "bg-black text-[#7EB5FF]"
+                )}>
                   {block.height}
                 </div>
                 
-                {/* Block content with gradient based on pool */}
+                {/* Block content with gradient */}
                 <div 
-                  className="p-3 flex flex-col h-24 relative overflow-hidden text-center"
-                  style={getPoolGradientStyle(block.minedBy)}
+                  className={cn(
+                    "p-3 flex flex-col h-24 relative overflow-hidden text-center",
+                    isLatestBlock 
+                      ? "bg-gradient-to-b from-yellow-500/90 via-yellow-600/80 to-amber-700/80" 
+                      : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
+                  )}
                 >
+                  {/* Sparkles effect only for the latest block */}
+                  {isLatestBlock && (
+                    <div className="absolute inset-0 pointer-events-none opacity-60">
+                      <SparklesText 
+                        text="" 
+                        colors={{ first: "#FFD700", second: "#FFF8E1" }}
+                        className="absolute inset-0 w-full h-full"
+                        sparklesCount={15}
+                      />
+                    </div>
+                  )}
+                  
                   {/* Content layout with centered text */}
                   <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
                   <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
