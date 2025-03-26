@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -47,13 +48,6 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
         isSelected ? "opacity-40" : "opacity-20"
       )}
       style={{ background: getDarkerTechGradient(pool.id) }}></div>
-      
-      {/* Background Logo with Gradient */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-20">
-        <div className="w-[80%] h-[80%] opacity-20">
-          {getPoolLogo(pool.id)}
-        </div>
-      </div>
       
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
       
