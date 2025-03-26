@@ -13,11 +13,13 @@ const BlockchainVisualization = () => {
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
+  // Simulate pending block progress
   useEffect(() => {
     const interval = setInterval(() => {
       setPendingBlock(prev => {
         const newValue = prev + (Math.random() * 2);
         if (newValue >= 100) {
+          // When it reaches 100%, trigger a new block
           setTimeout(() => addNewBlock(), 500);
           return 0;
         }
@@ -28,9 +30,11 @@ const BlockchainVisualization = () => {
     return () => clearInterval(interval);
   }, []);
   
+  // Function to add a new block
   const addNewBlock = () => {
     setIsNewBlockAppearing(true);
     
+    // Create new block with unique hash
     const randomHash = `000000000000000000${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 30)}`;
     
     const newBlock: Block = {
@@ -46,18 +50,22 @@ const BlockchainVisualization = () => {
       totalBtc: parseFloat((Math.random() * 0.02 + 0.01).toFixed(3))
     };
     
+    // Update blocks state
     setTimeout(() => {
       setBlocks(prev => [newBlock, ...prev.slice(0, 9)]);
       setIsNewBlockAppearing(false);
     }, 500);
   };
 
+  // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
+    // Lowercase the pool name and remove spaces, special characters
     const normalizedName = poolName.toLowerCase()
       .replace(/\s+/g, '')
       .replace(/\./g, '')
       .replace(/-/g, '');
     
+    // Check common mining pool names and return the correct SVG path
     if (poolName === 'Foundry USA') return '/pool-logos/foundryusa.svg';
     if (poolName === 'AntPool') return '/pool-logos/antpool.svg';
     if (poolName === 'F2Pool') return '/pool-logos/f2pool.svg';
@@ -76,9 +84,11 @@ const BlockchainVisualization = () => {
     if (poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
     
+    // Return a default logo if no match is found
     return '/pool-logos/default.svg';
   };
 
+  // Scroll handlers
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
@@ -92,9 +102,7 @@ const BlockchainVisualization = () => {
   };
   
   return (
-    <AuroraContainer 
-      className="w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden relative"
-    >
+    <AuroraContainer className="w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
         <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
@@ -111,15 +119,16 @@ const BlockchainVisualization = () => {
             >
               <ArrowRight className="h-4 w-4 text-white/70" />
             </button>
-            <div className="flex items-center space-x-2">
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-xs text-white/70">Live</span>
-            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs text-white/70">Live</span>
           </div>
         </div>
       </div>
       
       <div className="relative">
+        {/* Hidden pending blocks section */}
         <div className="hidden">
           <div className="p-3 border-b border-white/5 bg-btc-dark/50 flex items-center">
             <div className="flex-shrink-0 mr-4 relative">
@@ -127,6 +136,7 @@ const BlockchainVisualization = () => {
                 <div className="font-mono text-xs text-white/70 animate-pulse">
                   ?
                 </div>
+                {/* Progress overlay */}
                 <div 
                   className="absolute bottom-0 left-0 right-0 bg-btc-orange/30 transition-all duration-500 ease-out"
                   style={{ height: `${pendingBlock}%` }}
@@ -149,6 +159,7 @@ const BlockchainVisualization = () => {
           </div>
         </div>
         
+        {/* New block appearing animation */}
         <div className={cn(
           "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500",
           isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -159,12 +170,14 @@ const BlockchainVisualization = () => {
           </div>
         </div>
         
+        {/* Horizontal blocks scrolling area */}
         <div 
           ref={scrollRef}
           className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-4 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
           style={{ scrollbarWidth: 'none' }}
         >
           {blocks.map((block, index) => {
+            // Determine if this is the most recent block
             const isLatestBlock = index === 0;
             
             return (
@@ -175,6 +188,7 @@ const BlockchainVisualization = () => {
                   index === 0 ? "animate-block-appear" : ""
                 )}
               >
+                {/* Add outer sparkles for the latest block */}
                 {isLatestBlock && (
                   <div className="absolute -inset-2 pointer-events-none opacity-70 z-10">
                     <SparklesText 
@@ -186,16 +200,19 @@ const BlockchainVisualization = () => {
                   </div>
                 )}
                 
+                {/* 3D Box Effect - Top */}
                 <div className={cn(
                   "h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2",
                   isLatestBlock && "bg-[#2A2000]"
                 )}></div>
                 
+                {/* 3D Box Effect - Side */}
                 <div className={cn(
                   "h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0",
                   isLatestBlock && "bg-[#1A1500]"
                 )}></div>
                 
+                {/* Block header with height - cyan color for all except latest */}
                 <div className={cn(
                   "h-6 flex items-center justify-center text-sm font-bold",
                   isLatestBlock ? "bg-black text-yellow-300" : "bg-black text-[#7EB5FF]"
@@ -203,6 +220,7 @@ const BlockchainVisualization = () => {
                    {block.height}
                 </div>
                 
+                {/* Block content with gradient */}
                 <div 
                   className={cn(
                     "p-3 flex flex-col h-24 relative overflow-hidden text-center",
@@ -211,6 +229,7 @@ const BlockchainVisualization = () => {
                       : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
                   )}
                 >
+                  {/* Sparkles effect only for the latest block */}
                   {isLatestBlock && (
                     <div className="absolute inset-0 pointer-events-none opacity-80">
                       <SparklesText 
@@ -222,6 +241,7 @@ const BlockchainVisualization = () => {
                     </div>
                   )}
                   
+                  {/* Content layout with centered text */}
                   <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
                   <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
                   
@@ -231,6 +251,7 @@ const BlockchainVisualization = () => {
                   <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
                 </div>
                 
+                {/* Pool info with black background */}
                 <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
                   <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center">
                     <img 

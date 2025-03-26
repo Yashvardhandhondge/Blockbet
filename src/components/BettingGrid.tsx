@@ -544,7 +544,7 @@ const BettingGrid = () => {
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Step 1. Fund your wallet.</h3>
+        <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="flex items-center mb-3 md:mb-0">
             <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
