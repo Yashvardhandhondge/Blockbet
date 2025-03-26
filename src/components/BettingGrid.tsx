@@ -469,9 +469,9 @@ const BettingGrid = () => {
             <Clock className="h-3.5 w-3.5 text-btc-orange mr-1.5" />
             <span className="text-xs font-medium title-gradient">Betting closes in:</span>
           </div>
-          <div className="flex items-center">
-            <span className="text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
-            <div className="w-24 ml-2">
+          <div className="flex items-center flex-grow ml-4">
+            <span className="text-xs font-mono font-bold text-btc-orange mr-3">{formatTimeRemaining()}</span>
+            <div className="flex-grow max-w-[400px]">
               <Progress value={progressPercentage} className="h-1.5 bg-white/10 rounded-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
             </div>
           </div>
