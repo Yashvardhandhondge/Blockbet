@@ -409,10 +409,10 @@ const BettingGrid = () => {
             </div>
           </div>
           <div className="flex gap-2 w-full md:w-auto justify-end">
-            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleDeposit}>
+            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-md" onClick={handleDeposit}>
               Deposit
             </Button>
-            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleWithdraw}>
+            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-md" onClick={handleWithdraw}>
               Withdraw
             </Button>
           </div>
@@ -523,3 +523,4 @@ const BettingGrid = () => {
 };
 
 export default BettingGrid;
+
