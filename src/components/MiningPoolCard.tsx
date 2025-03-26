@@ -51,30 +51,36 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
       
+      {/* New Layout with centered, larger logo */}
       <div className="relative z-10 p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-lg font-medium text-white">{pool.name}</h3>
-            <div className="mt-1 text-xs text-white/60">{pool.region}</div>
-          </div>
-          <div className="h-10 w-10 rounded-lg overflow-hidden bg-transparent">
+        <div className="flex flex-col items-center mb-3">
+          {/* Centered, Larger Logo */}
+          <div className="h-16 w-16 rounded-lg overflow-hidden bg-transparent mb-2">
             {getPoolLogo(pool.id)}
+          </div>
+          
+          {/* Pool Name and Region below logo */}
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-white">{pool.name}</h3>
+            <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>
           </div>
         </div>
         
-        <div className="mt-4 flex justify-between text-sm">
-          <div>
-            <div className="text-white/60">Hashrate</div>
+        {/* Stats section - 2 columns */}
+        <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+          <div className="bg-black/20 rounded-lg p-2">
+            <div className="text-white/60 text-xs">Hashrate</div>
             <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
           </div>
-          <div>
-            <div className="text-white/60">Blocks (24h)</div>
+          <div className="bg-black/20 rounded-lg p-2">
+            <div className="text-white/60 text-xs">Blocks (24h)</div>
             <div className="font-medium text-white">{pool.blocksLast24h}</div>
           </div>
         </div>
         
-        <div className="mt-4 flex justify-between items-center">
-          <div className="text-white/80">
+        {/* Payout multiplier - centered */}
+        <div className="mt-3 flex justify-center items-center bg-black/20 rounded-lg p-2">
+          <div className="text-white/80 text-center">
             <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">{pool.odds.toFixed(2)}
               <span className="ml-0.5">×</span>
             </span>
@@ -82,7 +88,8 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           </div>
         </div>
         
-        <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+        {/* Progress bar */}
+        <div className="mt-3 h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
           <div 
             className="h-full transition-all duration-1000 ease-out"
             style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
