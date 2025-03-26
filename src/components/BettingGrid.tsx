@@ -104,6 +104,61 @@ const BettingGrid = () => {
       blockHeight: 843310
     }
   ]);
+  const [deposits, setDeposits] = useState<Array<{
+    id: number;
+    amount: number;
+    timestamp: Date;
+    txId: string;
+  }>>([
+    {
+      id: 1,
+      amount: 10000000,
+      timestamp: new Date(Date.now() - 3600000 * 24 * 7),
+      txId: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+    },
+    {
+      id: 2,
+      amount: 5000000,
+      timestamp: new Date(Date.now() - 3600000 * 24 * 3),
+      txId: "q1w2e3r4t5y6u7i8o9p0a1s2d3f4g5h6"
+    },
+    {
+      id: 3,
+      amount: 15000000,
+      timestamp: new Date(Date.now() - 3600000 * 10),
+      txId: "z1x2c3v4b5n6m7q8w9e0r1t2y3u4i5o6"
+    }
+  ]);
+  
+  const [withdrawals, setWithdrawals] = useState<Array<{
+    id: number;
+    amount: number;
+    timestamp: Date;
+    txId: string;
+    status: 'completed' | 'pending' | 'failed';
+  }>>([
+    {
+      id: 1,
+      amount: 8000000,
+      timestamp: new Date(Date.now() - 3600000 * 24 * 5),
+      txId: "j1k2l3m4n5o6p7q8w9e0r1t2y3u4i5o6",
+      status: 'completed'
+    },
+    {
+      id: 2,
+      amount: 3000000,
+      timestamp: new Date(Date.now() - 3600000 * 24 * 2),
+      txId: "a1s2d3f4g5h6j7k8l9z1x2c3v4b5n6m7",
+      status: 'completed'
+    },
+    {
+      id: 3,
+      amount: 7000000,
+      timestamp: new Date(Date.now() - 3600000 * 2),
+      txId: "q1w2e3r4t5y6u7i8o9p0a1s2d3f4g5h6",
+      status: 'pending'
+    }
+  ]);
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
@@ -188,7 +243,19 @@ const BettingGrid = () => {
   };
 
   const handleDeposit = () => {
-    setWalletBalance(prev => prev + 10000000); // Add 0.1 BTC
+    const newBalance = walletBalance + 10000000; // Add 0.1 BTC
+    setWalletBalance(newBalance);
+    
+    // Add deposit to history
+    const newDeposit = {
+      id: deposits.length + 1,
+      amount: 10000000,
+      timestamp: new Date(),
+      txId: Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join('')
+    };
+    
+    setDeposits([newDeposit, ...deposits]);
+    
     toast({
       title: "Deposit successful",
       description: "Added 0.1 BTC to your wallet",
@@ -198,7 +265,31 @@ const BettingGrid = () => {
 
   const handleWithdraw = () => {
     if (walletBalance >= 10000000) {
-      setWalletBalance(prev => prev - 10000000); // Withdraw 0.1 BTC
+      const newBalance = walletBalance - 10000000; // Withdraw 0.1 BTC
+      setWalletBalance(newBalance);
+      
+      // Add withdrawal to history
+      const newWithdrawal = {
+        id: withdrawals.length + 1,
+        amount: 10000000,
+        timestamp: new Date(),
+        txId: Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join(''),
+        status: 'pending' as const
+      };
+      
+      setWithdrawals([newWithdrawal, ...withdrawals]);
+      
+      // Simulate withdrawal completing after 5 seconds
+      setTimeout(() => {
+        setWithdrawals(prev => 
+          prev.map(w => 
+            w.id === newWithdrawal.id 
+              ? {...w, status: 'completed' as const} 
+              : w
+          )
+        );
+      }, 5000);
+      
       toast({
         title: "Withdrawal successful",
         description: "Withdrawn 0.1 BTC from your wallet",
@@ -636,7 +727,11 @@ const BettingGrid = () => {
           <History className="h-4 w-4 text-btc-orange mr-2" />
           <h3 className="text-white text-sm">History of Bets Stats:</h3>
         </div>
-        <BetHistory betHistory={betHistory} />
+        <BetHistory 
+          betHistory={betHistory} 
+          deposits={deposits} 
+          withdrawals={withdrawals} 
+        />
       </Card>
     </div>;
 };
