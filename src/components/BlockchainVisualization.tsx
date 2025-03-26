@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Block, formatTimeAgo } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -20,7 +19,6 @@ const BlockchainVisualization = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Memoize the fetch data function to prevent recreating it on each render
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -28,25 +26,20 @@ const BlockchainVisualization = () => {
       
       console.log('Fetched block data:', data);
       
-      // Check if we have a new block
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
-        // Store the hash of the current latest block before updating
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
         
-        // Show toast notification for new block
         toast({
           title: "New Block Found!",
           description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
         });
         
-        // After a short delay, update the blocks
         setTimeout(() => {
           setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
           setIsNewBlockAppearing(false);
         }, 500);
       } else if (blocks.length === 0) {
-        // Initial load
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
       }
       
@@ -57,33 +50,28 @@ const BlockchainVisualization = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [blocks, toast]); // Depend on blocks and toast for memoization
+  }, [blocks, toast]);
   
-  // Setup periodic refresh
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       setShouldRefresh(prev => !prev);
-    }, 30000); // 30 seconds
+    }, 30000);
     
     return () => clearInterval(refreshInterval);
   }, []);
   
-  // Fetch when refresh is triggered
   useEffect(() => {
     fetchData();
   }, [fetchData, shouldRefresh]);
   
-  // Initial fetch
   useEffect(() => {
     fetchData();
   }, [fetchData]);
   
-  // Simulate pending block progress
   useEffect(() => {
     const interval = setInterval(() => {
       setPendingBlock(prev => {
         const newValue = prev + (Math.random() * 2);
-        // Reset when we reach 100%
         if (newValue >= 100) {
           return 0;
         }
@@ -94,12 +82,8 @@ const BlockchainVisualization = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
-    // Convert pool name to lowercase for case-insensitive matching
     const normalizedName = poolName.toLowerCase().trim();
-    
-    // Map of known pool names to their logo paths
     const poolLogoMap: { [key: string]: string } = {
       'foundry usa': '/pool-logos/foundryusa.svg',
       'foundry': '/pool-logos/foundryusa.svg',
@@ -137,24 +121,20 @@ const BlockchainVisualization = () => {
       'unknown': '/pool-logos/default.svg',
     };
     
-    // Check if we have a logo for this pool
     for (const [key, value] of Object.entries(poolLogoMap)) {
       if (normalizedName.includes(key)) {
         return value;
       }
     }
     
-    // Return default logo if no match found
     return '/pool-logos/default.svg';
   };
 
-  // Manual refresh handler
   const handleManualRefresh = async () => {
     try {
       setIsLoading(true);
       const data = await fetchWithRetry(() => fetchLatestBlockData());
       
-      // Check if we have a new block
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
@@ -192,7 +172,6 @@ const BlockchainVisualization = () => {
     }
   };
 
-  // Scroll handlers
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
@@ -205,12 +184,10 @@ const BlockchainVisualization = () => {
     }
   };
   
-  // Format number of transactions for display
   const formatTransactionCount = (count: number): string => {
     return count ? count.toLocaleString() : '0';
   };
 
-  // Format BTC with fixed decimals
   const formatBTC = (amount: number | undefined): string => {
     if (!amount) return '0.000 BTC';
     return `${amount.toFixed(3)} BTC`;
@@ -253,7 +230,6 @@ const BlockchainVisualization = () => {
       </div>
       
       <div className="relative">
-        {/* Error state */}
         {error && (
           <div className="p-8 text-center">
             <p className="text-red-400">{error}</p>
@@ -266,7 +242,6 @@ const BlockchainVisualization = () => {
           </div>
         )}
         
-        {/* Loading state */}
         {isLoading && blocks.length === 0 && !error && (
           <div className="p-8 text-center">
             <div className="flex justify-center space-x-2">
@@ -278,7 +253,6 @@ const BlockchainVisualization = () => {
           </div>
         )}
         
-        {/* New block appearing animation */}
         <div className={cn(
           "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500 z-10",
           isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -289,7 +263,6 @@ const BlockchainVisualization = () => {
           </div>
         </div>
         
-        {/* Horizontal blocks scrolling area */}
         {blocks.length > 0 && (
           <div 
             ref={scrollRef}
@@ -299,54 +272,46 @@ const BlockchainVisualization = () => {
             {blocks.map((block, index) => (
               <div 
                 key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
-                className="flex-shrink-0 flex flex-col min-w-[160px] max-w-[160px]"
+                className="flex-shrink-0 flex flex-col min-w-[140px] max-w-[140px]"
               >
-                {/* Block height */}
                 <div className="text-center py-2">
                   <span className="text-lg font-bold text-cyan-400">
                     {block.height.toLocaleString()}
                   </span>
                 </div>
                 
-                {/* Block content */}
-                <div className="bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 p-3 rounded-t-md flex flex-col h-[180px]">
-                  {/* Fee rate median */}
+                <div className="bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 p-2 rounded-t-md flex flex-col h-[160px]">
                   <div className="text-center mb-1">
-                    <span className="text-base font-medium text-white">{block.feesRangeText}</span>
+                    <span className="text-sm font-medium text-white">{block.feesRangeText}</span>
                   </div>
                   
-                  {/* Fee range */}
-                  <div className="text-center mb-3">
-                    <span className="text-sm text-yellow-300 font-medium">{block.feeRange}</span>
+                  <div className="text-center mb-2">
+                    <span className="text-xs text-yellow-300 font-medium">{block.feeRange}</span>
                   </div>
                   
-                  {/* Total BTC */}
-                  <div className="text-center mb-3">
-                    <span className="text-2xl font-bold text-white">{formatBTC(block.totalBtc)}</span>
+                  <div className="text-center mb-2">
+                    <span className="text-lg font-bold text-white">{formatBTC(block.totalBtc)}</span>
                   </div>
                   
-                  {/* Transaction count */}
-                  <div className="text-center mb-3">
-                    <span className="text-sm font-medium text-white">
-                      {formatTransactionCount(block.transactionCount)} transactions
+                  <div className="text-center mb-2">
+                    <span className="text-xs font-medium text-white">
+                      {formatTransactionCount(block.transactionCount)} txs
                     </span>
                   </div>
                   
-                  {/* Time ago */}
                   <div className="text-center mt-auto">
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-xs font-medium text-white">
                       {block.minutesAgo ? `${block.minutesAgo} minutes ago` : formatTimeAgo(block.timestamp)}
                     </span>
                   </div>
                 </div>
                 
-                {/* Mining pool */}
-                <div className="bg-black py-2 px-2 rounded-b-md flex items-center justify-center space-x-2">
-                  <div className="w-5 h-5 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                <div className="bg-black py-2 px-1 rounded-b-md flex items-center justify-center space-x-1">
+                  <div className="w-4 h-4 rounded-full overflow-hidden bg-black flex items-center justify-center">
                     <img 
                       src={getPoolLogo(block.minedBy)} 
                       alt={block.minedBy}
-                      className="w-4 h-4 object-contain"
+                      className="w-3 h-3 object-contain"
                       onError={(e) => {
                         console.error(`Error loading logo for ${block.minedBy}`);
                         (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
