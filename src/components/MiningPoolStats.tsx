@@ -5,21 +5,30 @@ import { MiningPoolStats as PoolStats } from '@/services/mempoolService';
 import { AuroraContainer } from '@/components/ui/aurora-container';
 import { Pickaxe, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { fetchWithRetry } from '@/utils/errorUtils';
+import { toast } from './ui/use-toast';
 
 const MiningPoolStats = () => {
   const [poolStats, setPoolStats] = useState<PoolStats[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const stats = await fetchMiningPoolStats();
+      const stats = await fetchWithRetry(() => fetchMiningPoolStats(), 3, 2000);
       setPoolStats(stats);
+      setLastUpdated(new Date());
       setError(null);
     } catch (err) {
       console.error('Error fetching pool stats:', err);
       setError('Failed to load mining pool statistics');
+      toast({
+        title: "Data fetch error",
+        description: "Could not update mining pool statistics",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -28,8 +37,8 @@ const MiningPoolStats = () => {
   useEffect(() => {
     fetchData();
     
-    // Refresh every 10 minutes
-    const intervalId = setInterval(fetchData, 600000);
+    // Refresh every 5 minutes (300000ms)
+    const intervalId = setInterval(fetchData, 300000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -45,11 +54,37 @@ const MiningPoolStats = () => {
     if (poolName === 'F2Pool') return '/pool-logos/f2pool.svg';
     if (poolName === 'Binance Pool') return '/pool-logos/binancepool.svg';
     if (poolName === 'ViaBTC') return '/pool-logos/viabtc.svg';
-    if (poolName === 'SlushPool') return '/pool-logos/braiinspool.svg';
+    if (poolName === 'SlushPool' || poolName === 'Braiins Pool') return '/pool-logos/braiinspool.svg';
     if (poolName === 'Poolin') return '/pool-logos/poolin.svg';
     if (poolName === 'BTC.com') return '/pool-logos/btccom.svg';
+    if (poolName === 'SBI Crypto') return '/pool-logos/sbicrypto.svg';
+    if (poolName === 'EMCD') return '/pool-logos/emcdpool.svg';
+    if (poolName === 'Luxor') return '/pool-logos/luxor.svg';
+    if (poolName === 'KuCoin Pool' || poolName === 'KanoPool') return '/pool-logos/kucoinpool.svg';
+    if (poolName === 'PEGA Pool') return '/pool-logos/pegapool.svg';
+    if (poolName === 'Ultimuspool' || poolName === 'WhitePool') return '/pool-logos/ultimuspool.svg';
+    if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
+    if (poolName === 'Titan Pool' || poolName === 'Titan') return '/pool-logos/titan.svg';
+    if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
     
     return '/pool-logos/default.svg';
+  };
+
+  // Format relative time for last updated
+  const getLastUpdatedText = () => {
+    if (!lastUpdated) return '';
+    
+    const now = new Date();
+    const diffMs = now.getTime() - lastUpdated.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'just now';
+    if (diffMins === 1) return '1 minute ago';
+    if (diffMins < 60) return `${diffMins} minutes ago`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours === 1) return '1 hour ago';
+    return `${diffHours} hours ago`;
   };
 
   return (
@@ -59,12 +94,21 @@ const MiningPoolStats = () => {
           <Pickaxe className="h-5 w-5 text-btc-orange mr-2" />
           <h2 className="text-lg font-medium text-white">Mining Pool Distribution (24h)</h2>
         </div>
-        <button 
-          onClick={fetchData}
-          className={cn("p-1.5 rounded-full hover:bg-white/10 transition-colors", isLoading && "animate-spin")}
-        >
-          <RefreshCw className="h-4 w-4 text-white/70" />
-        </button>
+        <div className="flex items-center">
+          {lastUpdated && (
+            <span className="text-xs text-white/50 mr-2">
+              Updated {getLastUpdatedText()}
+            </span>
+          )}
+          <button 
+            onClick={fetchData}
+            className={cn("p-1.5 rounded-full hover:bg-white/10 transition-colors", 
+              isLoading && "animate-spin")}
+            disabled={isLoading}
+          >
+            <RefreshCw className="h-4 w-4 text-white/70" />
+          </button>
+        </div>
       </div>
       
       <div className="p-4 bg-gradient-to-b from-[#0a0a0a] to-[#070707]">

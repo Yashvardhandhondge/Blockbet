@@ -13,6 +13,7 @@ import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
+
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -649,7 +650,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="text-white text-sm mb-3">Live Blockchain Stats:</h3>
-        <LiveBlockData currentBlock={currentBlock} avgBlockTime={avgBlockTime} pendingTxCount={pendingTxCount} estimatedTime={estimatedTime} />
+        <LiveBlockData />
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
@@ -661,4 +662,5 @@ const BettingGrid = () => {
       </Card>
     </div>;
 };
+
 export default BettingGrid;

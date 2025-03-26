@@ -5,6 +5,8 @@ import { Card } from './ui/card';
 import StatCard from './StatCard';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { fetchPendingTransactionsData } from '@/api/pendingTransactionsApi';
+import { fetchWithRetry } from '@/utils/errorUtils';
+import { toast } from './ui/use-toast';
 
 const LiveBlockData = () => {
   const [currentBlock, setCurrentBlock] = useState<number>(0);
@@ -19,20 +21,25 @@ const LiveBlockData = () => {
       try {
         setIsLoading(true);
         
-        // Fetch block data
-        const blockData = await fetchLatestBlockData();
+        // Fetch block data with retry logic
+        const blockData = await fetchWithRetry(() => fetchLatestBlockData());
         setCurrentBlock(blockData.latestBlock.height);
         setAvgBlockTime(blockData.avgBlockTime);
         setEstimatedTime(blockData.estimatedNextBlock);
         
-        // Fetch pending transaction data
-        const txData = await fetchPendingTransactionsData();
+        // Fetch pending transaction data with retry logic
+        const txData = await fetchWithRetry(() => fetchPendingTransactionsData());
         setPendingTxCount(txData.count);
         
         setError(null);
       } catch (err) {
         console.error('Error fetching live data:', err);
         setError('Failed to load data');
+        toast({
+          title: "Data fetch error",
+          description: "Could not update blockchain data",
+          variant: "destructive"
+        });
       } finally {
         setIsLoading(false);
       }
