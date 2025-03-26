@@ -11,6 +11,7 @@ const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
   const [pendingBlock, setPendingBlock] = useState<number>(50); // Animation progress 0-100
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // Simulate pending block progress
@@ -50,10 +51,14 @@ const BlockchainVisualization = () => {
       totalBtc: parseFloat((Math.random() * 0.02 + 0.01).toFixed(3))
     };
     
-    // Update blocks state
+    // Update blocks state and trigger confetti
     setTimeout(() => {
       setBlocks(prev => [newBlock, ...prev.slice(0, 9)]);
       setIsNewBlockAppearing(false);
+      
+      // Show confetti when new block is added
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000); // Hide confetti after 4 seconds
     }, 500);
   };
 
@@ -170,6 +175,9 @@ const BlockchainVisualization = () => {
           </div>
         </div>
         
+        {/* Confetti effect */}
+        {showConfetti && <Confetti />}
+        
         {/* Horizontal blocks scrolling area */}
         <div 
           ref={scrollRef}
@@ -268,6 +276,84 @@ const BlockchainVisualization = () => {
         </div>
       </div>
     </AuroraContainer>
+  );
+};
+
+// Confetti component
+const Confetti = () => {
+  const confettiCount = 150;
+  const colors = [
+    '#9b87f5', '#7E69AB', '#F97316', '#0EA5E9', '#ea384c', '#FFD700', 
+    '#FFC107', '#F6E05E', '#A3E635', '#5EEAD4', '#FB7185', '#E879F9'
+  ];
+  
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
+      {Array.from({ length: confettiCount }).map((_, i) => {
+        const size = Math.floor(Math.random() * 8) + 5; // 5-12px
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const animationDuration = Math.floor(Math.random() * 3) + 3; // 3-5s
+        const animationDelay = Math.random() * 0.5;
+        
+        // Random shape: circle, square, or star
+        const shapeTypes = ['circle', 'square', 'star'];
+        const shape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        
+        let shapeElement;
+        if (shape === 'circle') {
+          shapeElement = <div className="w-full h-full rounded-full" style={{ backgroundColor: color }}></div>;
+        } else if (shape === 'square') {
+          shapeElement = <div className="w-full h-full rotate-45" style={{ backgroundColor: color }}></div>;
+        } else { // star
+          shapeElement = (
+            <div className="w-full h-full" style={{ color: color }}>
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+              </svg>
+            </div>
+          );
+        }
+        
+        return (
+          <div
+            key={i}
+            className="absolute will-change-transform"
+            style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              top: '-5%',
+              left: `${left}%`,
+              animation: `confetti-fall ${animationDuration}s ease-in ${animationDelay}s forwards, confetti-shake ${animationDuration / 3}s ease-in-out ${animationDelay}s infinite alternate`
+            }}
+          >
+            {shapeElement}
+          </div>
+        );
+      })}
+      
+      <style jsx global>{`
+        @keyframes confetti-fall {
+          0% {
+            transform: translateY(-10px) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(calc(100vh + 20px)) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes confetti-shake {
+          0% {
+            transform: translateX(-5px);
+          }
+          100% {
+            transform: translateX(5px);
+          }
+        }
+      `}</style>
+    </div>
   );
 };
 
