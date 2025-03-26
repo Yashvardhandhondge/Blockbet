@@ -26,6 +26,8 @@ const BlockchainVisualization = () => {
       setIsLoading(true);
       const data = await fetchWithRetry(() => fetchLatestBlockData());
       
+      console.log('Fetched block data:', data);
+      
       // Check if we have a new block
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
         // Store the hash of the current latest block before updating
@@ -50,8 +52,8 @@ const BlockchainVisualization = () => {
       
       setError(null);
     } catch (err) {
-      setError('Failed to fetch blockchain data');
       console.error('Error fetching blockchain data:', err);
+      setError('Failed to fetch blockchain data');
     } finally {
       setIsLoading(false);
     }
@@ -94,32 +96,41 @@ const BlockchainVisualization = () => {
 
   // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
-    // Lowercase the pool name and remove spaces, special characters
-    const normalizedName = poolName.toLowerCase()
-      .replace(/\s+/g, '')
-      .replace(/\./g, '')
-      .replace(/-/g, '');
+    // Convert pool name to lowercase for case-insensitive matching
+    const normalizedName = poolName.toLowerCase().trim();
     
-    // Check common mining pool names and return the correct SVG path
-    if (poolName === 'Foundry USA') return '/pool-logos/foundryusa.svg';
-    if (poolName === 'AntPool') return '/pool-logos/antpool.svg';
-    if (poolName === 'F2Pool') return '/pool-logos/f2pool.svg';
-    if (poolName === 'Binance Pool') return '/pool-logos/binancepool.svg';
-    if (poolName === 'ViaBTC') return '/pool-logos/viabtc.svg';
-    if (poolName === 'SlushPool') return '/pool-logos/braiinspool.svg';
-    if (poolName === 'Poolin') return '/pool-logos/poolin.svg';
-    if (poolName === 'BTC.com') return '/pool-logos/btccom.svg';
-    if (poolName === 'SBI Crypto') return '/pool-logos/sbicrypto.svg';
-    if (poolName === 'EMCD') return '/pool-logos/emcdpool.svg';
-    if (poolName === 'Luxor') return '/pool-logos/luxor.svg';
-    if (poolName === 'KanoPool') return '/pool-logos/kucoinpool.svg';
-    if (poolName === 'PEGA Pool') return '/pool-logos/pegapool.svg';
-    if (poolName === 'WhitePool') return '/pool-logos/ultimuspool.svg';
-    if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
-    if (poolName === 'Titan') return '/pool-logos/titan.svg';
-    if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
+    // Map of known pool names to their logo paths
+    const poolLogoMap: { [key: string]: string } = {
+      'foundry usa': '/pool-logos/foundryusa.svg',
+      'antpool': '/pool-logos/antpool.svg',
+      'f2pool': '/pool-logos/f2pool.svg',
+      'binance pool': '/pool-logos/binancepool.svg',
+      'viabtc': '/pool-logos/viabtc.svg',
+      'slushpool': '/pool-logos/slushpool.svg',
+      'braiins pool': '/pool-logos/braiinspool.svg',
+      'poolin': '/pool-logos/poolin.svg',
+      'btc.com': '/pool-logos/btccom.svg',
+      'sbi crypto': '/pool-logos/sbicrypto.svg',
+      'emcd': '/pool-logos/emcdpool.svg',
+      'luxor': '/pool-logos/luxor.svg',
+      'kano pool': '/pool-logos/kucoinpool.svg',
+      'pega pool': '/pool-logos/pegapool.svg',
+      'ultimuspool': '/pool-logos/ultimuspool.svg',
+      'minerium': '/pool-logos/minerium.svg',
+      'titan.io': '/pool-logos/titan.svg',
+      'bitfury': '/pool-logos/bitfury.svg',
+      'okex': '/pool-logos/okexpool.svg',
+      'huobi pool': '/pool-logos/huobipool.svg',
+    };
     
-    // Return a default logo if no match is found
+    // Check if we have a logo for this pool
+    for (const [key, value] of Object.entries(poolLogoMap)) {
+      if (normalizedName.includes(key)) {
+        return value;
+      }
+    }
+    
+    // Return default logo if no match found
     return '/pool-logos/default.svg';
   };
 
@@ -268,7 +279,7 @@ const BlockchainVisualization = () => {
               
               return (
                 <div 
-                  key={`${block.height}-${block.hash.substring(0, 10)}`} 
+                  key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
                   className={cn(
                     "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
                     index === 0 ? "animate-block-appear" : ""
@@ -333,9 +344,9 @@ const BlockchainVisualization = () => {
                     <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
                     <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
                     
-                    <div className="text-white font-bold text-sm mb-1">{block.totalBtc} BTC</div>
+                    <div className="text-white font-bold text-sm mb-1">{block.totalBtc?.toFixed(2) || '0'} BTC</div>
                     
-                    <div className="text-white/90 text-[10px] mb-1">{block.transactionCount.toLocaleString()} txs</div>
+                    <div className="text-white/90 text-[10px] mb-1">{block.transactionCount?.toLocaleString() || 0} txs</div>
                     <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
                   </div>
                   
@@ -347,6 +358,7 @@ const BlockchainVisualization = () => {
                         alt={block.minedBy}
                         className="w-full h-full object-contain"
                         onError={(e) => {
+                          console.error(`Error loading logo for ${block.minedBy}`);
                           (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
                         }}
                       />

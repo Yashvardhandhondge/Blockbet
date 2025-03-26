@@ -69,13 +69,16 @@ export interface MiningPoolStats {
  */
 export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
   try {
-    const response = await fetch(`${BASE_URL}/blocks`);
+    // Add a cache buster parameter to avoid caching issues
+    const response = await fetch(`${BASE_URL}/v1/blocks?limit=15&_=${Date.now()}`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch blocks: ${response.status} ${response.statusText}`);
     }
     
-    return await response.json();
+    const blocks = await response.json();
+    console.log('Fetched blocks:', blocks);
+    return blocks;
   } catch (error) {
     console.error('Error fetching recent blocks:', error);
     throw error;
