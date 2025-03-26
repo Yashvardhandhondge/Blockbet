@@ -32,9 +32,8 @@ const LiveBlockData = ({ currentBlock, avgBlockTime, pendingTxCount, estimatedTi
       />
       <StatCard
         icon={<Clock className="h-5 w-5 text-btc-orange" />}
-        title="Live"
+        title="Next block est."
         value={estimatedTime}
-        subtitle="Next block est."
       />
     </div>
   );
