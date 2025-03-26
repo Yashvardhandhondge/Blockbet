@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -11,6 +11,7 @@ import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
+import BetHistory from './BetHistory';
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
@@ -30,6 +31,79 @@ const BettingGrid = () => {
   const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const [walletBalance, setWalletBalance] = useState(25000000); // 0.25 BTC in satoshis
+  const [betHistory, setBetHistory] = useState<Array<{
+    id: number;
+    poolId: string;
+    poolName: string;
+    amount: number;
+    timestamp: Date;
+    isWin: boolean;
+    blockHeight: number;
+  }>>([
+    {
+      id: 1,
+      poolId: 'foundry',
+      poolName: 'Foundry USA',
+      amount: 5000,
+      timestamp: new Date(Date.now() - 3600000 * 24 * 2),
+      isWin: true,
+      blockHeight: 843231
+    },
+    {
+      id: 2,
+      poolId: 'antpool',
+      poolName: 'Antpool',
+      amount: 10000,
+      timestamp: new Date(Date.now() - 3600000 * 24 * 1.5),
+      isWin: false,
+      blockHeight: 843245
+    },
+    {
+      id: 3,
+      poolId: 'f2pool',
+      poolName: 'F2Pool',
+      amount: 1000,
+      timestamp: new Date(Date.now() - 3600000 * 24),
+      isWin: true,
+      blockHeight: 843260
+    },
+    {
+      id: 4,
+      poolId: 'binance',
+      poolName: 'Binance Pool',
+      amount: 50000,
+      timestamp: new Date(Date.now() - 3600000 * 12),
+      isWin: false,
+      blockHeight: 843279
+    },
+    {
+      id: 5,
+      poolId: 'viabtc',
+      poolName: 'ViaBTC',
+      amount: 5000,
+      timestamp: new Date(Date.now() - 3600000 * 6),
+      isWin: true,
+      blockHeight: 843291
+    },
+    {
+      id: 6,
+      poolId: 'slushpool',
+      poolName: 'Slush Pool',
+      amount: 10000,
+      timestamp: new Date(Date.now() - 3600000 * 3),
+      isWin: false,
+      blockHeight: 843301
+    },
+    {
+      id: 7,
+      poolId: 'poolin',
+      poolName: 'Poolin',
+      amount: 500,
+      timestamp: new Date(Date.now() - 3600000),
+      isWin: true,
+      blockHeight: 843310
+    }
+  ]);
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
@@ -135,6 +209,32 @@ const BettingGrid = () => {
         title: "Insufficient funds",
         description: "You don't have enough funds to withdraw",
         variant: "destructive"
+      });
+    }
+  };
+
+  const handleAddBetToHistory = (poolId: string, amount: number, isWin: boolean) => {
+    const pool = miningPools.find(p => p.id === poolId);
+    const newBet = {
+      id: betHistory.length + 1,
+      poolId: poolId,
+      poolName: pool?.name || 'Unknown Pool',
+      amount: amount,
+      timestamp: new Date(),
+      isWin: isWin,
+      blockHeight: currentBlock + 1
+    };
+    
+    setBetHistory(prev => [newBet, ...prev]);
+    
+    // Update wallet balance based on bet outcome
+    if (isWin) {
+      const winAmount = amount * (pool?.odds || 2);
+      setWalletBalance(prev => prev + winAmount);
+      toast({
+        title: "Bet won!",
+        description: `You won ${formatSats(winAmount)} betting on ${pool?.name}!`,
+        variant: "default"
       });
     }
   };
@@ -530,8 +630,15 @@ const BettingGrid = () => {
         <h3 className="text-white text-sm mb-3">Live Blockchain Stats:</h3>
         <LiveBlockData currentBlock={currentBlock} avgBlockTime={avgBlockTime} pendingTxCount={pendingTxCount} estimatedTime={estimatedTime} />
       </Card>
+      
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
+        <div className="flex items-center mb-3">
+          <History className="h-4 w-4 text-btc-orange mr-2" />
+          <h3 className="text-white text-sm">History of Bets Stats:</h3>
+        </div>
+        <BetHistory betHistory={betHistory} />
+      </Card>
     </div>;
 };
 
 export default BettingGrid;
-
