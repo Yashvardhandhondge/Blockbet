@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { CheckCircle, XCircle, Trophy, DollarSign, Calendar, FileBarChart } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface BetHistoryProps {
   betHistory: Array<{
@@ -135,63 +136,65 @@ const BetHistoryList: React.FC<BetHistoryProps> = ({ betHistory }) => {
   };
   
   return (
-    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 hide-scrollbar">
-      {betHistory.length === 0 ? (
-        <div className="text-center py-8 text-white/60">
-          No bets matching this filter
-        </div>
-      ) : (
-        betHistory.map((bet) => (
-          <div 
-            key={bet.id} 
-            className={cn(
-              "flex items-center justify-between p-3 rounded-lg",
-              bet.isWin ? "bg-green-950/30 border border-green-800/30" : "bg-red-950/20 border border-red-900/20"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <div className={cn(
-                "h-10 w-10 rounded-full flex items-center justify-center",
-                bet.isWin ? "bg-green-500/20" : "bg-red-500/20"
-              )}>
-                {bet.isWin ? (
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                ) : (
-                  <XCircle className="h-5 w-5 text-red-500" />
-                )}
+    <ScrollArea className="h-[300px] pr-1">
+      <div className="space-y-2">
+        {betHistory.length === 0 ? (
+          <div className="text-center py-8 text-white/60">
+            No bets matching this filter
+          </div>
+        ) : (
+          betHistory.map((bet) => (
+            <div 
+              key={bet.id} 
+              className={cn(
+                "flex items-center justify-between p-3 rounded-lg",
+                bet.isWin ? "bg-green-950/30 border border-green-800/30" : "bg-red-950/20 border border-red-900/20"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "h-10 w-10 rounded-full flex items-center justify-center",
+                  bet.isWin ? "bg-green-500/20" : "bg-red-500/20"
+                )}>
+                  {bet.isWin ? (
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-red-500" />
+                  )}
+                </div>
+                
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-medium text-white">{bet.poolName}</div>
+                    {bet.isWin && <Trophy className="h-3.5 w-3.5 text-yellow-500" />}
+                  </div>
+                  <div className="text-xs text-white/60 flex items-center">
+                    <Calendar className="h-3 w-3 mr-1 inline" />
+                    {format(bet.timestamp, 'MMM d, yyyy HH:mm')}
+                    <span className="mx-1">•</span>
+                    Block #{bet.blockHeight}
+                  </div>
+                </div>
               </div>
               
-              <div>
-                <div className="flex items-center gap-2">
-                  <div className="font-medium text-white">{bet.poolName}</div>
-                  {bet.isWin && <Trophy className="h-3.5 w-3.5 text-yellow-500" />}
+              <div className="text-right">
+                <div className={cn(
+                  "font-mono font-medium",
+                  bet.isWin ? "text-green-500" : "text-red-500"
+                )}>
+                  {bet.isWin ? "+" : "-"}{formatSats(bet.amount)}
                 </div>
-                <div className="text-xs text-white/60 flex items-center">
-                  <Calendar className="h-3 w-3 mr-1 inline" />
-                  {format(bet.timestamp, 'MMM d, yyyy HH:mm')}
-                  <span className="mx-1">•</span>
-                  Block #{bet.blockHeight}
-                </div>
+                {bet.isWin && (
+                  <div className="text-xs text-green-400/60">
+                    x2.0 odds
+                  </div>
+                )}
               </div>
             </div>
-            
-            <div className="text-right">
-              <div className={cn(
-                "font-mono font-medium",
-                bet.isWin ? "text-green-500" : "text-red-500"
-              )}>
-                {bet.isWin ? "+" : "-"}{formatSats(bet.amount)}
-              </div>
-              {bet.isWin && (
-                <div className="text-xs text-green-400/60">
-                  x2.0 odds
-                </div>
-              )}
-            </div>
-          </div>
-        ))
-      )}
-    </div>
+          ))
+        )}
+      </div>
+    </ScrollArea>
   );
 };
 
