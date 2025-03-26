@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet } from 'lucide-react';
@@ -467,10 +466,16 @@ const BettingGrid = () => {
         <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="title-gradient text-sm">Your Bets</h3>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-3 h-3" />
-              Clear All
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+                <X className="w-3 h-3" />
+                Cancel Last
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+                <Trash2 className="w-3 h-3" />
+                Clear All
+              </Button>
+            </div>
           </div>
           
           {bets.length === 0 ? <div className="text-white/60 text-center py-4 text-sm">
@@ -507,19 +512,6 @@ const BettingGrid = () => {
           {renderChipSelection()}
         </Card>
       </div>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-            <X className="w-3.5 h-3.5" />
-            Cancel Last
-          </Button>
-          <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-            <Trash2 className="w-3.5 h-3.5" />
-            Clear All
-          </Button>
-        </div>
-      </Card>
       
       {/* New thin betting timer strip */}
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-md mb-6 overflow-hidden">
