@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -55,6 +54,21 @@ const BlockchainVisualization = () => {
       setIsNewBlockAppearing(false);
     }, 500);
   };
+  
+  // Function to get pool gradient style based on the pool name
+  const getPoolGradientStyle = (poolName: string): React.CSSProperties => {
+    const pool = miningPools.find(p => p.name === poolName);
+    if (pool) {
+      return { background: pool.gradient };
+    }
+    return { background: 'linear-gradient(135deg, #333, #000000)' };
+  };
+
+  // Function to get pool color class (for header)
+  const getPoolColorClass = (poolName: string): string => {
+    const pool = miningPools.find(p => p.name === poolName);
+    return pool?.colorClass || 'bg-gray-600';
+  };
 
   // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
@@ -76,19 +90,12 @@ const BlockchainVisualization = () => {
     if (poolName === 'SBI Crypto') return '/pool-logos/sbicrypto.svg';
     if (poolName === 'EMCD') return '/pool-logos/emcdpool.svg';
     if (poolName === 'Luxor') return '/pool-logos/luxor.svg';
-    if (poolName === 'KuCoin Pool') return '/pool-logos/kucoinpool.svg';
+    if (poolName === 'KanoPool') return '/pool-logos/kucoinpool.svg';
     if (poolName === 'PEGA Pool') return '/pool-logos/pegapool.svg';
+    if (poolName === 'WhitePool') return '/pool-logos/ultimuspool.svg';
     if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
     if (poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
-    if (poolName === 'BTC.TOP') return '/pool-logos/btctop.svg';
-    if (poolName === 'OKEx Pool') return '/pool-logos/okexpool.svg';
-    if (poolName === 'Huobi Pool') return '/pool-logos/huobipool.svg';
-    if (poolName === '1THash') return '/pool-logos/1thash.svg';
-    if (poolName === 'Bitcoin.com') return '/pool-logos/bitcoincom.svg';
-    if (poolName === 'ArkPool') return '/pool-logos/arkpool.svg';
-    if (poolName === 'OKKong') return '/pool-logos/okkong.svg';
-    if (poolName === 'MaraPool') return '/pool-logos/marapool.svg';
     
     // Return a default logo if no match is found
     return '/pool-logos/default.svg';
@@ -183,8 +190,8 @@ const BlockchainVisualization = () => {
           style={{ scrollbarWidth: 'none' }}
         >
           {blocks.map((block, index) => {
-            // Get the logo path for this mining pool
-            const logoPath = getPoolLogo(block.minedBy);
+            // Get the mining pool info for this block
+            const pool = miningPools.find(p => p.name === block.minedBy);
             
             return (
               <div 
@@ -205,16 +212,10 @@ const BlockchainVisualization = () => {
                   {block.height}
                 </div>
                 
-                {/* Block content with logo as background */}
+                {/* Block content with gradient based on pool */}
                 <div 
-                  className="p-3 flex flex-col h-24 relative overflow-hidden text-center bg-[#151520]"
-                  style={{
-                    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.86), rgba(0, 0, 0, 0.86)), url(${logoPath})`,
-                    backgroundSize: '100%',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundBlendMode: 'overlay'
-                  }}
+                  className="p-3 flex flex-col h-24 relative overflow-hidden text-center"
+                  style={getPoolGradientStyle(block.minedBy)}
                 >
                   {/* Content layout with centered text */}
                   <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
@@ -230,7 +231,7 @@ const BlockchainVisualization = () => {
                 <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
                   <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center">
                     <img 
-                      src={logoPath} 
+                      src={getPoolLogo(block.minedBy)} 
                       alt={block.minedBy}
                       className="w-full h-full object-contain"
                     />
