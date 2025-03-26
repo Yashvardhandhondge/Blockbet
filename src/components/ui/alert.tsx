@@ -27,7 +27,7 @@ const Alert = React.forwardRef<
   <div
     ref={ref}
     role="alert"
-    className={cn(alertVariants({ variant }), className, "!bg-btc-darker rounded-lg shadow-md")}
+    className={cn(alertVariants({ variant }), className, "!bg-btc-darker")}
     {...props}
   />
 ))
