@@ -4,9 +4,10 @@
 
 // CORS proxy options - we'll try multiple services if one fails
 const CORS_PROXIES = [
+  'https://api.codetabs.com/v1/proxy?quest=',
   'https://corsproxy.io/?',
-  'https://cors-anywhere.herokuapp.com/',
-  'https://api.allorigins.win/raw?url='
+  'https://api.allorigins.win/raw?url=',
+  'https://cors-anywhere.herokuapp.com/'
 ];
 
 // Keep track of which proxy is working
@@ -23,6 +24,11 @@ const FALLBACK_APIS = [
 
 // Current API base URL index
 let currentApiIndex = 0;
+
+// Track failed requests to avoid endless retries
+let consecutiveFailures = 0;
+const MAX_CONSECUTIVE_FAILURES = 3;
+const FAILURE_RESET_TIMEOUT = 30000; // 30 seconds
 
 export interface MempoolBlock {
   id: string;
@@ -81,12 +87,26 @@ export interface MiningPoolStats {
   percentage: number;
 }
 
+// Reset the failure counter after some time
+setInterval(() => {
+  if (consecutiveFailures > 0) {
+    console.log('Resetting API failure counter...');
+    consecutiveFailures = 0;
+  }
+}, FAILURE_RESET_TIMEOUT);
+
 /**
  * Tries to fetch data using different CORS proxies or direct connection
  * @param endpoint API endpoint to fetch
  * @returns Promise with response data
  */
 const fetchWithProxies = async (endpoint: string): Promise<any> => {
+  // If we've had too many consecutive failures, immediately use mock data
+  if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+    console.log(`Too many consecutive failures (${consecutiveFailures}), skipping API requests`);
+    throw new Error('Maximum consecutive failures reached');
+  }
+  
   // Start with the current proxy
   let startIndex = currentProxyIndex;
   let attempts = 0;
@@ -118,14 +138,20 @@ const fetchWithProxies = async (endpoint: string): Promise<any> => {
         console.log(`Direct connection attempt to: ${url}`);
       }
       
+      // Generate a unique cache-busting parameter
+      const cacheBuster = `_=${Date.now()}`;
+      const separator = url.includes('?') ? '&' : '?';
+      const finalUrl = `${url}${separator}${cacheBuster}`;
+      
       // Make the request
-      const response = await fetch(url, {
+      const response = await fetch(finalUrl, {
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         },
         // Reduce timeout to try alternatives faster
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: AbortSignal.timeout(3000) // 3 second timeout
       });
       
       if (!response.ok) {
@@ -141,14 +167,19 @@ const fetchWithProxies = async (endpoint: string): Promise<any> => {
         console.log(`Found working API, setting current index to: ${currentApiIndex}`);
       }
       
+      // Reset consecutive failures on success
+      consecutiveFailures = 0;
+      
       // Return the response data
       return await response.json();
     } catch (error) {
       console.warn(`Attempt ${attempts + 1} failed:`, error);
       attempts++;
       
-      // If we've tried everything, throw the last error
+      // If we've tried everything, increment failure counter and throw the last error
       if (attempts >= maxAttempts) {
+        consecutiveFailures++;
+        console.error(`All fetch attempts failed. Consecutive failures: ${consecutiveFailures}`);
         throw error;
       }
     }

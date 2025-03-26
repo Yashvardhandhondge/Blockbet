@@ -43,12 +43,15 @@ const formatFeeRange = (feeRange: number[]): string => {
 
 // Mock data to use as fallback if all API requests fail
 const generateMockBlockData = (): LatestBlockData => {
+  // Get current time for realistic timestamps
+  const now = Date.now();
+  
   // Create some reasonable mock data
   const mockLatestBlock: Block = {
     height: 833410,
-    hash: 'a1b2c3d4e5f6g7h8i9j0',
+    hash: `mock${now}`,
     minedBy: 'Foundry USA',
-    timestamp: Date.now(),
+    timestamp: now,
     size: 1345678,
     transactionCount: 2415,
     fees: 0.1256,
@@ -59,7 +62,7 @@ const generateMockBlockData = (): LatestBlockData => {
   
   const mockPreviousBlocks: Block[] = Array(10).fill(0).map((_, i) => ({
     height: mockLatestBlock.height - (i + 1),
-    hash: `mock${i}${Date.now()}`,
+    hash: `mock${i}${now}`,
     minedBy: ['Foundry USA', 'AntPool', 'F2Pool', 'Binance Pool'][i % 4],
     timestamp: mockLatestBlock.timestamp - ((i + 1) * 600000), // ~10 min per block
     size: 800000 + Math.floor(Math.random() * 600000),
@@ -78,6 +81,28 @@ const generateMockBlockData = (): LatestBlockData => {
   };
 };
 
+// Cache for mock data to ensure consistency between calls
+let cachedMockData: LatestBlockData | null = null;
+let lastMockUpdate = 0;
+const MOCK_UPDATE_INTERVAL = 600000; // 10 minutes
+
+/**
+ * Gets cached mock data or generates new mock data if needed
+ * Ensures consistent mock data between calls
+ */
+const getMockBlockData = (): LatestBlockData => {
+  const now = Date.now();
+  
+  // If no cached data or it's time to update
+  if (!cachedMockData || now - lastMockUpdate > MOCK_UPDATE_INTERVAL) {
+    console.log('Generating fresh mock data');
+    cachedMockData = generateMockBlockData();
+    lastMockUpdate = now;
+  }
+  
+  return cachedMockData;
+};
+
 /**
  * Fetches latest block data from Mempool.space API
  * @returns Promise with latest block data
@@ -90,7 +115,8 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
     const mempoolBlocks = await fetchRecentBlocks();
     
     if (!mempoolBlocks || mempoolBlocks.length === 0) {
-      throw new Error('No blocks returned from API');
+      console.warn('No blocks returned from API, falling back to mock data');
+      return getMockBlockData();
     }
     
     console.log('API responded with blocks:', mempoolBlocks.length);
@@ -118,7 +144,7 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
         timestamp: block.timestamp * 1000, // Convert from seconds to milliseconds
         size: block.size,
         transactionCount: block.tx_count,
-        fees: totalFees,
+        fees: totalFees / 100000000, // Convert sats to BTC 
         feesRangeText: `~${formatToOneDecimal(medianFee)} sat/vB`,
         feeRange: formatFeeRange(feeRange),
         totalBtc: (reward + totalFees) / 100000000 // Convert sats to BTC
@@ -139,6 +165,6 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
     
     // Return mock data as a last resort so the UI isn't completely empty
     console.warn('Falling back to mock data due to API failure');
-    return generateMockBlockData();
+    return getMockBlockData();
   }
 };

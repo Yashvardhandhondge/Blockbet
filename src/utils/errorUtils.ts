@@ -20,8 +20,8 @@ export const handleApiError = (error: any): string => {
  */
 export const fetchWithRetry = async <T>(
   fetchFn: () => Promise<T>,
-  retries: number = 3,
-  delay: number = 1000
+  retries: number = 2,
+  delay: number = 500
 ): Promise<T> => {
   try {
     return await fetchFn();
@@ -35,7 +35,7 @@ export const fetchWithRetry = async <T>(
     // Wait for the specified delay
     await new Promise(resolve => setTimeout(resolve, delay));
     
-    // Retry the fetch with one less retry attempt
+    // Retry the fetch with one less retry attempt, slightly increased delay
     return fetchWithRetry(fetchFn, retries - 1, delay * 1.5); // Exponential backoff
   }
 };
