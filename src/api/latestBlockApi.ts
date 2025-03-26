@@ -35,13 +35,14 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
       const feesInBtc = block.extras?.totalFees ? block.extras.totalFees / 100000000 : 0;
       const totalBtc = blockReward + feesInBtc;
       
-      // Get fee range as min - max sat/vB
+      // Format fee range exactly as "min - max sat/vB"
       const feeRange = block.extras?.feeRange 
         ? `${block.extras.feeRange[0]} - ${block.extras.feeRange[block.extras.feeRange.length - 1]} sat/vB`
         : '0 - 0 sat/vB';
       
-      // Get median fee for fee display
+      // Get median fee for fee display (format as "~X sat/vB")
       const medianFee = block.extras?.medianFee || 0;
+      const feesRangeText = `~${medianFee} sat/vB`;
       
       // Calculate minutes since block was mined
       const blockTimestamp = block.timestamp * 1000; // Convert to milliseconds
@@ -52,11 +53,12 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
         height: block.height,
         minedBy: block.extras?.pool?.name || 'Unknown',
         feesInBtc,
-        totalBtc,
+        totalBtc: totalBtc.toFixed(3),
         txCount: block.tx_count,
         medianFee,
         feeRange,
-        minutesAgo
+        minutesAgo,
+        feesRangeText
       });
       
       return {
@@ -67,7 +69,7 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
         size: block.size,
         transactionCount: block.tx_count,
         fees: block.extras?.totalFees || 0,
-        feesRangeText: `~${medianFee} sat/vB`,
+        feesRangeText: feesRangeText,
         feeRange: feeRange,
         totalBtc: totalBtc, // Total BTC (block reward + fees)
         minutesAgo: minutesAgo

@@ -299,61 +299,61 @@ const BlockchainVisualization = () => {
             {blocks.map((block, index) => (
               <div 
                 key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
-                className="flex-shrink-0 flex flex-col min-w-[220px] max-w-[220px]"
+                className="flex-shrink-0 flex flex-col min-w-[160px] max-w-[160px]"
               >
                 {/* Block height */}
                 <div className="text-center py-2">
-                  <span className="text-2xl font-bold text-cyan-400">
+                  <span className="text-lg font-bold text-cyan-400">
                     {block.height.toLocaleString()}
                   </span>
                 </div>
                 
                 {/* Block content */}
-                <div className="bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 p-4 rounded-t-md flex flex-col h-[220px]">
+                <div className="bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 p-3 rounded-t-md flex flex-col h-[180px]">
                   {/* Fee rate median */}
-                  <div className="text-center mb-2">
-                    <span className="text-lg font-medium text-white">{block.feesRangeText}</span>
+                  <div className="text-center mb-1">
+                    <span className="text-base font-medium text-white">{block.feesRangeText}</span>
                   </div>
                   
                   {/* Fee range */}
-                  <div className="text-center mb-4">
-                    <span className="text-yellow-300 font-medium">{block.feeRange}</span>
+                  <div className="text-center mb-3">
+                    <span className="text-sm text-yellow-300 font-medium">{block.feeRange}</span>
                   </div>
                   
                   {/* Total BTC */}
-                  <div className="text-center mb-4">
-                    <span className="text-3xl font-bold text-white">{formatBTC(block.totalBtc)}</span>
+                  <div className="text-center mb-3">
+                    <span className="text-2xl font-bold text-white">{formatBTC(block.totalBtc)}</span>
                   </div>
                   
                   {/* Transaction count */}
-                  <div className="text-center mb-4">
-                    <span className="text-lg font-medium text-white">
+                  <div className="text-center mb-3">
+                    <span className="text-sm font-medium text-white">
                       {formatTransactionCount(block.transactionCount)} transactions
                     </span>
                   </div>
                   
                   {/* Time ago */}
                   <div className="text-center mt-auto">
-                    <span className="text-lg font-medium text-white">
+                    <span className="text-sm font-medium text-white">
                       {block.minutesAgo ? `${block.minutesAgo} minutes ago` : formatTimeAgo(block.timestamp)}
                     </span>
                   </div>
                 </div>
                 
                 {/* Mining pool */}
-                <div className="bg-black py-3 px-2 rounded-b-md flex items-center justify-center space-x-2">
-                  <div className="w-6 h-6 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                <div className="bg-black py-2 px-2 rounded-b-md flex items-center justify-center space-x-2">
+                  <div className="w-5 h-5 rounded-full overflow-hidden bg-black flex items-center justify-center">
                     <img 
                       src={getPoolLogo(block.minedBy)} 
                       alt={block.minedBy}
-                      className="w-5 h-5 object-contain"
+                      className="w-4 h-4 object-contain"
                       onError={(e) => {
                         console.error(`Error loading logo for ${block.minedBy}`);
                         (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
                       }}
                     />
                   </div>
-                  <span className="text-white font-medium">{block.minedBy}</span>
+                  <span className="text-xs text-white font-medium truncate">{block.minedBy}</span>
                 </div>
               </div>
             ))}
