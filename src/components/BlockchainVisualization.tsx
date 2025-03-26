@@ -7,12 +7,46 @@ import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { AuroraContainer } from '@/components/ui/aurora-container';
 import { SparklesText } from '@/components/ui/sparkles-text';
 
+// Add confetti animations to the global styles
+const confettiAnimationStyles = `
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-10px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(calc(100vh + 20px)) rotate(360deg);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes confetti-shake {
+    0% {
+      transform: translateX(-5px);
+    }
+    100% {
+      transform: translateX(5px);
+    }
+  }
+`;
+
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
   const [pendingBlock, setPendingBlock] = useState<number>(50); // Animation progress 0-100
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  
+  // Add confetti styles to head when component mounts
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = confettiAnimationStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
   
   // Simulate pending block progress
   useEffect(() => {
@@ -279,7 +313,7 @@ const BlockchainVisualization = () => {
   );
 };
 
-// Confetti component
+// Confetti component with fixed animation styling
 const Confetti = () => {
   const confettiCount = 150;
   const colors = [
@@ -331,28 +365,6 @@ const Confetti = () => {
           </div>
         );
       })}
-      
-      <style jsx global>{`
-        @keyframes confetti-fall {
-          0% {
-            transform: translateY(-10px) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(calc(100vh + 20px)) rotate(360deg);
-            opacity: 0;
-          }
-        }
-        
-        @keyframes confetti-shake {
-          0% {
-            transform: translateX(-5px);
-          }
-          100% {
-            transform: translateX(5px);
-          }
-        }
-      `}</style>
     </div>
   );
 };
