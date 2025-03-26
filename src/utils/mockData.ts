@@ -1,4 +1,3 @@
-
 export interface MiningPool {
   id: string;
   name: string;
@@ -35,7 +34,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-orange-500',
     odds: 3.77,
     region: 'North America',
-    logoUrl: '/pool-logos/foundryusa.png',
+    logoUrl: '/pool-logos/foundryusa.svg',
     gradient: 'linear-gradient(135deg, #F97316, #7C2D12)'
   },
   {
@@ -47,7 +46,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-red-600',
     odds: 5.99,
     region: 'Asia',
-    logoUrl: '/pool-logos/antpool.png',
+    logoUrl: '/pool-logos/antpool.svg',
     gradient: 'linear-gradient(135deg, #DC2626, #7F1D1D)'
   },
   {
@@ -71,7 +70,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-yellow-500',
     odds: 11.36,
     region: 'Asia',
-    logoUrl: '/pool-logos/binancepool.png',
+    logoUrl: '/pool-logos/binancepool.svg',
     gradient: 'linear-gradient(135deg, #EAB308, #854D0E)'
   },
   {
@@ -203,7 +202,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-green-700',
     odds: 38.46,
     region: 'North America',
-    logoUrl: '/pool-logos/carbonnegative.svg',
+    logoUrl: '/pool-logos/CarbonNegative.svg',
     gradient: 'linear-gradient(135deg, #15803D, #166534)'
   },
   {
