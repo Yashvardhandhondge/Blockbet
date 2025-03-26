@@ -2,10 +2,27 @@
  * Service for interacting with the Mempool.space API
  */
 
-// Use a CORS proxy to bypass CORS restrictions
-const CORS_PROXY = 'https://corsproxy.io/?';
+// CORS proxy options - we'll try multiple services if one fails
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://cors-anywhere.herokuapp.com/',
+  'https://api.allorigins.win/raw?url='
+];
+
+// Keep track of which proxy is working
+let currentProxyIndex = 0;
+
 // Base URL for the Mempool.space API
 const BASE_URL = 'https://mempool.space/api';
+
+// Alternative API URLs if the main one fails
+const FALLBACK_APIS = [
+  'https://mempool.blockstream.com/api',
+  'https://mempool.emzy.de/api'
+];
+
+// Current API base URL index
+let currentApiIndex = 0;
 
 export interface MempoolBlock {
   id: string;
@@ -65,24 +82,89 @@ export interface MiningPoolStats {
 }
 
 /**
+ * Tries to fetch data using different CORS proxies or direct connection
+ * @param endpoint API endpoint to fetch
+ * @returns Promise with response data
+ */
+const fetchWithProxies = async (endpoint: string): Promise<any> => {
+  // Start with the current proxy
+  let startIndex = currentProxyIndex;
+  let attempts = 0;
+  const maxAttempts = CORS_PROXIES.length + FALLBACK_APIS.length + 1; // +1 for direct attempt
+  
+  // Try each proxy and then direct connection
+  while (attempts < maxAttempts) {
+    try {
+      console.log(`Attempt ${attempts + 1}/${maxAttempts}: Trying to fetch data...`);
+      
+      let url;
+      // First try all proxies with main API
+      if (attempts < CORS_PROXIES.length) {
+        const proxyIndex = (startIndex + attempts) % CORS_PROXIES.length;
+        const proxy = CORS_PROXIES[proxyIndex];
+        url = `${proxy}${encodeURIComponent(`${BASE_URL}${endpoint}`)}`;
+        console.log(`Using proxy: ${proxy} with base: ${BASE_URL}`);
+      } 
+      // Then try fallback APIs with the current working proxy
+      else if (attempts < CORS_PROXIES.length + FALLBACK_APIS.length) {
+        const apiIndex = (attempts - CORS_PROXIES.length) % FALLBACK_APIS.length;
+        const api = FALLBACK_APIS[apiIndex];
+        url = `${CORS_PROXIES[currentProxyIndex]}${encodeURIComponent(`${api}${endpoint}`)}`;
+        console.log(`Using fallback API: ${api} with proxy: ${CORS_PROXIES[currentProxyIndex]}`);
+      } 
+      // Last resort: try direct connection (might work in some environments)
+      else {
+        url = `${BASE_URL}${endpoint}`;
+        console.log(`Direct connection attempt to: ${url}`);
+      }
+      
+      // Make the request
+      const response = await fetch(url, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        // Reduce timeout to try alternatives faster
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+      }
+      
+      // If successful, update the current proxy index for future requests
+      if (attempts < CORS_PROXIES.length) {
+        currentProxyIndex = (startIndex + attempts) % CORS_PROXIES.length;
+        console.log(`Found working proxy, setting current index to: ${currentProxyIndex}`);
+      } else if (attempts < CORS_PROXIES.length + FALLBACK_APIS.length) {
+        currentApiIndex = (attempts - CORS_PROXIES.length) % FALLBACK_APIS.length;
+        console.log(`Found working API, setting current index to: ${currentApiIndex}`);
+      }
+      
+      // Return the response data
+      return await response.json();
+    } catch (error) {
+      console.warn(`Attempt ${attempts + 1} failed:`, error);
+      attempts++;
+      
+      // If we've tried everything, throw the last error
+      if (attempts >= maxAttempts) {
+        throw error;
+      }
+    }
+  }
+  
+  throw new Error('All fetch attempts failed');
+};
+
+/**
  * Fetches recent blocks from the Mempool.space API
  * @returns Promise with an array of block data
  */
 export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
   try {
-    // Use the CORS proxy to make the request
-    const response = await fetch(`${CORS_PROXY}${encodeURIComponent(`${BASE_URL}/v1/blocks`)}`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch blocks: ${response.status} ${response.statusText}`);
-    }
-    
-    return await response.json();
+    console.log('Fetching recent blocks...');
+    return await fetchWithProxies('/v1/blocks');
   } catch (error) {
     console.error('Error fetching recent blocks:', error);
     throw error;
@@ -95,19 +177,8 @@ export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
  */
 export const fetchPendingTransactions = async (): Promise<MempoolTransaction[]> => {
   try {
-    // Use the CORS proxy to make the request
-    const response = await fetch(`${CORS_PROXY}${encodeURIComponent(`${BASE_URL}/v1/mempool/recent`)}`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch pending transactions: ${response.status} ${response.statusText}`);
-    }
-    
-    return await response.json();
+    console.log('Fetching pending transactions...');
+    return await fetchWithProxies('/v1/mempool/recent');
   } catch (error) {
     console.error('Error fetching pending transactions:', error);
     throw error;
