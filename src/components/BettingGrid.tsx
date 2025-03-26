@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X, ArrowDown } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -30,6 +29,7 @@ const BettingGrid = () => {
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
+  const [walletBalance, setWalletBalance] = useState(25000000); // 0.25 BTC in satoshis
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
@@ -111,6 +111,32 @@ const BettingGrid = () => {
       description: `Removed bet of ${(lastBet.amount / 100000).toFixed(5)} BTC on ${poolName}`,
       variant: "default"
     });
+  };
+
+  const handleDeposit = () => {
+    setWalletBalance(prev => prev + 10000000); // Add 0.1 BTC
+    toast({
+      title: "Deposit successful",
+      description: "Added 0.1 BTC to your wallet",
+      variant: "default"
+    });
+  };
+
+  const handleWithdraw = () => {
+    if (walletBalance >= 10000000) {
+      setWalletBalance(prev => prev - 10000000); // Withdraw 0.1 BTC
+      toast({
+        title: "Withdrawal successful",
+        description: "Withdrawn 0.1 BTC from your wallet",
+        variant: "default"
+      });
+    } else {
+      toast({
+        title: "Insufficient funds",
+        description: "You don't have enough funds to withdraw",
+        variant: "destructive"
+      });
+    }
   };
 
   const formatTimeRemaining = () => {
@@ -354,6 +380,10 @@ const BettingGrid = () => {
       </div>;
   };
 
+  const formatBTCAmount = (satoshis: number) => {
+    return (satoshis / 100000000).toFixed(8) + " BTC";
+  };
+
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
         <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
@@ -362,9 +392,32 @@ const BettingGrid = () => {
         <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">Place your chips on the mining pool that you think will mine the next Bitcoin block.</p>
       </div>
       
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <h3 className="text-white font-medium text-sm mb-3">Your Wallet</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="bg-btc-orange/20 p-2 rounded-lg mr-3">
+              <Wallet className="h-6 w-6 text-btc-orange" />
+            </div>
+            <div>
+              <div className="text-xs text-white/60">Balance</div>
+              <div className="text-lg font-bold text-white">{formatBTCAmount(walletBalance)}</div>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleDeposit}>
+              Deposit
+            </Button>
+            <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleWithdraw}>
+              Withdraw
+            </Button>
+          </div>
+        </div>
+      </Card>
+      
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="text-white font-medium text-sm mb-3">Step 1: Select playing chip value.</h3>
-        <div className="px-1 py-2">
+        <div className="px-1 py-4">
           {renderChipSelection()}
         </div>
       </Card>
