@@ -11,6 +11,7 @@ const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
   const [pendingBlock, setPendingBlock] = useState<number>(50); // Animation progress 0-100
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
+  const [previousLatestBlock, setPreviousLatestBlock] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // Simulate pending block progress
@@ -33,6 +34,11 @@ const BlockchainVisualization = () => {
   // Function to add a new block
   const addNewBlock = () => {
     setIsNewBlockAppearing(true);
+    
+    // Store the hash of the current latest block so we can identify it later
+    if (blocks.length > 0) {
+      setPreviousLatestBlock(blocks[0].hash);
+    }
     
     // Create new block with unique hash
     const randomHash = `000000000000000000${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 30)}`;
@@ -179,6 +185,8 @@ const BlockchainVisualization = () => {
           {blocks.map((block, index) => {
             // Determine if this is the most recent block
             const isLatestBlock = index === 0;
+            // Check if this was the previous latest block that just got pushed
+            const wasPreviousLatest = previousLatestBlock === block.hash;
             
             return (
               <div 
@@ -226,7 +234,9 @@ const BlockchainVisualization = () => {
                     "p-3 flex flex-col h-24 relative overflow-hidden text-center",
                     isLatestBlock 
                       ? "bg-gradient-to-b from-yellow-500/90 via-yellow-600/80 to-amber-700/80" 
-                      : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
+                      : wasPreviousLatest
+                        ? "bg-gradient-to-b from-purple-500/90 via-indigo-600/80 to-blue-700/80 transition-colors duration-1000"
+                        : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
                   )}
                 >
                   {/* Sparkles effect only for the latest block */}
