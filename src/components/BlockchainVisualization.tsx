@@ -195,7 +195,7 @@ const BlockchainVisualization = () => {
                       text="" 
                       colors={{ first: "#FFD700", second: "#FFF8E1" }}
                       className="absolute inset-0 w-full h-full"
-                      sparklesCount={30}
+                      sparklesCount={50}
                     />
                   </div>
                 )}
@@ -229,26 +229,49 @@ const BlockchainVisualization = () => {
                       : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
                   )}
                 >
-                  {/* Sparkles effect only for the latest block */}
+                  {/* Sparkles effect only for the latest block - INCREASED SPARKLES COUNT */}
                   {isLatestBlock && (
-                    <div className="absolute inset-0 pointer-events-none opacity-80">
-                      <SparklesText 
-                        text="" 
-                        colors={{ first: "#FFD700", second: "#FFF8E1" }}
-                        className="absolute inset-0 w-full h-full"
-                        sparklesCount={25}
-                      />
-                    </div>
+                    <>
+                      {/* Main sparkles layer */}
+                      <div className="absolute inset-0 pointer-events-none opacity-80">
+                        <SparklesText 
+                          text="" 
+                          colors={{ first: "#FFD700", second: "#FFF8E1" }}
+                          className="absolute inset-0 w-full h-full"
+                          sparklesCount={60}
+                        />
+                      </div>
+                      
+                      {/* Secondary sparkles layer - slightly different colors and positions */}
+                      <div className="absolute inset-0 pointer-events-none opacity-60">
+                        <SparklesText 
+                          text="" 
+                          colors={{ first: "#FFC107", second: "#FFECB3" }}
+                          className="absolute -left-4 -right-4 -top-4 -bottom-4 w-[calc(100%+32px)] h-[calc(100%+32px)]"
+                          sparklesCount={40}
+                        />
+                      </div>
+                      
+                      {/* Third sparkles layer - even more ambient */}
+                      <div className="absolute inset-0 pointer-events-none opacity-40">
+                        <SparklesText 
+                          text="" 
+                          colors={{ first: "#FFF59D", second: "#FFFDE7" }}
+                          className="absolute -left-8 -right-8 -top-8 -bottom-8 w-[calc(100%+64px)] h-[calc(100%+64px)]"
+                          sparklesCount={30}
+                        />
+                      </div>
+                    </>
                   )}
                   
                   {/* Content layout with centered text */}
-                  <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
-                  <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
+                  <div className="text-white text-xs font-medium mb-1 relative z-10">{block.feesRangeText}</div>
+                  <div className="text-yellow-300 text-[10px] font-medium mb-1 relative z-10">{block.feeRange}</div>
                   
-                  <div className="text-white font-bold text-sm mb-1">{block.totalBtc} BTC</div>
+                  <div className="text-white font-bold text-sm mb-1 relative z-10">{block.totalBtc} BTC</div>
                   
-                  <div className="text-white/90 text-[10px] mb-1">{block.transactionCount.toLocaleString()} txs</div>
-                  <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
+                  <div className="text-white/90 text-[10px] mb-1 relative z-10">{block.transactionCount.toLocaleString()} txs</div>
+                  <div className="mt-auto text-white/80 text-[10px] relative z-10">{formatTimeAgo(block.timestamp)}</div>
                 </div>
                 
                 {/* Pool info with black background */}
