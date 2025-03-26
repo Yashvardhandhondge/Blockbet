@@ -424,6 +424,27 @@ const BettingGrid = () => {
         <div className="px-1 py-4">
           {renderChipSelection()}
         </div>
+        
+        <div className="w-full px-2 mt-5">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
+            <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
+              {formatTimeRemaining()}
+            </span>
+          </div>
+          <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
+        </div>
+        
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+            <X className="w-3.5 h-3.5" />
+            Cancel Last
+          </Button>
+          <Button variant="outline" size="sm" className="flex items-center justify-center gap-1.5 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+            <Trash2 className="w-3.5 h-3.5" />
+            Clear All
+          </Button>
+        </div>
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
@@ -523,4 +544,3 @@ const BettingGrid = () => {
 };
 
 export default BettingGrid;
-
