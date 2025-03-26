@@ -6,66 +6,12 @@ import { cn } from '@/lib/utils';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { AuroraContainer } from '@/components/ui/aurora-container';
 import { SparklesText } from '@/components/ui/sparkles-text';
-import { GlowEffect } from '@/components/ui/glow-effect';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>(recentBlocks);
   const [pendingBlock, setPendingBlock] = useState<number>(50); // Animation progress 0-100
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
-  // Add confetti animation styles to document head
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .confetti {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        opacity: 0;
-        transform: translateY(0) rotate(0);
-        pointer-events: none;
-        animation: confetti-fall 3s ease-in-out forwards;
-        z-index: 100;
-      }
-      
-      @keyframes confetti-fall {
-        0% {
-          opacity: 1;
-          transform: translateY(-20px) rotate(0);
-        }
-        50% {
-          opacity: 0.8;
-        }
-        100% {
-          opacity: 0;
-          transform: translateY(100px) rotate(720deg);
-        }
-      }
-      
-      @keyframes gold-pulse {
-        0% {
-          box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.3);
-        }
-        50% {
-          box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.6);
-        }
-        100% {
-          box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.3);
-        }
-      }
-      
-      .gold-glow {
-        animation: gold-pulse 2s infinite;
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
   
   // Simulate pending block progress
   useEffect(() => {
@@ -84,37 +30,9 @@ const BlockchainVisualization = () => {
     return () => clearInterval(interval);
   }, []);
   
-  // Function to create confetti elements
-  const createConfetti = (containerEl: HTMLElement) => {
-    const colors = ['#FFD700', '#FFC107', '#FFEB3B', '#FF9800', '#FFA726'];
-    const totalConfetti = 50;
-    
-    // Clear any existing confetti
-    const existingConfetti = containerEl.querySelectorAll('.confetti');
-    existingConfetti.forEach(el => el.remove());
-    
-    // Create new confetti pieces
-    for (let i = 0; i < totalConfetti; i++) {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.left = `${Math.random() * 100}%`;
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-      containerEl.appendChild(confetti);
-      
-      // Auto-remove confetti elements after animation completes
-      setTimeout(() => {
-        if (confetti.parentNode === containerEl) {
-          containerEl.removeChild(confetti);
-        }
-      }, 3000);
-    }
-  };
-  
   // Function to add a new block
   const addNewBlock = () => {
     setIsNewBlockAppearing(true);
-    setShowConfetti(true);
     
     // Create new block with unique hash
     const randomHash = `000000000000000000${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 30)}`;
@@ -136,23 +54,8 @@ const BlockchainVisualization = () => {
     setTimeout(() => {
       setBlocks(prev => [newBlock, ...prev.slice(0, 9)]);
       setIsNewBlockAppearing(false);
-      
-      // Hide confetti after a delay
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 3000);
     }, 500);
   };
-
-  // Add confetti effect when a new block appears
-  useEffect(() => {
-    if (showConfetti && scrollRef.current) {
-      const firstBlockElement = scrollRef.current.querySelector('[data-latest-block="true"]');
-      if (firstBlockElement) {
-        createConfetti(firstBlockElement as HTMLElement);
-      }
-    }
-  }, [showConfetti, blocks]);
 
   // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
@@ -280,11 +183,9 @@ const BlockchainVisualization = () => {
             return (
               <div 
                 key={`${block.height}-${block.hash.substring(0, 10)}`} 
-                data-latest-block={isLatestBlock ? "true" : "false"}
                 className={cn(
                   "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
-                  isLatestBlock ? "animate-block-appear" : "",
-                  isLatestBlock && showConfetti ? "gold-glow" : ""
+                  index === 0 ? "animate-block-appear" : ""
                 )}
               >
                 {/* Add outer sparkles for the latest block */}
@@ -295,19 +196,6 @@ const BlockchainVisualization = () => {
                       colors={{ first: "#FFD700", second: "#FFF8E1" }}
                       className="absolute inset-0 w-full h-full"
                       sparklesCount={30}
-                    />
-                  </div>
-                )}
-                
-                {/* Conditional gold glow effect for the latest block */}
-                {isLatestBlock && showConfetti && (
-                  <div className="absolute -inset-1 z-0 rounded-lg">
-                    <GlowEffect
-                      colors={["#FFD700", "#FFA500", "#FFFF00", "#FAFAD2"]}
-                      blur="stronger"
-                      scale={1.1}
-                      mode="colorShift"
-                      duration={1.5}
                     />
                   </div>
                 )}
