@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Block, recentBlocks, miningPools, getRandomMiningPool, formatTimeAgo } from '@/utils/mockData';
 import { useRandomInterval } from '@/lib/animations';
@@ -138,10 +139,10 @@ const BlockchainVisualization = () => {
             >
               <ArrowRight className="h-4 w-4 text-white/70" />
             </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-white/70">Live</span>
+            <div className="flex items-center space-x-2">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span className="text-xs text-white/70">Live</span>
+            </div>
           </div>
         </div>
       </div>
