@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet } from 'lucide-react';
@@ -462,6 +463,20 @@ const BettingGrid = () => {
       </Card>
       
       <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
+        {/* New betting timer card placed above "Your Bets" card */}
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-4 md:mb-0">
+          <h3 className="text-white font-medium text-sm mb-3">Betting Timer</h3>
+          <div className="w-full px-2">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
+              <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
+                {formatTimeRemaining()}
+              </span>
+            </div>
+            <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
+          </div>
+        </Card>
+        
         <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white font-medium text-sm">Your Bets</h3>
@@ -503,16 +518,6 @@ const BettingGrid = () => {
         <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <h3 className="text-white font-medium text-sm mb-3">Select Chip Value</h3>
           {renderChipSelection()}
-          
-          <div className="w-full px-2 mt-5">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-lg font-extrabold tracking-tight text-white text-xl font-bold mb-3">Betting closes in:</span>
-              <span className={cn("text-base font-mono font-bold", getUrgencyClass())}>
-                {formatTimeRemaining()}
-              </span>
-            </div>
-            <Progress value={progressPercentage} className="h-3 bg-white/10 rounded-full" indicatorClassName={cn("transition-all duration-500 ease-linear bg-gradient-to-r from-btc-orange to-orange-500")} />
-          </div>
         </Card>
       </div>
       
