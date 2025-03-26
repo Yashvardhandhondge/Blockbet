@@ -1,4 +1,3 @@
-
 import { fetchRecentBlocks, calculateAverageBlockTime, estimateNextBlockTime } from '../services/mempoolService';
 import { Block } from '@/utils/mockData';
 
@@ -8,6 +7,38 @@ export interface LatestBlockData {
   avgBlockTime: number;
   estimatedNextBlock: string;
 }
+
+/**
+ * Formats a number to at most 1 decimal place, removing trailing zeros
+ * @param value The number to format
+ * @returns Formatted number string
+ */
+const formatToOneDecimal = (value: number): string => {
+  // Round to 1 decimal place
+  const rounded = Math.round(value * 10) / 10;
+  // If it's a whole number, return without decimal
+  if (rounded === Math.floor(rounded)) {
+    return rounded.toString();
+  }
+  // Otherwise return with 1 decimal place
+  return rounded.toFixed(1);
+};
+
+/**
+ * Formats a fee range string with abbreviated numbers
+ * @param feeRange Array of fee values
+ * @returns Formatted fee range string
+ */
+const formatFeeRange = (feeRange: number[]): string => {
+  if (!feeRange || feeRange.length === 0) {
+    return '0 - 0 sat/vB';
+  }
+  
+  const minFee = formatToOneDecimal(feeRange[0]);
+  const maxFee = formatToOneDecimal(feeRange[feeRange.length - 1]);
+  
+  return `${minFee} - ${maxFee} sat/vB`;
+};
 
 /**
  * Fetches latest block data from Mempool.space API
@@ -37,9 +68,9 @@ export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
       size: block.size,
       transactionCount: block.tx_count,
       fees: block.extras?.totalFees || 0,
-      feesRangeText: `~${block.extras?.medianFee || 0} sat/vB`,
+      feesRangeText: `~${formatToOneDecimal(block.extras?.medianFee || 0)} sat/vB`,
       feeRange: block.extras?.feeRange 
-        ? `${block.extras.feeRange[0]} - ${block.extras.feeRange[block.extras.feeRange.length - 1]} sat/vB`
+        ? formatFeeRange(block.extras.feeRange)
         : '0 - 0 sat/vB',
       totalBtc: ((block.extras?.reward || 0) + (block.extras?.totalFees || 0)) / 100000000 // Convert sats to BTC
     }));
