@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet } from 'lucide-react';
@@ -519,6 +520,22 @@ const BettingGrid = () => {
           </Button>
         </div>
       </Card>
+      
+      {/* New thin betting timer strip */}
+      <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-md mb-6 overflow-hidden">
+        <div className="flex items-center justify-between px-3 py-1.5">
+          <div className="flex items-center">
+            <Clock className="h-3.5 w-3.5 text-btc-orange mr-1.5" />
+            <span className="text-xs font-medium title-gradient">Betting closes in:</span>
+          </div>
+          <div className="flex items-center">
+            <span className="text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
+            <div className="w-24 ml-2">
+              <Progress value={progressPercentage} className="h-1.5 bg-white/10 rounded-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
+            </div>
+          </div>
+        </div>
+      </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="title-gradient text-sm mb-3">Live Blockchain Stats:</h3>
