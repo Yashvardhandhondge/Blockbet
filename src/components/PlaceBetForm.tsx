@@ -21,7 +21,6 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
   const potentialWin = betAmount * selectedPool.odds;
   
   const handleBetChange = (value: number) => {
-    // Ensure bet is within limits
     if (value > maxBet) {
       value = maxBet;
     } else if (value < 0) {
@@ -48,7 +47,6 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
     
     setIsPending(true);
     
-    // Simulate API call
     setTimeout(() => {
       toast({
         title: "Bet placed successfully!",
@@ -58,7 +56,6 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
     }, 1500);
   };
   
-  // Get a darker gradient based on the pool's color
   const getPoolDarkGradient = () => {
     switch(selectedPool.id) {
       case 'antpool':

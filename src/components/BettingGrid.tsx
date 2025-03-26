@@ -397,7 +397,7 @@ const BettingGrid = () => {
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="title-gradient text-sm mb-3">Betting Timer</h3>
+        <h3 className="text-white text-sm mb-3">Betting Timer</h3>
         <div className="w-full px-2">
           <div className="flex justify-between items-center mb-1">
             <span className="font-extrabold tracking-tight text-white font-bold text-sm">Betting closes in:</span>
@@ -410,7 +410,7 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="title-gradient text-sm mb-3">Step 1. Found your Wallet.</h3>
+        <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="flex items-center mb-3 md:mb-0">
             <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
@@ -433,14 +433,14 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-4">
-        <h3 className="title-gradient text-sm mb-3">Step 2: Select chip value.</h3>
+        <h3 className="text-white text-sm mb-3">Step 2: Select chip value.</h3>
         <div className="px-1 py-4">
           {renderChipSelection()}
         </div>
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="title-gradient text-sm mb-3">Step 3: Select the next winning mining Pool.</h3>
+        <h3 className="text-white text-sm mb-3">Step 3: Select the next winning mining Pool.</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
           
@@ -466,7 +466,7 @@ const BettingGrid = () => {
         <div className="flex items-center justify-between px-3 py-1.5">
           <div className="flex items-center">
             <Clock className="h-3.5 w-3.5 text-btc-orange mr-1.5" />
-            <span className="text-xs font-medium title-gradient">Betting closes in:</span>
+            <span className="text-xs font-medium text-white">Betting closes in:</span>
           </div>
           <div className="flex-grow mx-4 relative">
             <Progress value={progressPercentage} className="h-1.5 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
@@ -478,7 +478,7 @@ const BettingGrid = () => {
       <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
         <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="title-gradient text-sm">Your Bets</h3>
+            <h3 className="text-white text-sm">Your Bets</h3>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
                 <X className="w-3 h-3" />
@@ -521,16 +521,17 @@ const BettingGrid = () => {
         </Card>
         
         <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-          <h3 className="title-gradient text-sm mb-3">Select Chip Value</h3>
+          <h3 className="text-white text-sm mb-3">Select Chip Value</h3>
           {renderChipSelection()}
         </Card>
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="title-gradient text-sm mb-3">Live Blockchain Stats:</h3>
+        <h3 className="text-white text-sm mb-3">Live Blockchain Stats:</h3>
         <LiveBlockData currentBlock={currentBlock} avgBlockTime={avgBlockTime} pendingTxCount={pendingTxCount} estimatedTime={estimatedTime} />
       </Card>
     </div>;
 };
 
 export default BettingGrid;
+
