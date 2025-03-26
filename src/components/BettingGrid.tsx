@@ -384,6 +384,10 @@ const BettingGrid = () => {
     return (satoshis / 100000000).toFixed(8) + " BTC";
   };
 
+  const formatSatsAmount = (satoshis: number) => {
+    return satoshis.toLocaleString() + " sats";
+  };
+
   return <div className="w-full">
       <div className="flex flex-col items-center mb-6">
         <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
@@ -394,21 +398,21 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
         <h3 className="text-white font-medium text-sm mb-3">Your Wallet</h3>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="bg-btc-orange/20 p-2 rounded-lg mr-3">
-              <Wallet className="h-6 w-6 text-btc-orange" />
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center mb-3 md:mb-0">
+            <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
+              <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
             </div>
             <div>
               <div className="text-xs text-white/60">Balance</div>
-              <div className="text-lg font-bold text-white">{formatBTCAmount(walletBalance)}</div>
+              <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleDeposit}>
+          <div className="flex gap-2 w-full md:w-auto justify-end">
+            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleDeposit}>
               Deposit
             </Button>
-            <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleWithdraw}>
+            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleWithdraw}>
               Withdraw
             </Button>
           </div>
