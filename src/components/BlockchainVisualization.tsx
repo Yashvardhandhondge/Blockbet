@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Block, formatTimeAgo } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -19,6 +20,7 @@ const BlockchainVisualization = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
+  // Memoize the fetch data function to prevent recreating it on each render
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -26,20 +28,25 @@ const BlockchainVisualization = () => {
       
       console.log('Fetched block data:', data);
       
+      // Check if we have a new block
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
+        // Store the hash of the current latest block before updating
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
         
+        // Show toast notification for new block
         toast({
           title: "New Block Found!",
           description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
         });
         
+        // After a short delay, update the blocks
         setTimeout(() => {
           setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
           setIsNewBlockAppearing(false);
         }, 500);
       } else if (blocks.length === 0) {
+        // Initial load
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
       }
       
@@ -50,28 +57,33 @@ const BlockchainVisualization = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [blocks, toast]);
+  }, [blocks, toast]); // Depend on blocks and toast for memoization
   
+  // Setup periodic refresh
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       setShouldRefresh(prev => !prev);
-    }, 30000);
+    }, 30000); // 30 seconds
     
     return () => clearInterval(refreshInterval);
   }, []);
   
+  // Fetch when refresh is triggered
   useEffect(() => {
     fetchData();
   }, [fetchData, shouldRefresh]);
   
+  // Initial fetch
   useEffect(() => {
     fetchData();
   }, [fetchData]);
   
+  // Simulate pending block progress
   useEffect(() => {
     const interval = setInterval(() => {
       setPendingBlock(prev => {
         const newValue = prev + (Math.random() * 2);
+        // Reset when we reach 100%
         if (newValue >= 100) {
           return 0;
         }
@@ -82,22 +94,22 @@ const BlockchainVisualization = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
+    // Convert pool name to lowercase for case-insensitive matching
     const normalizedName = poolName.toLowerCase().trim();
+    
+    // Map of known pool names to their logo paths
     const poolLogoMap: { [key: string]: string } = {
       'foundry usa': '/pool-logos/foundryusa.svg',
-      'foundry': '/pool-logos/foundryusa.svg',
       'antpool': '/pool-logos/antpool.svg',
       'f2pool': '/pool-logos/f2pool.svg',
       'binance pool': '/pool-logos/binancepool.svg',
-      'binance': '/pool-logos/binancepool.svg',
       'viabtc': '/pool-logos/viabtc.svg',
       'slushpool': '/pool-logos/slushpool.svg',
       'braiins pool': '/pool-logos/braiinspool.svg',
-      'braiins': '/pool-logos/braiinspool.svg',
       'poolin': '/pool-logos/poolin.svg',
       'btc.com': '/pool-logos/btccom.svg',
-      'btccom': '/pool-logos/btccom.svg',
       'sbi crypto': '/pool-logos/sbicrypto.svg',
       'emcd': '/pool-logos/emcdpool.svg',
       'luxor': '/pool-logos/luxor.svg',
@@ -109,32 +121,26 @@ const BlockchainVisualization = () => {
       'bitfury': '/pool-logos/bitfury.svg',
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
-      'whitepool': '/Whitepool Bitcoin Explorer.svg',
-      'spiderpool': '/Spiderpool Bitcoin Explorer.svg',
-      'luxor mining': '/Luxor Bitcoin Explorer.svg',
-      'mempool': '/Mempool Bitcoin Explorer.svg',
-      'mempool.space': '/Mempool Bitcoin Explorer.svg',
-      'mempool.com': '/Mempool Bitcoin Explorer.svg',
-      'antpool#0': '/Antpool Bitcoin Explorer.svg',
-      'f2pool#0': '/Bitcoin Explorer f2pool.svg',
-      'binance#0': '/Binance Pool.svg',
-      'unknown': '/pool-logos/default.svg',
     };
     
+    // Check if we have a logo for this pool
     for (const [key, value] of Object.entries(poolLogoMap)) {
       if (normalizedName.includes(key)) {
         return value;
       }
     }
     
+    // Return default logo if no match found
     return '/pool-logos/default.svg';
   };
 
+  // Manual refresh handler
   const handleManualRefresh = async () => {
     try {
       setIsLoading(true);
       const data = await fetchWithRetry(() => fetchLatestBlockData());
       
+      // Check if we have a new block
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
@@ -172,6 +178,7 @@ const BlockchainVisualization = () => {
     }
   };
 
+  // Scroll handlers
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
@@ -182,15 +189,6 @@ const BlockchainVisualization = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
-  };
-  
-  const formatTransactionCount = (count: number): string => {
-    return count ? count.toLocaleString() : '0';
-  };
-
-  const formatBTC = (amount: number | undefined): string => {
-    if (!amount) return '0.000 BTC';
-    return `${amount.toFixed(3)} BTC`;
   };
   
   return (
@@ -230,6 +228,7 @@ const BlockchainVisualization = () => {
       </div>
       
       <div className="relative">
+        {/* Error state */}
         {error && (
           <div className="p-8 text-center">
             <p className="text-red-400">{error}</p>
@@ -242,6 +241,7 @@ const BlockchainVisualization = () => {
           </div>
         )}
         
+        {/* Loading state */}
         {isLoading && blocks.length === 0 && !error && (
           <div className="p-8 text-center">
             <div className="flex justify-center space-x-2">
@@ -253,6 +253,7 @@ const BlockchainVisualization = () => {
           </div>
         )}
         
+        {/* New block appearing animation */}
         <div className={cn(
           "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500 z-10",
           isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -263,65 +264,110 @@ const BlockchainVisualization = () => {
           </div>
         </div>
         
+        {/* Horizontal blocks scrolling area */}
         {blocks.length > 0 && (
           <div 
             ref={scrollRef}
-            className="flex overflow-x-auto hide-scrollbar py-4 px-4 space-x-4 bg-black"
+            className="flex overflow-x-auto hide-scrollbar py-4 pl-4 pr-4 space-x-4 border-b border-white/5 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
             style={{ scrollbarWidth: 'none' }}
           >
-            {blocks.map((block, index) => (
-              <div 
-                key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
-                className="flex-shrink-0 flex flex-col min-w-[140px] max-w-[140px]"
-              >
-                <div className="text-center py-2">
-                  <span className="text-lg font-bold text-cyan-400">
-                    {block.height.toLocaleString()}
-                  </span>
+            {blocks.map((block, index) => {
+              // Determine if this is the most recent block
+              const isLatestBlock = index === 0;
+              // Check if this was the previous latest block that just got pushed
+              const wasPreviousLatest = previousLatestBlock === block.hash;
+              
+              return (
+                <div 
+                  key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
+                  className={cn(
+                    "flex-shrink-0 w-32 relative group transition-all duration-300 hover:transform hover:scale-[1.03]",
+                    index === 0 ? "animate-block-appear" : ""
+                  )}
+                >
+                  {/* Add outer sparkles for the latest block */}
+                  {isLatestBlock && (
+                    <div className="absolute -inset-2 pointer-events-none opacity-70 z-10">
+                      <SparklesText 
+                        text="" 
+                        colors={{ first: "#FFD700", second: "#FFF8E1" }}
+                        className="absolute inset-0 w-full h-full"
+                        sparklesCount={30}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* 3D Box Effect - Top */}
+                  <div className={cn(
+                    "h-4 w-full bg-[#141420] skew-x-[-25deg] origin-top-right absolute -top-3 left-2",
+                    isLatestBlock && "bg-[#2A2000]"
+                  )}></div>
+                  
+                  {/* 3D Box Effect - Side */}
+                  <div className={cn(
+                    "h-full w-4 bg-[#070710] skew-y-[30deg] origin-bottom-left absolute -left-4 top-0",
+                    isLatestBlock && "bg-[#1A1500]"
+                  )}></div>
+                  
+                  {/* Block header with height - cyan color for all except latest */}
+                  <div className={cn(
+                    "h-6 flex items-center justify-center text-sm font-bold",
+                    isLatestBlock ? "bg-black text-yellow-300" : "bg-black text-[#7EB5FF]"
+                  )}>
+                     {block.height}
+                  </div>
+                  
+                  {/* Block content with gradient */}
+                  <div 
+                    className={cn(
+                      "p-3 flex flex-col h-24 relative overflow-hidden text-center",
+                      isLatestBlock 
+                        ? "bg-gradient-to-b from-yellow-500/90 via-yellow-600/80 to-amber-700/80" 
+                        : wasPreviousLatest
+                          ? "bg-gradient-to-b from-purple-500/90 via-indigo-600/80 to-blue-700/80 transition-colors duration-1000"
+                          : "bg-gradient-to-b from-purple-600/90 via-indigo-700/80 to-blue-700/80"
+                    )}
+                  >
+                    {/* Sparkles effect only for the latest block */}
+                    {isLatestBlock && (
+                      <div className="absolute inset-0 pointer-events-none opacity-80">
+                        <SparklesText 
+                          text="" 
+                          colors={{ first: "#FFD700", second: "#FFF8E1" }}
+                          className="absolute inset-0 w-full h-full"
+                          sparklesCount={25}
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Content layout with centered text */}
+                    <div className="text-white text-xs font-medium mb-1">{block.feesRangeText}</div>
+                    <div className="text-yellow-300 text-[10px] font-medium mb-1">{block.feeRange}</div>
+                    
+                    <div className="text-white font-bold text-sm mb-1">{block.totalBtc?.toFixed(2) || '0'} BTC</div>
+                    
+                    <div className="text-white/90 text-[10px] mb-1">{block.transactionCount?.toLocaleString() || 0} txs</div>
+                    <div className="mt-auto text-white/80 text-[10px]">{formatTimeAgo(block.timestamp)}</div>
+                  </div>
+                  
+                  {/* Pool info with black background */}
+                  <div className="bg-black py-1 px-2 flex items-center justify-center space-x-1 border-t border-black/50">
+                    <div className="w-3 h-3 rounded-full overflow-hidden flex items-center justify-center">
+                      <img 
+                        src={getPoolLogo(block.minedBy)} 
+                        alt={block.minedBy}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          console.error(`Error loading logo for ${block.minedBy}`);
+                          (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
+                        }}
+                      />
+                    </div>
+                    <span className="text-white text-[10px] font-medium truncate">{block.minedBy}</span>
+                  </div>
                 </div>
-                
-                <div className="bg-gradient-to-b from-purple-800 via-indigo-700 to-blue-700 p-2 rounded-t-md flex flex-col h-[160px]">
-                  <div className="text-center mb-1">
-                    <span className="text-sm font-medium text-white">{block.feesRangeText}</span>
-                  </div>
-                  
-                  <div className="text-center mb-2">
-                    <span className="text-xs text-yellow-300 font-medium">{block.feeRange}</span>
-                  </div>
-                  
-                  <div className="text-center mb-2">
-                    <span className="text-lg font-bold text-white">{formatBTC(block.totalBtc)}</span>
-                  </div>
-                  
-                  <div className="text-center mb-2">
-                    <span className="text-xs font-medium text-white">
-                      {formatTransactionCount(block.transactionCount)} txs
-                    </span>
-                  </div>
-                  
-                  <div className="text-center mt-auto">
-                    <span className="text-xs font-medium text-white">
-                      {block.minutesAgo ? `${block.minutesAgo} minutes ago` : formatTimeAgo(block.timestamp)}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="bg-black py-2 px-1 rounded-b-md flex items-center justify-center space-x-1">
-                  <div className="w-4 h-4 rounded-full overflow-hidden bg-black flex items-center justify-center">
-                    <img 
-                      src={getPoolLogo(block.minedBy)} 
-                      alt={block.minedBy}
-                      className="w-3 h-3 object-contain"
-                      onError={(e) => {
-                        console.error(`Error loading logo for ${block.minedBy}`);
-                        (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
-                      }}
-                    />
-                  </div>
-                  <span className="text-xs text-white font-medium truncate">{block.minedBy}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
