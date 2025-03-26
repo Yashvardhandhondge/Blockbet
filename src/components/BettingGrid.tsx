@@ -555,13 +555,6 @@ const BettingGrid = () => {
   };
 
   return <div className="w-full">
-      <div className="flex flex-col items-center mb-6">
-        <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
-          Place Your Bets
-        </h1>
-        <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">Place your chips on the mining pool that you think will mine the next Bitcoin block.</p>
-      </div>
-      
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
@@ -573,6 +566,13 @@ const BettingGrid = () => {
             <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
           </div>
         </div>
+      </div>
+      
+      <div className="flex flex-col items-center mb-6">
+        <h1 className="text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-btc-orange to-yellow-500">
+          Place Your Bets
+        </h1>
+        <p className="text-white/80 text-lg mb-4 animate-pulse-subtle">Place your chips on the mining pool that you think will mine the next Bitcoin block.</p>
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
