@@ -462,18 +462,15 @@ const BettingGrid = () => {
         </div>
       </Card>
       
-      {/* Thin betting timer strip - moved up as requested */}
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-md mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-1.5">
           <div className="flex items-center">
             <Clock className="h-3.5 w-3.5 text-btc-orange mr-1.5" />
             <span className="text-xs font-medium title-gradient">Betting closes in:</span>
           </div>
-          <div className="flex items-center flex-grow ml-4">
-            <span className="text-xs font-mono font-bold text-btc-orange mr-3">{formatTimeRemaining()}</span>
-            <div className="flex-grow max-w-[400px]">
-              <Progress value={progressPercentage} className="h-1.5 bg-white/10 rounded-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
-            </div>
+          <div className="flex-grow mx-4 relative">
+            <Progress value={progressPercentage} className="h-1.5 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
+            <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
           </div>
         </div>
       </div>
