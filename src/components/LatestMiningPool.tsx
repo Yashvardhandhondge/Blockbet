@@ -103,6 +103,8 @@ const LatestMiningPool = () => {
       'bitfury': '/pool-logos/bitfury.svg',
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
+      'mara pool': '/pool-logos/marapool.svg', // Fixed MaraPool logo
+      'whitepool': '/pool-logos/whitepool.svg' // Fixed WhitePool logo
     };
     
     // Check if we have a logo for this pool
