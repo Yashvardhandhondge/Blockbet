@@ -353,12 +353,19 @@ const BettingGrid = () => {
       'unknown': '/Mempool Bitcoin Explorer (2).svg'
     };
     const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
-    return <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden p-0.5">
-        <img src={logoPath} alt={`${poolId} logo`} className="w-full h-full object-contain" onError={e => {
-        console.log(`Error loading logo for ${poolId}: ${logoPath}`);
-        e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
-      }} />
-      </div>;
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden p-0.5">
+        <img 
+          src={logoPath} 
+          alt={`${poolId} logo`} 
+          className="w-full h-full object-contain" 
+          onError={e => {
+            console.log(`Error loading logo for ${poolId}: ${logoPath}`);
+            e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
+          }} 
+        />
+      </div>
+    );
   };
 
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
@@ -389,11 +396,13 @@ const BettingGrid = () => {
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
     const textColor = poolId === 'unknown' ? '#FFFFFF' : '#FFFFFF';
-    return <div className="w-full h-full flex items-center justify-center bg-white text-sm font-bold" style={{
-      color: textColor
-    }}>
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-white text-sm font-bold" style={{
+        color: textColor
+      }}>
         {firstLetter}
-      </div>;
+      </div>
+    );
   };
 
   const getChipColor = (value: number) => {
@@ -473,24 +482,30 @@ const BettingGrid = () => {
     })).sort((a, b) => b.amount - a.amount);
     const chipsToShow = chipGroups.slice(0, 3);
     const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
-    return <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", getChipColor(chipGroup.amount))} style={{
-        zIndex: 5 - index,
-        transform: `translateX(${index * 4}px)`
-      }}>
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
+          <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", getChipColor(chipGroup.amount))} style={{
+            zIndex: 5 - index,
+            transform: `translateX(${index * 4}px)`
+          }}>
             <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
             <div className="flex items-center">
               {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
             </div>
-          </div>)}
-        {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
-        zIndex: 1,
-        transform: `translateX(${chipsToShow.length * 4}px)`
-      }}>
+          </div>
+        ))}
+        {remainingDenoms > 0 && (
+          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
+            zIndex: 1,
+            transform: `translateX(${chipsToShow.length * 4}px)`
+          }}>
             +{remainingDenoms}
-          </div>}
-      </div>;
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderStackedChips = (bets: Array<{
@@ -500,61 +515,120 @@ const BettingGrid = () => {
     if (bets.length === 0) return null;
     const displayBets = bets.slice(-5);
     const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
-    return <div className="absolute bottom-1 right-1 flex flex-col items-end">
+    return (
+      <div className="absolute bottom-1 right-1 flex flex-col items-end">
         <div className="relative h-12 w-8">
-          {displayBets.map((bet, index) => <div key={bet.id} className={cn("absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(bet.amount))} style={{
-          bottom: `${index * 4}px`,
-          right: `${index % 2 === 0 ? 0 : 2}px`,
-          zIndex: index,
-          transform: `rotate(${index * 5 - 10}deg)`
-        }}>
-              <div className="absolute inset-1.5 rounded-full border-2 border-white/30\"></div>
+          {displayBets.map((bet, index) => (
+            <div 
+              key={bet.id} 
+              className={cn(
+                "absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+                getChipColor(bet.amount)
+              )} 
+              style={{
+                bottom: `${index * 4}px`,
+                right: `${index % 2 === 0 ? 0 : 2}px`,
+                zIndex: index,
+                transform: `rotate(${index * 5 - 10}deg)`
+              }}
+            >
+              <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
               <div className="flex items-center">
                 {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
               </div>
-            </div>)}
+            </div>
+          ))}
         </div>
         
-        {remainingCount > 0 && <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
+        {remainingCount > 0 && (
+          <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
             +{remainingCount} more
-          </div>}
-      </div>;
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
-    return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "")}>
-        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
-            {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
+    return (
+      <div className={cn(
+        "flex flex-wrap gap-2 justify-center mb-4", 
+        isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : ""
+      )}>
+        {CHIP_VALUES.map(value => (
+          <div 
+            key={value} 
+            className={cn(
+              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
+              selectedChip === value ? "transform scale-110" : "transform scale-100", 
+              isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-14 h-14"
+            )} 
+            onClick={() => handleSelectChip(value)}
+          >
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>
+            )}
             
-            {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>
+            )}
             
-            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-8 h-8" : "w-12 h-12")}>
-              <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(value)}`
-          }}></div>
+            <div className={cn(
+              "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+              getChipColor(value), 
+              isMobile ? "w-8 h-8" : "w-12 h-12"
+            )}>
+              <div 
+                className="absolute inset-0 rounded-full border-2 border-dashed" 
+                style={{
+                  borderColor: `${getChipSecondaryColor(value)}`
+                }}
+              ></div>
               
-              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
+              <div className={cn(
+                "absolute rounded-full border border-white/30", 
+                isMobile ? "inset-0.5" : "inset-1.5"
+              )}></div>
               
-              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[9px]\" : \"\")}>
+              <span className={cn(
+                "relative z-10 text-white font-bold drop-shadow-md", 
+                isMobile ? "text-[9px]" : ""
+              )}>
                 {formatChipValue(value)}
               </span>
             </div>
-          </div>)}
-      </div>;
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const renderBetControlButtons = () => {
-    return <div className="flex gap-2 justify-end">
-        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+    return (
+      <div className="flex gap-2 justify-end">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
+          onClick={handleCancelLastBet} 
+          disabled={bets.length === 0}
+        >
           <X className="w-3 h-3" />
           Cancel Last
         </Button>
-        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
+          onClick={handleClearBets} 
+          disabled={bets.length === 0}
+        >
           <Trash2 className="w-3 h-3" />
           Clear All
         </Button>
-      </div>;
+      </div>
+    );
   };
 
   const formatBTCAmount = (satoshis: number) => {
@@ -652,4 +726,14 @@ const BettingGrid = () => {
         )}
       </Card>
       
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
+        <h3 className="text-white text-sm mb-3">Step 3: Place your bets on mining pools.</h3>
+        <div className="grid grid-cols-1 gap-4">
+          <p className="text-white/60 text-sm text-center py-4">Select mining pools to place your bets.</p>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default BettingGrid;
