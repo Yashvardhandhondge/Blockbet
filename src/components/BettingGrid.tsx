@@ -293,7 +293,7 @@ const BettingGrid = () => {
     setNextBetId(prev => prev + 1);
     toast({
       title: "Bet placed!",
-      description: `${(selectedChip / 100000).toFixed(5)} BTC on ${poolId ? miningPools.find(p => p.id === poolId)?.name : 'Empty Block'}`,\
+      description: `${(selectedChip / 100000).toFixed(5)} BTC on ${poolId ? miningPools.find(p => p.id === poolId)?.name : 'Empty Block'}`,
       variant: "default"
     });
   };
@@ -700,4 +700,4 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-
