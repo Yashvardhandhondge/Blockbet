@@ -1,205 +1,360 @@
+import { Sparkles } from 'lucide-react';
 
-import { MiningPool } from '@/utils/types';
+export interface MiningPool {
+  id: string;
+  name: string;
+  hashRate: number;
+  hashRatePercent: number;
+  odds: number;
+  region: string;
+  blocksLast24h: number;
+  logoUrl: string;
+  gradient: string;
+  colorClass: string; // Added missing property
+}
 
-// Mock mining pool data
-export const mockMiningPools: MiningPool[] = [
+export interface Block {
+  height: number;
+  timestamp: number;
+  minedBy: string;
+  hash: string;
+  size?: number;
+  transactionCount?: number;
+  fees?: number;
+  feesRangeText?: string;
+  feeRange?: string;
+  totalBtc?: number;
+}
+
+export interface UserBalance {
+  availableBalance: number;
+  totalBet: number;
+  totalWin: number;
+}
+
+export const mockUserBalance: UserBalance = {
+  availableBalance: 0.15,
+  totalBet: 0.02,
+  totalWin: 0.05,
+};
+
+export const nextBlockEstimate = {
+  estimatedTimeMinutes: 9.8,
+};
+
+export const miningPools: MiningPool[] = [
   {
     id: 'foundry',
     name: 'Foundry USA',
-    hashRate: 70.5,
-    hashRatePercent: 33.8,
-    blocksLast24h: 52,
-    colorClass: 'bg-amber-600',
-    odds: 2.95,
+    hashRate: 83.2,
+    hashRatePercent: 21.3,
+    odds: 4.69,
     region: 'North America',
+    blocksLast24h: 135,
     logoUrl: '/pool-logos/foundryusa.svg',
-    gradient: 'bg-gradient-to-r from-amber-600 to-amber-700'
+    gradient: 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)',
+    colorClass: 'bg-orange-700'
   },
   {
     id: 'antpool',
-    name: 'AntPool',
-    hashRate: 45.2,
-    hashRatePercent: 21.7,
-    blocksLast24h: 34,
-    colorClass: 'bg-red-600',
-    odds: 4.61,
+    name: 'Antpool',
+    hashRate: 68.1,
+    hashRatePercent: 17.4,
+    odds: 5.75,
     region: 'Asia',
+    blocksLast24h: 110,
     logoUrl: '/pool-logos/antpool.svg',
-    gradient: 'bg-gradient-to-r from-red-600 to-red-700'
+    gradient: 'linear-gradient(135deg, #4a0e0e 0%, #2a0606 100%)',
+    colorClass: 'bg-red-800'
   },
   {
     id: 'f2pool',
     name: 'F2Pool',
-    hashRate: 30.4,
-    hashRatePercent: 14.6,
-    blocksLast24h: 22,
-    colorClass: 'bg-blue-600',
-    odds: 6.85,
+    hashRate: 51.3,
+    hashRatePercent: 13.1,
+    odds: 7.63,
     region: 'Asia',
+    blocksLast24h: 83,
     logoUrl: '/pool-logos/f2pool.svg',
-    gradient: 'bg-gradient-to-r from-blue-600 to-blue-700'
+    gradient: 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)',
+    colorClass: 'bg-blue-800'
   },
   {
     id: 'binance',
     name: 'Binance Pool',
-    hashRate: 20.1,
-    hashRatePercent: 9.6,
-    blocksLast24h: 15,
-    colorClass: 'bg-yellow-500',
-    odds: 10.42,
+    hashRate: 34.2,
+    hashRatePercent: 8.7,
+    odds: 11.49,
     region: 'Asia',
+    blocksLast24h: 55,
     logoUrl: '/pool-logos/binancepool.svg',
-    gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+    gradient: 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)',
+    colorClass: 'bg-amber-600'
   },
   {
     id: 'viabtc',
     name: 'ViaBTC',
-    hashRate: 18.7,
-    hashRatePercent: 9.0,
-    blocksLast24h: 14,
-    colorClass: 'bg-green-600',
-    odds: 11.11,
+    hashRate: 25.7,
+    hashRatePercent: 6.6,
+    odds: 15.15,
     region: 'Asia',
+    blocksLast24h: 42,
     logoUrl: '/pool-logos/viabtc.svg',
-    gradient: 'bg-gradient-to-r from-green-600 to-green-700'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-orange-600'
   },
   {
     id: 'slushpool',
-    name: 'SlushPool',
-    hashRate: 12.9,
-    hashRatePercent: 6.2,
-    blocksLast24h: 10,
-    colorClass: 'bg-indigo-600',
-    odds: 16.13,
+    name: 'Slush Pool',
+    hashRate: 18.5,
+    hashRatePercent: 4.7,
+    odds: 21.28,
     region: 'Europe',
+    blocksLast24h: 30,
     logoUrl: '/pool-logos/slushpool.svg',
-    gradient: 'bg-gradient-to-r from-indigo-600 to-indigo-700'
+    gradient: 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)',
+    colorClass: 'bg-blue-700'
   },
   {
     id: 'poolin',
     name: 'Poolin',
-    hashRate: 10.4,
-    hashRatePercent: 5.0,
-    blocksLast24h: 8,
-    colorClass: 'bg-teal-600',
-    odds: 20.0,
+    hashRate: 15.2,
+    hashRatePercent: 3.9,
+    odds: 25.64,
     region: 'Asia',
+    blocksLast24h: 25,
     logoUrl: '/pool-logos/poolin.svg',
-    gradient: 'bg-gradient-to-r from-teal-600 to-teal-700'
-  }
+    gradient: 'linear-gradient(135deg, #0a4a30 0%, #052218 100%)',
+    colorClass: 'bg-green-800'
+  },
+  {
+    id: 'sbicrypto',
+    name: 'SBI Crypto',
+    hashRate: 14.1,
+    hashRatePercent: 3.6,
+    odds: 27.78,
+    region: 'Asia',
+    blocksLast24h: 22,
+    logoUrl: '/pool-logos/sbicrypto.svg',
+    gradient: 'linear-gradient(135deg, #1a3366 0%, #0d1b33 100%)',
+    colorClass: 'bg-blue-900'
+  },
+  {
+    id: 'braiinspool',
+    name: 'Braiins Pool',
+    hashRate: 13.3,
+    hashRatePercent: 3.4,
+    odds: 29.41,
+    region: 'Europe',
+    blocksLast24h: 21,
+    logoUrl: '/pool-logos/braiinspool.svg',
+    gradient: 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)',
+    colorClass: 'bg-cyan-700'
+  },
+  {
+    id: 'marapool',
+    name: 'Mara Pool',
+    hashRate: 12.5,
+    hashRatePercent: 3.2,
+    odds: 31.25,
+    region: 'North America',
+    blocksLast24h: 4,
+    logoUrl: '/pool-logos/marapool.svg',
+    gradient: 'linear-gradient(135deg, #4f1a00 0%, #2d0f00 100%)',
+    colorClass: 'bg-amber-800'
+  },
+  {
+    id: 'emcd',
+    name: 'EMCD',
+    hashRate: 11.8,
+    hashRatePercent: 3.0,
+    odds: 33.33,
+    region: 'Europe',
+    blocksLast24h: 19,
+    logoUrl: '/pool-logos/emcdpool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-yellow-800'
+  },
+  {
+    id: 'luxor',
+    name: 'Luxor',
+    hashRate: 9.2,
+    hashRatePercent: 2.4,
+    odds: 41.67,
+    region: 'North America',
+    blocksLast24h: 15,
+    logoUrl: '/pool-logos/luxor.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-yellow-700'
+  },
+  {
+    id: 'titan.io',
+    name: 'Titan.io',
+    hashRate: 8.5,
+    hashRatePercent: 2.2,
+    odds: 45.45,
+    region: 'North America',
+    blocksLast24h: 14,
+    logoUrl: '/pool-logos/titan.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-stone-700'
+  },
+  {
+    id: 'okex',
+    name: 'Okex',
+    hashRate: 7.8,
+    hashRatePercent: 2.0,
+    odds: 50.00,
+    region: 'Asia',
+    blocksLast24h: 12,
+    logoUrl: '/pool-logos/okexpool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-blue-600'
+  },
+  {
+    id: 'huobi pool',
+    name: 'Huobi Pool',
+    hashRate: 7.1,
+    hashRatePercent: 1.8,
+    odds: 55.56,
+    region: 'Asia',
+    blocksLast24h: 11,
+    logoUrl: '/pool-logos/huobipool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-sky-600'
+  },
+  {
+    id: 'btc.com',
+    name: 'BTC.com',
+    hashRate: 6.4,
+    hashRatePercent: 1.6,
+    odds: 62.50,
+    region: 'Asia',
+    blocksLast24h: 10,
+    logoUrl: '/pool-logos/btccom.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-red-600'
+  },
+  {
+    id: 'bitfury',
+    name: 'Bitfury',
+    hashRate: 5.7,
+    hashRatePercent: 1.5,
+    odds: 66.67,
+    region: 'Europe',
+    blocksLast24h: 9,
+    logoUrl: '/pool-logos/bitfury.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-slate-700'
+  },
+  {
+    id: 'kano pool',
+    name: 'Kano Pool',
+    hashRate: 5.0,
+    hashRatePercent: 1.3,
+    odds: 76.92,
+    region: 'North America',
+    blocksLast24h: 8,
+    logoUrl: '/pool-logos/kucoinpool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-emerald-700'
+  },
+  {
+    id: 'pega pool',
+    name: 'Pega Pool',
+    hashRate: 4.3,
+    hashRatePercent: 1.1,
+    odds: 90.91,
+    region: 'Asia',
+    blocksLast24h: 7,
+    logoUrl: '/pool-logos/pegapool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-indigo-600'
+  },
+  {
+    id: 'ultimuspool',
+    name: 'Ultimuspool',
+    hashRate: 3.6,
+    hashRatePercent: 0.9,
+    odds: 111.11,
+    region: 'Europe',
+    blocksLast24h: 6,
+    logoUrl: '/pool-logos/ultimuspool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-violet-700'
+  },
+  {
+    id: 'minerium',
+    name: 'Minerium',
+    hashRate: 2.9,
+    hashRatePercent: 0.7,
+    odds: 142.86,
+    region: 'Europe',
+    blocksLast24h: 5,
+    logoUrl: '/pool-logos/minerium.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-purple-700'
+  },
+  {
+    id: 'whitepool',
+    name: 'Whitepool',
+    hashRate: 2.1,
+    hashRatePercent: 0.5,
+    odds: 200.00,
+    region: 'Europe',
+    blocksLast24h: 4,
+    logoUrl: '/pool-logos/whitepool.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-white/30'
+  },
+  {
+    id: 'carbon negative',
+    name: 'Carbon Negative',
+    hashRate: 0.7,
+    hashRatePercent: 0.2,
+    odds: 571.43,
+    region: 'North America',
+    blocksLast24h: 2,
+    logoUrl: '/pool-logos/default.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-green-700'
+  },
+  {
+    id: 'secpool',
+    name: 'Secpool',
+    hashRate: 0.0,
+    hashRatePercent: 0.0,
+    odds: 833.33,
+    region: 'Asia',
+    blocksLast24h: 0,
+    logoUrl: '/pool-logos/default.svg',
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-gray-700'
+  },
 ];
 
-// Alias to miningPools for backward compatibility
-export const miningPools = mockMiningPools;
-
-// Mock next block estimate
-export const nextBlockEstimate = {
-  estimatedTimeMinutes: 10,
-  averageBlockTime: 9.8
-};
-
-// Mock user balance
-export const mockUserBalance = {
-  availableBalance: 0.05,
-  inPlay: 0.015
-};
-
-// Format BTC value to string
-export const formatBTC = (amount: number): string => {
-  return amount.toFixed(8);
-};
-
-// Format timeAgo
 export const formatTimeAgo = (timestamp: number): string => {
-  const now = Date.now();
-  const elapsedMs = now - timestamp;
-  
-  const seconds = Math.floor(elapsedMs / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  
-  if (days > 0) {
-    return `${days} day${days === 1 ? '' : 's'} ago`;
-  } else if (hours > 0) {
-    return `${hours} hour${hours === 1 ? '' : 's'} ago`;
-  } else if (minutes > 0) {
-    return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
-  } else {
-    return `${seconds} second${seconds === 1 ? '' : 's'} ago`;
+  const now = new Date().getTime();
+  const diffInSeconds = Math.floor((now - timestamp) / 1000);
+
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds} seconds ago`;
   }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} minutes ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours} hours ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays} days ago`;
 };
 
-// Mock bet history
-export const mockBetHistory = [
-  {
-    id: 1,
-    poolId: 'foundry',
-    poolName: 'Foundry USA',
-    amount: 150000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 25),
-    isWin: true,
-    blockHeight: 824523
-  },
-  {
-    id: 2,
-    poolId: 'antpool',
-    poolName: 'AntPool',
-    amount: 75000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 120),
-    isWin: false,
-    blockHeight: 824512
-  },
-  {
-    id: 3,
-    poolId: 'f2pool',
-    poolName: 'F2Pool',
-    amount: 200000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 180),
-    isWin: false,
-    blockHeight: 824505
-  },
-  {
-    id: 4,
-    poolId: 'binance',
-    poolName: 'Binance Pool',
-    amount: 120000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 240),
-    isWin: true,
-    blockHeight: 824498
-  }
-];
-
-// Mock deposits
-export const mockDeposits = [
-  {
-    id: 1,
-    amount: 500000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
-    txId: '3a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u'
-  },
-  {
-    id: 2,
-    amount: 1200000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-    txId: '7h8i9j0k1l2m3n4o5p6q7r8s9t0u3a1b2c3d4e5f6g'
-  }
-];
-
-// Mock withdrawals
-export const mockWithdrawals = [
-  {
-    id: 1,
-    amount: 300000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 10),
-    txId: '9j0k1l2m3n4o5p6q7r8s9t0u3a1b2c3d4e5f6g7h8i',
-    status: 'completed' as const
-  },
-  {
-    id: 2,
-    amount: 700000,
-    timestamp: new Date(Date.now() - 1000 * 60 * 30),
-    txId: '5p6q7r8s9t0u3a1b2c3d4e5f6g7h8i9j0k1l2m3n4o',
-    status: 'pending' as const
-  }
-];
+export const formatBTC = (btc: number): string => {
+  return btc.toFixed(8);
+};

@@ -651,44 +651,4 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Step 3: Place your bets on mining pools.</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-          {miningPools.slice(0, 8).map(pool => (
-            <div 
-              key={pool.id} 
-              className="relative aspect-square bg-gradient-to-br rounded-lg overflow-hidden border border-white/10 cursor-pointer hover:border-btc-orange/40 transition-all hover:shadow-lg hover:shadow-btc-orange/5"
-              style={getPoolGradientStyle(pool.id)}
-              onClick={() => handleSelectPool(pool)}
-            >
-              <div className="absolute inset-0 opacity-30 bg-gradient-to-br from-black via-transparent to-black"></div>
-              
-              <div className="absolute top-1 left-1 h-6 w-6 rounded-full bg-white/10 overflow-hidden shadow-xl">
-                {getPoolLogo(pool.id)}
-              </div>
-              
-              <div className="absolute top-1 right-1 text-[10px] font-bold bg-black/40 text-white/90 px-1.5 py-0.5 rounded-full">
-                {pool.odds}x
-              </div>
-              
-              <div className="absolute bottom-1 left-1 right-1">
-                <div className="text-[10px] font-medium text-white/80 bg-black/60 rounded px-1 mb-0.5 truncate">
-                  {pool.name}
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="text-[8px] text-white/60 bg-black/40 px-1 rounded">
-                    {pool.hashRate}
-                  </div>
-                  
-                  {getBetsOnPool(pool.id).length > 0 && renderRouletteCasualChips(getBetsOnPool(pool.id).map(bet => bet.amount))}
-                </div>
-              </div>
-              
-              {renderStackedChips(getBetsOnPool(pool.id))}
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>;
-};
-
-export default BettingGrid;
+        <h3 className="text-
