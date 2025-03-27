@@ -625,7 +625,8 @@ const BettingGrid = () => {
     setBets([]);
   };
 
-  return <div className="w-full">
+  return (
+    <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
@@ -705,4 +706,64 @@ const BettingGrid = () => {
         <Card className="w-full h-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white text-sm">Your Bets</h3>
-            <div className="
+            <div className="text-xs text-white/60">
+              Total: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
+            </div>
+          </div>
+          
+          {bets.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="bg-btc-dark/50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                <Server className="w-6 h-6 text-white/30" />
+              </div>
+              <p className="text-white/50 text-sm">No active bets</p>
+              <p className="text-white/30 text-xs mt-1">Select a chip and click on a mining pool to place a bet</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
+              {getConsolidatedBets().map((bet, index) => {
+                const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
+                return (
+                  <div key={`bet-${bet.poolId || 'empty'}-${index}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                    <div className="flex items-center">
+                      {bet.poolId ? (
+                        <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-gradient-to-br from-gray-700 to-gray-900 p-0.5">
+                          <div className="w-full h-full bg-black rounded-full flex items-center justify-center overflow-hidden">
+                            {getPoolLogo(bet.poolId)}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-full mr-2 bg-gray-800 flex items-center justify-center">
+                          <X className="w-4 h-4 text-white/60" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-sm text-white font-medium">{pool?.name || 'Empty Block'}</div>
+                        <div className="text-xs text-white/60">Odds: {pool?.odds.toFixed(2) || '1.00'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      {renderRouletteCasualChips(bet.amounts)}
+                      <div className="text-sm text-white font-mono">{formatSats(bet.totalAmount)}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+        
+        <Card className="w-full h-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-white text-sm">Step 2: Select chip value in sats.</h3>
+          </div>
+          <div className="px-0">
+            {renderChipSelection()}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default BettingGrid;
