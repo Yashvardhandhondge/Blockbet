@@ -89,6 +89,15 @@ export const mockMiningPools: MiningPool[] = [
   }
 ];
 
+// Alias to miningPools for backward compatibility
+export const miningPools = mockMiningPools;
+
+// Mock next block estimate
+export const nextBlockEstimate = {
+  estimatedTimeMinutes: 10,
+  averageBlockTime: 9.8
+};
+
 // Mock user balance
 export const mockUserBalance = {
   availableBalance: 0.05,
