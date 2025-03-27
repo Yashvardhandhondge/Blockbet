@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -6,6 +5,8 @@ import { CheckCircle, XCircle, Trophy, DollarSign, Calendar, FileBarChart, Uploa
 import { format } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 
 interface BetHistoryProps {
   betHistory: Array<{
@@ -41,6 +42,7 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
   withdrawals = [] 
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'wins' | 'losses' | 'deposits' | 'withdrawals'>('all');
+  const isMobile = useIsMobile();
   
   // Sort transactions by newest first (using timestamp)
   const sortedBetHistory = [...betHistory].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
@@ -133,23 +135,52 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
       </div>
       
       <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid grid-cols-5 mb-4 bg-[#121212]/40">
+        <TabsList className={cn(
+          "mb-4 bg-[#121212]/40",
+          isMobile ? "grid grid-cols-3 mb-1" : "grid grid-cols-5"
+        )}>
           <TabsTrigger value="all" className="data-[state=active]:bg-btc-orange/20 data-[state=active]:text-btc-orange">
-            All ({totalBets})
+            All {!isMobile && `(${totalBets})`}
           </TabsTrigger>
           <TabsTrigger value="wins" className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-500">
-            Wins ({totalWins})
+            Wins {!isMobile && `(${totalWins})`}
           </TabsTrigger>
           <TabsTrigger value="losses" className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-500">
-            Losses ({totalLosses})
+            Loss {!isMobile && `(${totalLosses})`}
           </TabsTrigger>
-          <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
-            Deposits ({totalDeposits})
-          </TabsTrigger>
-          <TabsTrigger value="withdrawals" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
-            Withdrawals ({totalWithdrawals})
-          </TabsTrigger>
+          
+          {isMobile ? (
+            <CollapsibleTrigger asChild className="col-span-3 mt-1">
+              <Button variant="outline" size="sm" className="bg-[#121212]/40 text-xs border-white/10 hover:bg-[#202020]/40">
+                More Tabs
+              </Button>
+            </CollapsibleTrigger>
+          ) : (
+            <>
+              <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
+                Deposits {!isMobile && `(${totalDeposits})`}
+              </TabsTrigger>
+              <TabsTrigger value="withdrawals" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
+                Withdrawals {!isMobile && `(${totalWithdrawals})`}
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
+        
+        {isMobile && (
+          <Collapsible>
+            <CollapsibleContent>
+              <TabsList className="grid grid-cols-2 mb-4 bg-[#121212]/40 w-full">
+                <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
+                  Deposits
+                </TabsTrigger>
+                <TabsTrigger value="withdrawals" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
+                  Withdrawals
+                </TabsTrigger>
+              </TabsList>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
         
         <TabsContent value="all" className="mt-0">
           <ScrollArea className="h-[300px]">
