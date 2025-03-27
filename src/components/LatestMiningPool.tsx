@@ -35,12 +35,14 @@ const LatestMiningPool = () => {
         
         // Show toast notification for new block
         toast({
-          title: <ToastContent 
-                  title="New Block Found!" 
-                  description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
-                  poolName={data.latestBlock.minedBy}
-                />,
-          description: ""
+          description: "",
+          action: (
+            <ToastContent 
+              title="New Block Found!" 
+              description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
+              poolName={data.latestBlock.minedBy}
+            />
+          )
         });
         
         // After a short delay, update the blocks
@@ -130,13 +132,17 @@ const LatestMiningPool = () => {
     try {
       await fetchData();
       toast({
-        title: <ToastContent title="Data Refreshed" description="Mining pool data updated" />,
-        description: ""
+        description: "",
+        action: (
+          <ToastContent title="Data Refreshed" description="Mining pool data updated" />
+        )
       });
     } catch (err) {
       toast({
-        title: <ToastContent title="Error" description="Failed to refresh data" variant="destructive" />,
-        description: ""
+        description: "",
+        action: (
+          <ToastContent title="Error" description="Failed to refresh data" variant="destructive" />
+        )
       });
     }
   };

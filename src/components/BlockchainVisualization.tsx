@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Block, formatTimeAgo } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -36,12 +37,14 @@ const BlockchainVisualization = () => {
         
         // Show toast notification for new block
         toast({
-          title: <ToastContent 
-                  title="New Block Found!" 
-                  description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
-                  poolName={data.latestBlock.minedBy}
-                />,
-          description: ""
+          description: "",
+          action: (
+            <ToastContent 
+              title="New Block Found!" 
+              description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
+              poolName={data.latestBlock.minedBy}
+            />
+          )
         });
         
         // After a short delay, update the blocks
@@ -154,12 +157,14 @@ const BlockchainVisualization = () => {
         setIsNewBlockAppearing(true);
         
         toast({
-          title: <ToastContent 
-                  title="New Block Found!" 
-                  description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
-                  poolName={data.latestBlock.minedBy}
-                />,
-          description: ""
+          description: "",
+          action: (
+            <ToastContent 
+              title="New Block Found!" 
+              description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
+              poolName={data.latestBlock.minedBy}
+            />
+          )
         });
         
         setTimeout(() => {
@@ -170,8 +175,10 @@ const BlockchainVisualization = () => {
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
         
         toast({
-          title: <ToastContent title="Data Refreshed" description="No new blocks found" />,
-          description: ""
+          description: "",
+          action: (
+            <ToastContent title="Data Refreshed" description="No new blocks found" />
+          )
         });
       }
       
@@ -181,8 +188,10 @@ const BlockchainVisualization = () => {
       console.error('Error fetching blockchain data:', err);
       
       toast({
-        title: <ToastContent title="Error" description="Failed to fetch blockchain data" variant="destructive" />,
-        description: ""
+        description: "",
+        action: (
+          <ToastContent title="Error" description="Failed to fetch blockchain data" variant="destructive" />
+        )
       });
     } finally {
       setIsLoading(false);
