@@ -700,6 +700,7 @@ const BettingGrid = () => {
         </div>
       </Card>
       
+      {/* Step 2: Chip selection and bet controls */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
           <h3 className="text-white text-sm mb-2 md:mb-0">Step 2. Place your bets.</h3>
@@ -709,7 +710,11 @@ const BettingGrid = () => {
         <div className="mb-4">
           {renderChipSelection()}
         </div>
-        
+      </Card>
+      
+      {/* Step 3: Mining pool betting grid */}
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
+        <h3 className="text-white text-sm mb-3">Step 3. Select a mining pool.</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           {miningPools.map((pool) => (
             <MiningPoolCard
