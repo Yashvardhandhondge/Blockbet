@@ -1,3 +1,4 @@
+
 import { Sparkles } from 'lucide-react';
 
 export interface MiningPool {
@@ -10,6 +11,7 @@ export interface MiningPool {
   blocksLast24h: number;
   logoUrl: string;
   gradient: string;
+  colorClass: string; // Added missing property
 }
 
 export interface Block {
@@ -17,6 +19,12 @@ export interface Block {
   timestamp: number;
   minedBy: string;
   hash: string;
+  size?: number;
+  transactionCount?: number;
+  fees?: number;
+  feesRangeText?: string;
+  feeRange?: string;
+  totalBtc?: number;
 }
 
 export interface UserBalance {
@@ -45,7 +53,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 135,
     logoUrl: '/pool-logos/foundryusa.svg',
-    gradient: 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)'
+    gradient: 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)',
+    colorClass: 'bg-orange-700'
   },
   {
     id: 'antpool',
@@ -56,7 +65,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 110,
     logoUrl: '/pool-logos/antpool.svg',
-    gradient: 'linear-gradient(135deg, #4a0e0e 0%, #2a0606 100%)'
+    gradient: 'linear-gradient(135deg, #4a0e0e 0%, #2a0606 100%)',
+    colorClass: 'bg-red-800'
   },
   {
     id: 'f2pool',
@@ -67,7 +77,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 83,
     logoUrl: '/pool-logos/f2pool.svg',
-    gradient: 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)'
+    gradient: 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)',
+    colorClass: 'bg-blue-800'
   },
   {
     id: 'binance',
@@ -78,7 +89,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 55,
     logoUrl: '/pool-logos/binancepool.svg',
-    gradient: 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)'
+    gradient: 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)',
+    colorClass: 'bg-amber-600'
   },
   {
     id: 'viabtc',
@@ -89,7 +101,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 42,
     logoUrl: '/pool-logos/viabtc.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-orange-600'
   },
   {
     id: 'slushpool',
@@ -100,7 +113,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 30,
     logoUrl: '/pool-logos/slushpool.svg',
-    gradient: 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)'
+    gradient: 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)',
+    colorClass: 'bg-blue-700'
   },
   {
     id: 'poolin',
@@ -111,7 +125,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 25,
     logoUrl: '/pool-logos/poolin.svg',
-    gradient: 'linear-gradient(135deg, #0a4a30 0%, #052218 100%)'
+    gradient: 'linear-gradient(135deg, #0a4a30 0%, #052218 100%)',
+    colorClass: 'bg-green-800'
   },
   {
     id: 'sbicrypto',
@@ -122,7 +137,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 22,
     logoUrl: '/pool-logos/sbicrypto.svg',
-    gradient: 'linear-gradient(135deg, #1a3366 0%, #0d1b33 100%)'
+    gradient: 'linear-gradient(135deg, #1a3366 0%, #0d1b33 100%)',
+    colorClass: 'bg-blue-900'
   },
   {
     id: 'braiinspool',
@@ -133,7 +149,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 21,
     logoUrl: '/pool-logos/braiinspool.svg',
-    gradient: 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)'
+    gradient: 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)',
+    colorClass: 'bg-cyan-700'
   },
   {
     id: 'marapool',
@@ -144,7 +161,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 4,
     logoUrl: '/pool-logos/marapool.svg',
-    gradient: 'linear-gradient(135deg, #4f1a00 0%, #2d0f00 100%)'
+    gradient: 'linear-gradient(135deg, #4f1a00 0%, #2d0f00 100%)',
+    colorClass: 'bg-amber-800'
   },
   {
     id: 'emcd',
@@ -155,7 +173,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 19,
     logoUrl: '/pool-logos/emcdpool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-yellow-800'
   },
   {
     id: 'luxor',
@@ -166,7 +185,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 15,
     logoUrl: '/pool-logos/luxor.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-yellow-700'
   },
   {
     id: 'titan.io',
@@ -177,7 +197,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 14,
     logoUrl: '/pool-logos/titan.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-stone-700'
   },
   {
     id: 'okex',
@@ -188,7 +209,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 12,
     logoUrl: '/pool-logos/okexpool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-blue-600'
   },
   {
     id: 'huobi pool',
@@ -199,7 +221,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 11,
     logoUrl: '/pool-logos/huobipool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-sky-600'
   },
   {
     id: 'btc.com',
@@ -210,7 +233,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 10,
     logoUrl: '/pool-logos/btccom.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-red-600'
   },
   {
     id: 'bitfury',
@@ -221,7 +245,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 9,
     logoUrl: '/pool-logos/bitfury.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-slate-700'
   },
   {
     id: 'kano pool',
@@ -232,7 +257,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 8,
     logoUrl: '/pool-logos/kucoinpool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-emerald-700'
   },
   {
     id: 'pega pool',
@@ -243,7 +269,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 7,
     logoUrl: '/pool-logos/pegapool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-indigo-600'
   },
   {
     id: 'ultimuspool',
@@ -254,7 +281,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 6,
     logoUrl: '/pool-logos/ultimuspool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-violet-700'
   },
   {
     id: 'minerium',
@@ -265,7 +293,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 5,
     logoUrl: '/pool-logos/minerium.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-purple-700'
   },
   {
     id: 'whitepool',
@@ -276,7 +305,8 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     blocksLast24h: 4,
     logoUrl: '/pool-logos/whitepool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-white/30'
   },
   {
     id: 'mara pool',
@@ -287,7 +317,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 3,
     logoUrl: '/pool-logos/marapool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-amber-700'
   },
   {
     id: 'carbon negative',
@@ -298,7 +329,8 @@ export const miningPools: MiningPool[] = [
     region: 'North America',
     blocksLast24h: 2,
     logoUrl: '/pool-logos/default.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-green-700'
   },
   {
     id: 'secpool',
@@ -309,7 +341,8 @@ export const miningPools: MiningPool[] = [
     region: 'Asia',
     blocksLast24h: 0,
     logoUrl: '/pool-logos/default.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)'
+    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
+    colorClass: 'bg-gray-700'
   },
 ];
 
