@@ -9,7 +9,6 @@ import { toast } from './ui/use-toast';
 export const BLOCK_MINED_EVENT = 'blockMined';
 
 export function emitBlockMined(blockData: any) {
-  console.log("Emitting block mined event", blockData);
   const event = new CustomEvent(BLOCK_MINED_EVENT, { 
     detail: blockData 
   });
@@ -44,7 +43,6 @@ const LiveBlockData: React.FC<LiveBlockDataProps> = ({
         
         // Check if this is a new block
         if (blockHeight !== null && blockData.latestBlock.height !== blockHeight) {
-          console.log("New block detected", blockData.latestBlock);
           // Emit block mined event
           emitBlockMined(blockData.latestBlock);
           
