@@ -665,8 +665,13 @@ const BettingGrid = () => {
               Clear
             </Button>
           </div>}
-        {!isMobile && <div className="flex justify-end
-  </div>;
+        {!isMobile && <div className="flex justify-end">
+            {renderBetControlButtons()}
+          </div>}
+      </Card>
+      
+      {/* Add your remaining code here */}
+    </div>;
 };
 
 export default BettingGrid;
