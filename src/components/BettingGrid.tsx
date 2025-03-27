@@ -577,7 +577,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2: Select chip value.</h3>
+          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2: Select chip value in sats.</h3>
           {isMobile ? <div className="flex gap-2 mb-2 self-end">
               <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
                 <X className="w-2.5 h-2.5" />
