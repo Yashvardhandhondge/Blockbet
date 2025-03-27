@@ -145,7 +145,7 @@ const LatestMiningPool = () => {
   return (
     <AuroraContainer className="w-full rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
-        <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
+        <h2 className="text-lg font-medium text-white">Live Blockchain</h2>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>

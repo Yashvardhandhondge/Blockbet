@@ -173,28 +173,7 @@ const BlockchainVisualization = () => {
     }
   };
 
-  return <AuroraContainer className="w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden">
-      <div className="p-3 border-b border-white/10 flex justify-between items-center">
-        <h2 className="text-lg font-medium text-white">Live Blockchain</h2>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-white/70">Live</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button onClick={handleManualRefresh} className={cn("p-1.5 rounded-full hover:bg-white/10 transition-colors", isLoading && "animate-spin")} disabled={isLoading}>
-              <RefreshCw className="h-4 w-4 text-white/70" />
-            </button>
-            <button onClick={scrollLeft} className="p-1.5 rounded-full hover:bg-white/10 transition-colors">
-              <ArrowLeft className="h-4 w-4 text-white/70" />
-            </button>
-            <button onClick={scrollRight} className="p-1.5 rounded-full hover:bg-white/10 transition-colors">
-              <ArrowRight className="h-4 w-4 text-white/70" />
-            </button>
-          </div>
-        </div>
-      </div>
-      
+  return <AuroraContainer className="w-full group hover:border-white/20 transition-colors rounded-xl overflow-hidden">      
       <div className="relative">
         {error && <div className="p-8 text-center">
             <p className="text-red-400">{error}</p>
