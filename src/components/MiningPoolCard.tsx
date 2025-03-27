@@ -25,7 +25,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
   return (
     <div 
       className={cn(
-        "relative rounded-xl overflow-hidden transition-all duration-300 border cursor-pointer",
+        "relative rounded-xl overflow-hidden transition-all duration-300 border cursor-pointer group",
         isSelected 
           ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" 
           : "border-white/10 hover:border-white/20",
@@ -35,6 +35,22 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelect(pool)}
     >
+      {/* Animated glowing background */}
+      <div className="absolute inset-0 -z-10 h-full w-full bg-transparent [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]">
+        <div className="absolute inset-0 bg-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay">
+          <div className="absolute inset-0 bg-transparent opacity-60">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#f7931a20] to-transparent blur-xl" />
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 blur-xl" 
+              style={{
+                backgroundSize: "200% 200%",
+                animation: "moveGradient 8s linear infinite",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      
       {isHovered && (
         <div className="absolute inset-0 z-0 overflow-hidden">
           <BackgroundGradientAnimation 
