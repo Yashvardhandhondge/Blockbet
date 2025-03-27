@@ -63,8 +63,9 @@ const LiveBlockData = () => {
       fetchData().catch(err => {
         console.error("Error in interval fetch:", err);
         toast({
-          title: <ToastContent title="Data fetch error" variant="destructive" />,
-          description: ""
+          title: "Data fetch error",
+          description: "Could not update blockchain data",
+          variant: "destructive"
         });
       });
     }, 30000);
