@@ -616,85 +616,38 @@ const BettingGrid = () => {
 
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
-    return (
-      <div className={cn(
-        "flex flex-wrap gap-2 justify-center", 
-        isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "",
-        "md:h-full md:items-center" // Center items vertically on desktop
-      )}>
-        {CHIP_VALUES.map(value => (
-          <div 
-            key={value} 
-            className={cn(
-              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
-              selectedChip === value ? "transform scale-110" : "transform scale-100", 
-              isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-11 h-11" // Smaller size on desktop
-            )} 
-            onClick={() => handleSelectChip(value)}
-          >
-            {selectedChip === value && (
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>
-            )}
+    return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "")}>
+        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
+            {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
             
-            {selectedChip === value && (
-              <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>
-            )}
+            {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
             
-            <div className={cn(
-              "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
-              getChipColor(value), 
-              isMobile ? "w-8 h-8" : "w-9 h-9" // Smaller chip on desktop
-            )}>
-              <div 
-                className="absolute inset-0 rounded-full border-2 border-dashed" 
-                style={{
-                  borderColor: `${getChipSecondaryColor(value)}`
-                }}
-              ></div>
+            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-8 h-8" : "w-12 h-12")}>
+              <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
+            borderColor: `${getChipSecondaryColor(value)}`
+          }}></div>
               
-              <div className={cn(
-                "absolute rounded-full border border-white/30", 
-                isMobile ? "inset-0.5" : "inset-1.5"
-              )}></div>
+              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
               
-              <span className={cn(
-                "relative z-10 text-white font-bold drop-shadow-md", 
-                isMobile ? "text-[9px]" : "text-xs"
-              )}>
+              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[9px]" : "")}>
                 {formatChipValue(value)}
               </span>
             </div>
-          </div>
-        ))}
-      </div>
-    );
+          </div>)}
+      </div>;
   };
 
   const renderBetControlButtons = () => {
-    return (
-      <div className="flex gap-2 justify-end mt-auto">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="flex items-center gap-1 py-0.5 h-5 text-[9px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
-          onClick={handleCancelLastBet} 
-          disabled={bets.length === 0}
-        >
-          <X className="w-2.5 h-2.5" />
+    return <div className="flex gap-2 justify-end">
+        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+          <X className="w-3 h-3" />
           Cancel Last
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="flex items-center gap-1 py-0.5 h-5 text-[9px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
-          onClick={handleClearBets} 
-          disabled={bets.length === 0}
-        >
-          <Trash2 className="w-2.5 h-2.5" />
+        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+          <Trash2 className="w-3 h-3" />
           Clear All
         </Button>
-      </div>
-    );
+      </div>;
   };
 
   const formatBTCAmount = (satoshis: number) => {
@@ -724,87 +677,56 @@ const BettingGrid = () => {
         </div>
       </div>
       
-      {/* Desktop: Step 1 and Step 2 side by side */}
-      <div className="flex flex-col md:flex-row gap-6 mb-6">
-        {/* Step 1: Wallet Section */}
-        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
-          <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
-          <div className="flex flex-col">
-            <div className="flex items-center mb-3">
-              <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
-                <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
-              </div>
-              <div>
-                <div className="text-xs text-white/60">Balance</div>
-                <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
-              </div>
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center mb-3 md:mb-0">
+            <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
+              <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
             </div>
-            <div className="flex gap-2 w-full justify-end">
-              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-xs md:py-1 md:h-7 md:max-w-28" onClick={handleDeposit}>
-                Deposit
-              </Button>
-              <Button variant="outline" className="flex-1 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-xs md:py-1 md:h-7 md:max-w-28" onClick={handleWithdraw}>
-                Withdraw
-              </Button>
+            <div>
+              <div className="text-xs text-white/60">Balance</div>
+              <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
             </div>
           </div>
-        </Card>
-        
-        {/* Step 2: Select Chip Section */}
-        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
-          <h3 className="text-white text-sm mb-3">Step 2. Select your bet amount</h3>
-          <div className="h-full flex flex-col">
-            {renderChipSelection()}
-            {renderBetControlButtons()}
+          <div className="flex gap-2 w-full md:w-auto justify-end">
+            <Button variant="outline" className="flex-1 md:flex-initial bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleDeposit}>
+              Deposit
+            </Button>
+            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleWithdraw}>
+              Withdraw
+            </Button>
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
       
-      {/* Step 3: Place Your Bets Section */}
-      <div className="mb-6">
-        <h3 className="text-white text-sm mb-3">Step 3. Place your bets</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {miningPools.slice(0, 8).map(pool => (
-            <div 
-              key={pool.id} 
-              className="relative bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden hover:border-btc-orange/50 transition-colors cursor-pointer"
-              onClick={() => handleSelectPool(pool)}
-            >
-              <div className="p-3 flex items-center gap-3">
-                <div className="w-10 h-10 flex-shrink-0 bg-gray-800 rounded-full overflow-hidden">
-                  {getPoolLogo(pool.id)}
-                </div>
-                <div className="min-w-0">
-                  <div className="text-white text-sm font-medium truncate">
-                    {pool.name}
-                  </div>
-                  <div className="text-white/60 text-xs flex items-center gap-1">
-                    <span className="whitespace-nowrap">{pool.hashRatePercent}%</span>
-                    <span className="text-btc-orange">•</span>
-                    <span className="whitespace-nowrap">{pool.odds}x</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Show bets on this pool if any */}
-              {getBetsOnPool(pool.id).length > 0 && renderStackedChips(getBetsOnPool(pool.id))}
-            </div>
+      {/* Step 2: Chip selection and bet controls */}
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2. Place your bets.</h3>
+          {renderBetControlButtons()}
+        </div>
+        
+        <div className="mb-4">
+          {renderChipSelection()}
+        </div>
+      </Card>
+      
+      {/* Step 3: Mining pool betting grid */}
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
+        <h3 className="text-white text-sm mb-3">Step 3. Select a mining pool.</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+          {miningPools.map((pool) => (
+            <MiningPoolCard
+              key={pool.id}
+              pool={pool}
+              onSelect={handleSelectPool}
+              isSelected={selectedPool?.id === pool.id}
+              bets={getBetsOnPool(pool.id)}
+            />
           ))}
         </div>
-      </div>
-      
-      {/* History */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-white text-sm">Your bet history</h3>
-          <div className="flex-grow"></div>
-          <Button variant="outline" size="sm" className="h-6 py-0 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30">
-            <History className="w-3 h-3 mr-1" />
-            View all
-          </Button>
-        </div>
-        <BetHistory betHistory={betHistory.slice(0, 5)} />
-      </div>
+      </Card>
     </div>
   );
 };
