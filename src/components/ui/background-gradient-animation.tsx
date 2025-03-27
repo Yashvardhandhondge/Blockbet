@@ -44,52 +44,45 @@ export const BackgroundGradientAnimation = ({
   const [tgY, setTgY] = useState(0);
   
   useEffect(() => {
-    document.documentElement.style.background = `linear-gradient(to bottom, ${gradientBackgroundStart}, ${gradientBackgroundEnd})`;
-    document.documentElement.style.backgroundAttachment = "fixed";
-    document.documentElement.style.height = "100%";
-    document.body.style.margin = "0";
-    document.body.style.minHeight = "100vh";
-    document.body.style.overflowX = "hidden";
+    document.body.style.setProperty("background", `linear-gradient(to bottom, ${gradientBackgroundStart}, ${gradientBackgroundEnd})`);
+    document.body.style.setProperty("background-repeat", "no-repeat");
+    document.body.style.setProperty("overflow-x", "hidden");
     
+    // Clean up when component unmounts
     return () => {
-      document.documentElement.style.removeProperty("background");
-      document.documentElement.style.removeProperty("backgroundAttachment");
-      document.documentElement.style.removeProperty("height");
-      document.body.style.removeProperty("margin");
-      document.body.style.removeProperty("minHeight");
-      document.body.style.removeProperty("overflowX");
+      document.body.style.removeProperty("background");
+      document.body.style.removeProperty("background-repeat");
+      document.body.style.removeProperty("overflow-x");
     };
   }, [gradientBackgroundStart, gradientBackgroundEnd]);
   
   useEffect(() => {
-    if (!interactive) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
+    function move() {
       if (!interactiveRef.current) return;
       
-      const rect = interactiveRef.current.getBoundingClientRect();
-      setTgX(e.clientX - rect.left - rect.width / 2);
-      setTgY(e.clientY - rect.top - rect.height / 2);
-    };
-    
-    const handleFrame = () => {
-      setCurX(prevX => prevX + (tgX - prevX) * 0.1);
-      setCurY(prevY => prevY + (tgY - prevY) * 0.1);
+      setCurX(curX => curX + (tgX - curX) * 0.1);
+      setCurY(curY => curY + (tgY - curY) * 0.1);
       
       if (interactiveRef.current) {
         interactiveRef.current.style.transform = `translate(${curX}px, ${curY}px)`;
       }
-    };
+      
+      requestAnimationFrame(move);
+    }
     
-    window.addEventListener("mousemove", handleMouseMove);
-    
-    const intervalId = setInterval(handleFrame, 1000 / 60);
-    
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearInterval(intervalId);
-    };
-  }, [interactive, tgX, tgY, curX, curY]);
+    if (interactive) {
+      window.addEventListener("mousemove", (e) => {
+        const { clientX, clientY } = e;
+        if (!interactiveRef.current) return;
+        
+        const rect = interactiveRef.current.getBoundingClientRect();
+        setTgX(clientX - rect.left - rect.width / 2);
+        setTgY(clientY - rect.top - rect.height / 2);
+      });
+      
+      move();
+    }
+  }, [interactive, tgX, tgY]);
   
   const sizeClasses = {
     small: "w-[250px] h-[250px] md:w-[500px] md:h-[500px]",
@@ -101,7 +94,7 @@ export const BackgroundGradientAnimation = ({
     <div className={cn("relative overflow-hidden", containerClassName)}>
       <div
         className={cn(
-          "fixed inset-0 -z-10 transform-gpu overflow-hidden",
+          "fixed -z-10 transform-gpu overflow-hidden blur-3xl",
           sizeClasses[size],
           className
         )}
@@ -110,69 +103,64 @@ export const BackgroundGradientAnimation = ({
         <div
           ref={interactiveRef}
           className={cn(
-            "absolute inset-0",
-            "opacity-40"
+            "relative w-[200%] h-[200%] left-[-50%] top-[-50%]",
+            "bg-transparent opacity-40"
           )}
         >
           <div
-            className="absolute -left-[100%] top-[calc(50%-30rem)] z-[-10] transform-gpu blur-3xl sm:-top-[10rem]"
+            className="absolute top-0 left-[calc(50%-11rem)] z-[-10] transform-gpu rotate-[30deg] blur-3xl opacity-50"
             style={{
-              width: "60rem",
-              height: "60rem",
+              width: "48rem",
+              height: "48rem",
               background: `radial-gradient(circle, ${firstColor} 0%, transparent 70%)`,
               mixBlendMode: blendingValue as any,
-              animation: "moveBackground 15s linear infinite",
+              animation: "moveBackground 10s linear infinite",
               animationDelay: "0s",
             }}
-            aria-hidden="true"
           />
           <div
-            className="absolute -right-[100%] top-[calc(50%-30rem)] z-[-10] transform-gpu blur-3xl sm:top-[-15rem]"
-            style={{
-              width: "60rem",
-              height: "60rem",
-              background: `radial-gradient(circle, ${secondColor} 0%, transparent 70%)`,
-              mixBlendMode: blendingValue as any,
-              animation: "moveBackground 20s linear infinite",
-              animationDelay: "-5s",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="absolute left-[25%] bottom-0 z-[-10] transform-gpu blur-3xl"
-            style={{
-              width: "50rem",
-              height: "50rem",
-              background: `radial-gradient(circle, ${thirdColor} 0%, transparent 70%)`,
-              mixBlendMode: blendingValue as any,
-              animation: "moveBackground 25s linear infinite",
-              animationDelay: "-10s",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="absolute right-[50%] bottom-[20%] z-[-10] transform-gpu blur-3xl"
-            style={{
-              width: "45rem",
-              height: "45rem",
-              background: `radial-gradient(circle, ${fourthColor} 0%, transparent 70%)`,
-              mixBlendMode: blendingValue as any,
-              animation: "moveBackground 30s linear infinite",
-              animationDelay: "-15s",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="absolute top-[20%] left-[30%] z-[-10] transform-gpu blur-3xl"
+            className="absolute top-0 left-[calc(50%+13rem)] z-[-10] transform-gpu rotate-[170deg] blur-3xl opacity-40"
             style={{
               width: "40rem",
               height: "40rem",
-              background: `radial-gradient(circle, ${fifthColor} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${secondColor} 0%, transparent 70%)`,
               mixBlendMode: blendingValue as any,
-              animation: "moveBackground 35s linear infinite",
+              animation: "moveBackground 15s linear infinite",
+              animationDelay: "-2s",
+            }}
+          />
+          <div
+            className="absolute top-[calc(50%-40rem)] right-[calc(50%-11rem)] z-[-10] transform-gpu rotate-[10deg] blur-3xl opacity-30"
+            style={{
+              width: "44rem",
+              height: "44rem",
+              background: `radial-gradient(circle, ${thirdColor} 0%, transparent 70%)`,
+              mixBlendMode: blendingValue as any,
+              animation: "moveBackground 13s linear infinite",
+              animationDelay: "-5s",
+            }}
+          />
+          <div
+            className="absolute bottom-[calc(50%-15rem)] right-[calc(50%+8rem)] z-[-10] transform-gpu rotate-[60deg] blur-3xl opacity-50"
+            style={{
+              width: "35rem",
+              height: "35rem",
+              background: `radial-gradient(circle, ${fourthColor} 0%, transparent 70%)`,
+              mixBlendMode: blendingValue as any,
+              animation: "moveBackground 18s linear infinite",
               animationDelay: "-7s",
             }}
-            aria-hidden="true"
+          />
+          <div
+            className="absolute bottom-[20%] left-[30%] z-[-10] transform-gpu rotate-[230deg] blur-3xl opacity-40"
+            style={{
+              width: "38rem",
+              height: "38rem",
+              background: `radial-gradient(circle, ${fifthColor} 0%, transparent 70%)`,
+              mixBlendMode: blendingValue as any,
+              animation: "moveBackground 16s linear infinite",
+              animationDelay: "-10s",
+            }}
           />
         </div>
       </div>
