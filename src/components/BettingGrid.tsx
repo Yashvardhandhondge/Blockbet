@@ -145,6 +145,7 @@ const BettingGrid = () => {
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
@@ -156,6 +157,7 @@ const BettingGrid = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
   useRandomInterval(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
@@ -167,9 +169,11 @@ const BettingGrid = () => {
       return Math.max(9.2, Math.min(10.5, prev + variation));
     });
   }, 3000, 8000);
+
   useEffect(() => {
     setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
   }, [bets]);
+
   const handlePlaceBet = (poolId: string | null) => {
     if (!selectedChip) {
       toast({
@@ -191,6 +195,7 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const handleClearBets = () => {
     setBets([]);
     toast({
@@ -199,6 +204,7 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const handleCancelLastBet = () => {
     if (bets.length === 0) {
       toast({
@@ -218,6 +224,7 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const handleDeposit = () => {
     const newBalance = walletBalance + 10000000; // Add 0.1 BTC
     setWalletBalance(newBalance);
@@ -236,6 +243,7 @@ const BettingGrid = () => {
       variant: "default"
     });
   };
+
   const handleWithdraw = () => {
     if (walletBalance >= 10000000) {
       const newBalance = walletBalance - 10000000; // Withdraw 0.1 BTC
@@ -271,6 +279,7 @@ const BettingGrid = () => {
       });
     }
   };
+
   const handleAddBetToHistory = (poolId: string, amount: number, isWin: boolean) => {
     const pool = miningPools.find(p => p.id === poolId);
     const newBet = {
@@ -295,30 +304,36 @@ const BettingGrid = () => {
       });
     }
   };
+
   const formatTimeRemaining = () => {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
   const estimatedTime = (() => {
     const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
   })();
+
   const getUrgencyClass = () => {
     const percentageLeft = timeRemaining / totalTime * 100;
     if (percentageLeft < 20) return "text-btc-orange";
     if (percentageLeft < 50) return "text-btc-orange";
     return "text-btc-orange";
   };
+
   const handleSelectChip = (value: number) => {
     setSelectedChip(value);
   };
+
   const handleSelectPool = (pool: MiningPool) => {
     setSelectedPool(pool);
     handlePlaceBet(pool.id);
   };
+
   const getPoolLogo = (poolId: string) => {
     const logoMap: Record<string, string> = {
       'foundry': '/pool-logos/foundryusa.png',
@@ -344,6 +359,7 @@ const BettingGrid = () => {
       }} />
       </div>;
   };
+
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
     const pool = miningPools.find(p => p.id === poolId);
     if (pool) {
@@ -355,15 +371,19 @@ const BettingGrid = () => {
       background: 'linear-gradient(135deg, #3a3a3a, #1a1a1a)'
     };
   };
+
   const getBetsOnPool = (poolId: string | null) => {
     return bets.filter(bet => bet.poolId === poolId);
   };
+
   const formatBTC = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8);
   };
+
   const formatSats = (satoshis: number) => {
     return satoshis.toLocaleString() + " sats";
   };
+
   const getPlaceholderImage = (poolId: string) => {
     const pool = miningPools.find(p => p.id === poolId);
     const firstLetter = pool?.name.charAt(0) || '?';
@@ -374,6 +394,7 @@ const BettingGrid = () => {
         {firstLetter}
       </div>;
   };
+
   const getChipColor = (value: number) => {
     switch (value) {
       case 100:
@@ -394,6 +415,7 @@ const BettingGrid = () => {
         return "bg-gray-600";
     }
   };
+
   const getChipSecondaryColor = (value: number) => {
     switch (value) {
       case 100:
@@ -414,12 +436,14 @@ const BettingGrid = () => {
         return "bg-gray-500";
     }
   };
+
   const formatChipValue = (value: number) => {
     if (value >= 100000) return `${value / 1000}K`;
     if (value >= 10000) return `${value / 1000}K`;
     if (value >= 1000) return `${value / 1000}K`;
     return value;
   };
+
   const getConsolidatedBets = () => {
     const betsByPool = new Map<string | null, Array<number>>();
     bets.forEach(bet => {
@@ -434,6 +458,7 @@ const BettingGrid = () => {
     }));
     return result;
   };
+
   const renderRouletteCasualChips = (amounts: number[]) => {
     const groupedChips: {
       [key: number]: number;
@@ -466,6 +491,7 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
+
   const renderStackedChips = (bets: Array<{
     id: number;
     amount: number;
@@ -496,6 +522,7 @@ const BettingGrid = () => {
           </div>}
       </div>;
   };
+
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
     return <div className={cn(
@@ -539,7 +566,7 @@ const BettingGrid = () => {
           </div>)}
       </div>;
   };
-  
+
   const renderBetControlButtons = () => {
     const isMobile = window.innerWidth < 768;
     return (
@@ -567,14 +594,17 @@ const BettingGrid = () => {
       </div>
     );
   };
-  
+
   const formatBTCAmount = (satoshis: number) => {
     return (satoshis / 100000000).toFixed(8) + " BTC";
   };
+
   const formatSatsAmount = (satoshis: number) => {
     return satoshis.toLocaleString() + " sats";
   };
-  return <div className="w-full">
+
+  return (
+    <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
@@ -644,4 +674,62 @@ const BettingGrid = () => {
                 <X className="w-3 h-3" />
                 Cancel Last
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length ===
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+                <Trash2 className="w-3 h-3" />
+                Clear All
+              </Button>
+            </div>
+          </div>
+          
+          {bets.length === 0 ? (
+            <div className="text-white/60 text-center py-4 text-sm">
+              No bets placed yet. Select a chip and click on a mining pool to place a bet.
+            </div>
+          ) : (
+            <>
+              <div className="mb-3 space-y-1 max-h-[150px] overflow-y-auto hide-scrollbar">
+                {getConsolidatedBets().map((consolidatedBet, index) => {
+                  const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
+                  return (
+                    <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
+                      <div className="text-white">
+                        {pool ? pool.name : 'Empty Block'}
+                      </div>
+                      <div className="flex items-center">
+                        {renderRouletteCasualChips(consolidatedBet.amounts)}
+                        <div className="text-btc-orange font-mono">
+                          {formatSats(consolidatedBet.totalAmount)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="pt-2 border-t border-white/10">
+                <div className="flex justify-between text-white font-bold text-sm">
+                  <div>Total Bet:</div>
+                  <div className="text-btc-orange">{formatSats(totalBet)}</div>
+                </div>
+              </div>
+            </>
+          )}
+        </Card>
+        
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
+          <h3 className="text-white text-sm mb-3">Live Blockchain Stats:</h3>
+          <LiveBlockData />
+        </Card>
+      </div>
+      
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
+        <div className="flex items-center mb-3">
+          <History className="h-4 w-4 text-btc-orange mr-2" />
+          <h3 className="text-white text-sm">Wallet Account history Stats:</h3>
+        </div>
+        <BetHistory betHistory={betHistory} deposits={deposits} withdrawals={withdrawals} />
+      </Card>
+    </div>
+  );
+};
+
+export default BettingGrid;
