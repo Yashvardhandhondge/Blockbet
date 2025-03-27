@@ -311,7 +311,7 @@ const renderStackedChips = (bets: Array<{
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "rounded-full flex items-center justify-center font-bold shadow-xl w-7 h-7 text-[10px]",
+                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
                     getChipColor(amount)
                   )}
                   style={{
@@ -334,7 +334,7 @@ const renderStackedChips = (bets: Array<{
               
               <div 
                 className={cn(
-                  "rounded-full flex flex-col items-center justify-center font-bold shadow-xl w-7 h-7",
+                  "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
                   getChipColor(amount)
                 )}
                 style={{
@@ -351,11 +351,11 @@ const renderStackedChips = (bets: Array<{
                     borderColor: `${getChipSecondaryColor(amount)}`
                   }}
                 ></div>
-                <span className="relative z-10 text-black font-bold drop-shadow-md text-[8px]">
+                <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
                   {formatChipValue(amount)}
                 </span>
                 {betCount > 1 && 
-                  <span className="relative z-10 text-black font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
+                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
                     ×{betCount}
                   </span>
                 }
