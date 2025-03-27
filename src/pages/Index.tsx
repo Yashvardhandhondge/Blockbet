@@ -67,15 +67,15 @@ const Index = () => {
           </div>
           
           {/* Blockchain visualization */}
-          <div style={blockchainAnimation.style} className="mb-4">
+          <div style={blockchainAnimation.style} className="mb-2">
             <BlockchainVisualization />
           </div>
           
           {/* Live Block Data (compact version) */}
           <div style={liveDataAnimation.style} className="mb-8">
-            <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <h3 className="text-white text-xs font-medium mr-1">Live Blockchain Stats:</h3>
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
                 <LiveBlockData />
               </div>
             </div>
