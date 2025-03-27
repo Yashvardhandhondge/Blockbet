@@ -6,12 +6,14 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
-import LiveBlockData from '@/components/LiveBlockData';
+import LiveBlockData, { BLOCK_MINED_EVENT } from '@/components/LiveBlockData';
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
+import WinConfetti from '@/components/WinConfetti';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
   const isMobile = useIsMobile();
 
   // Simulate initial loading
@@ -19,6 +21,21 @@ const Index = () => {
     setTimeout(() => {
       setIsLoading(false);
     }, 1500);
+  }, []);
+
+  // Listen for block mined events
+  useEffect(() => {
+    const handleBlockMined = (e: CustomEvent<any>) => {
+      // Check if user has won (this would be determined by your betting logic)
+      // For now, we'll just show confetti for testing
+      setShowConfetti(true);
+    };
+
+    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+    
+    return () => {
+      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+    };
   }, []);
 
   // Animation for sections
@@ -37,6 +54,13 @@ const Index = () => {
 
   return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
       <div className="min-h-screen pb-20">
+        {/* Win Confetti Effect */}
+        <WinConfetti 
+          isActive={showConfetti} 
+          duration={5000}
+          onComplete={() => setShowConfetti(false)}
+        />
+        
         {/* Loading screen */}
         <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
           <div className="relative h-20 w-20 mb-6">

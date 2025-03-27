@@ -1,9 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
-import { Pickaxe } from 'lucide-react';
+import { Pickaxe, Star } from 'lucide-react';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { fetchWithRetry } from '@/utils/errorUtils';
 import { toast } from './ui/use-toast';
+
+// Custom event for block mining
+export const BLOCK_MINED_EVENT = 'blockMined';
+
+export function emitBlockMined(blockData: any) {
+  const event = new CustomEvent(BLOCK_MINED_EVENT, { 
+    detail: blockData 
+  });
+  window.dispatchEvent(event);
+}
 
 const LiveBlockData = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -11,6 +21,7 @@ const LiveBlockData = () => {
   const [minedBy, setMinedBy] = useState<string>('Unknown');
   const [poolLogo, setPoolLogo] = useState<string | null>(null);
   const [blockHeight, setBlockHeight] = useState<number | null>(null);
+  const [prevBlockHeight, setPrevBlockHeight] = useState<number | null>(null);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +30,14 @@ const LiveBlockData = () => {
 
         // Fetch block data with retry logic
         const blockData = await fetchWithRetry(() => fetchLatestBlockData());
+        
+        // Check if this is a new block
+        if (blockHeight !== null && blockData.latestBlock.height !== blockHeight) {
+          // Emit block mined event
+          emitBlockMined(blockData.latestBlock);
+        }
+        
+        setPrevBlockHeight(blockHeight);
         setMinedBy(blockData.latestBlock.minedBy || 'Unknown');
         setBlockHeight(blockData.latestBlock.height);
 
@@ -59,7 +78,7 @@ const LiveBlockData = () => {
     }, 30000);
     
     return () => clearInterval(intervalId);
-  }, []);
+  }, [blockHeight]);
   
   if (isLoading) {
     return <div className="flex flex-1 gap-4 overflow-x-auto hide-scrollbar">
@@ -87,6 +106,10 @@ const LiveBlockData = () => {
           (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
         }} />}
           <span className="text-xs font-mono font-bold text-white truncate max-w-16">{minedBy}</span>
+        </div>
+        <div className="relative ml-1">
+          <Star className="h-3 w-3 text-btc-orange absolute" />
+          <Star className="h-2 w-2 text-yellow-300 absolute -right-1.5 -top-0.5" />
         </div>
       </div>
     </div>;
