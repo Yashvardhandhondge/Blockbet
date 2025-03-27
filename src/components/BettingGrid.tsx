@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -700,35 +699,5 @@ const BettingGrid = () => {
         </div>
       </Card>
       
-      {/* Step 2: Chip selection and bet controls */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2. Place your bets.</h3>
-          {renderBetControlButtons()}
-        </div>
-        
-        <div className="mb-4">
-          {renderChipSelection()}
-        </div>
-      </Card>
-      
-      {/* Step 3: Mining pool betting grid */}
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
-        <h3 className="text-white text-sm mb-3">Step 3. Select a mining pool.</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-          {miningPools.map((pool) => (
-            <MiningPoolCard
-              key={pool.id}
-              pool={pool}
-              onSelect={handleSelectPool}
-              isSelected={selectedPool?.id === pool.id}
-              bets={getBetsOnPool(pool.id)}
-            />
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
-};
-
-export default BettingGrid;
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-
