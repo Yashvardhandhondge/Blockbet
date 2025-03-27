@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import BlockchainVisualization from '@/components/BlockchainVisualization';
 import BettingGrid from '@/components/BettingGrid';
 import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
@@ -26,9 +25,6 @@ const Index = () => {
   const headerAnimation = useElementAppear(!isLoading, {
     delay: 300
   });
-  const blockchainAnimation = useElementAppear(!isLoading, {
-    delay: 600
-  });
   const miningPoolAnimation = useElementAppear(!isLoading, {
     delay: 675
   });
@@ -39,7 +35,20 @@ const Index = () => {
     delay: 900
   });
 
-  return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
+  return (
+    <BackgroundGradientAnimation 
+      gradientBackgroundStart="rgb(0, 0, 0)" 
+      gradientBackgroundEnd="rgb(7, 7, 7)" 
+      firstColor="#FFCC66" 
+      secondColor="#D19CFF" 
+      thirdColor="#7AE5FF" 
+      fourthColor="#FFBB7A" 
+      fifthColor="#FFDF7A" 
+      pointerColor="rgba(255, 190, 60, 0.4)" 
+      blendingValue="hard-light" 
+      className="w-full h-full" 
+      containerClassName="min-h-screen"
+    >
       <div className="min-h-screen pb-20">
         {/* Loading screen */}
         <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
@@ -72,11 +81,6 @@ const Index = () => {
             <p className="text-white/70 max-w-2xl mx-auto text-sm font-normal">Predict which mining pool will mine the next Bitcoin block and win up to 83x your bet in Sats!</p>
           </div>
           
-          {/* Blockchain visualization */}
-          <div style={blockchainAnimation.style} className="mb-6">
-            <BlockchainVisualization />
-          </div>
-
           {/* Latest mining pool display */}
           <div style={miningPoolAnimation.style} className="mb-5">
             <LatestMiningPool />
@@ -100,7 +104,8 @@ const Index = () => {
         
         <Footer />
       </div>
-    </BackgroundGradientAnimation>;
+    </BackgroundGradientAnimation>
+  );
 };
 
 export default Index;

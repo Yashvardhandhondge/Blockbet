@@ -1,36 +1,5 @@
 import { Sparkles } from 'lucide-react';
-
-export interface MiningPool {
-  id: string;
-  name: string;
-  hashRate: number;
-  hashRatePercent: number;
-  odds: number;
-  region: string;
-  blocksLast24h: number;
-  logoUrl: string;
-  gradient: string;
-  colorClass: string; // Added missing property
-}
-
-export interface Block {
-  height: number;
-  timestamp: number;
-  minedBy: string;
-  hash: string;
-  size?: number;
-  transactionCount?: number;
-  fees?: number;
-  feesRangeText?: string;
-  feeRange?: string;
-  totalBtc?: number;
-}
-
-export interface UserBalance {
-  availableBalance: number;
-  totalBet: number;
-  totalWin: number;
-}
+import { MiningPool, Block, UserBalance } from './types';
 
 export const mockUserBalance: UserBalance = {
   availableBalance: 0.15,
