@@ -739,4 +739,4 @@ const BettingGrid = () => {
               </div>
             </div>
             <div className="flex gap-2 w-full justify-end">
-              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py
+              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h
