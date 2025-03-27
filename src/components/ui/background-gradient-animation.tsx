@@ -68,8 +68,8 @@ export const BackgroundGradientAnimation = ({
       if (!interactiveRef.current) return;
       
       const rect = interactiveRef.current.getBoundingClientRect();
-      setTgX(clientX - rect.left - rect.width / 2);
-      setTgY(clientY - rect.top - rect.height / 2);
+      setTgX(e.clientX - rect.left - rect.width / 2);
+      setTgY(e.clientY - rect.top - rect.height / 2);
     };
     
     const handleFrame = () => {
