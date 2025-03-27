@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
+import { MiningPool } from '@/utils/types';
+import { miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -651,4 +652,13 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-
+        <h3 className="text-white text-sm mb-3">Step 3: Place your bets on mining pools.</h3>
+        <div className="grid grid-cols-1 gap-4">
+          <p className="text-white/60 text-sm text-center py-4">Select mining pools to place your bets.</p>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default BettingGrid;
