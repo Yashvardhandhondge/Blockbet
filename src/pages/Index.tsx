@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
+import BlockchainVisualization from '@/components/BlockchainVisualization';
 import BettingGrid from '@/components/BettingGrid';
 import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
@@ -24,6 +25,9 @@ const Index = () => {
   // Animation for sections
   const headerAnimation = useElementAppear(!isLoading, {
     delay: 300
+  });
+  const blockchainAnimation = useElementAppear(!isLoading, {
+    delay: 600
   });
   const miningPoolAnimation = useElementAppear(!isLoading, {
     delay: 675
@@ -68,22 +72,25 @@ const Index = () => {
             <p className="text-white/70 max-w-2xl mx-auto text-sm font-normal">Predict which mining pool will mine the next Bitcoin block and win up to 83x your bet in Sats!</p>
           </div>
           
+          {/* Blockchain visualization */}
+          <div style={blockchainAnimation.style} className="mb-6">
+            <BlockchainVisualization />
+          </div>
+
           {/* Latest mining pool display */}
           <div style={miningPoolAnimation.style} className="mb-5">
             <LatestMiningPool />
           </div>
           
-          {/* Live Block Data - hidden on mobile */}
-          {!isMobile && (
-            <div style={liveDataAnimation.style} className="mb-8">
-              <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
-                  <LiveBlockData />
-                </div>
+          {/* Live Block Data (now responsive for mobile) */}
+          <div style={liveDataAnimation.style} className="mb-8">
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
+              <div className={`flex ${isMobile ? 'flex-col' : 'flex-wrap'} items-center gap-2`}>
+                <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
+                <LiveBlockData />
               </div>
             </div>
-          )}
+          </div>
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>
