@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
@@ -72,7 +71,10 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       
       <div className="relative z-10 p-4 flex flex-col h-full">
         <div className="flex flex-col items-center mb-1">
-          <div className="h-16 w-16 rounded-lg overflow-hidden bg-transparent mb-1">
+          <div className={cn(
+            "rounded-lg overflow-hidden bg-transparent mb-1",
+            isMobile ? "h-14 w-14" : "h-16 w-16"
+          )}>
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
                 src={pool.logoUrl} 
@@ -87,7 +89,10 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           </div>
           
           <div className="text-center">
-            <h3 className="text-lg font-medium text-white">{pool.name}</h3>
+            <h3 className={cn(
+              "font-medium text-white truncate max-w-full",
+              isMobile ? "text-sm" : "text-lg"
+            )}>{pool.name}</h3>
             {!isMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
           </div>
         </div>
@@ -105,20 +110,23 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           </div>
         )}
         
-        <div className={cn("mt-2 flex justify-center items-center p-2", isMobile && "mt-1")}>
-          <div className="text-white/80 text-center">
-            <span className={cn(
-              "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
-              isMobile ? "text-base" : "text-lg"
-            )}>
-              {pool.odds.toFixed(2)}
-              <span className="ml-0.5">×</span>
-            </span>
-            <span className={cn("ml-1 text-white/60", isMobile ? "text-[10px]" : "text-xs")}>payout</span>
+        <div className="mt-auto">
+          <div className={cn(
+            "flex justify-center items-center",
+            isMobile ? "mb-2" : "p-2"
+          )}>
+            <div className="text-white/80 text-center">
+              <span className={cn(
+                "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
+                isMobile ? "text-sm" : "text-lg"
+              )}>
+                {pool.odds.toFixed(2)}
+                <span className="ml-0.5">×</span>
+              </span>
+              <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
+            </div>
           </div>
-        </div>
-        
-        <div className="mt-auto pt-2">
+          
           <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
             <div 
               className="h-full transition-all duration-1000 ease-out"
