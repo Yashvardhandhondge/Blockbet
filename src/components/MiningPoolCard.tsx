@@ -74,7 +74,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
         <div className="flex flex-col items-center mb-1">
           <div className={cn(
             "rounded-lg overflow-hidden bg-transparent mb-1",
-            isMobile ? "h-14 w-14" : "h-16 w-16"
+            isMobile ? "h-10 w-10" : "h-16 w-16"
           )}>
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
@@ -92,7 +92,7 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           <div className="text-center">
             <h3 className={cn(
               "font-medium text-white truncate max-w-full",
-              isMobile ? "text-sm" : "text-lg"
+              isMobile ? "text-xs" : "text-lg"
             )}>{pool.name}</h3>
             {!isMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
           </div>
