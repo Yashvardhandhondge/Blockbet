@@ -101,7 +101,7 @@ const LiveBlockData = () => {
   }
   
   return (
-    <div className={`flex flex-1 ${isMobile ? 'flex-wrap' : ''} gap-3 overflow-x-auto hide-scrollbar`}>
+    <div className={`flex flex-1 ${isMobile ? 'flex-wrap hidden' : ''} gap-3 overflow-x-auto hide-scrollbar`}>
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
         <Server className="h-3 w-3 text-btc-orange flex-shrink-0" />
         <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Block:</span>

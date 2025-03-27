@@ -12,7 +12,6 @@ import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
-import BetHistory from './BetHistory';
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
@@ -32,117 +31,6 @@ const BettingGrid = () => {
   const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const [walletBalance, setWalletBalance] = useState(25000000); // 0.25 BTC in satoshis
-  const [betHistory, setBetHistory] = useState<Array<{
-    id: number;
-    poolId: string;
-    poolName: string;
-    amount: number;
-    timestamp: Date;
-    isWin: boolean;
-    blockHeight: number;
-  }>>([{
-    id: 1,
-    poolId: 'foundry',
-    poolName: 'Foundry USA',
-    amount: 5000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2),
-    isWin: true,
-    blockHeight: 843231
-  }, {
-    id: 2,
-    poolId: 'antpool',
-    poolName: 'Antpool',
-    amount: 10000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 1.5),
-    isWin: false,
-    blockHeight: 843245
-  }, {
-    id: 3,
-    poolId: 'f2pool',
-    poolName: 'F2Pool',
-    amount: 1000,
-    timestamp: new Date(Date.now() - 3600000 * 24),
-    isWin: true,
-    blockHeight: 843260
-  }, {
-    id: 4,
-    poolId: 'binance',
-    poolName: 'Binance Pool',
-    amount: 50000,
-    timestamp: new Date(Date.now() - 3600000 * 12),
-    isWin: false,
-    blockHeight: 843279
-  }, {
-    id: 5,
-    poolId: 'viabtc',
-    poolName: 'ViaBTC',
-    amount: 5000,
-    timestamp: new Date(Date.now() - 3600000 * 6),
-    isWin: true,
-    blockHeight: 843291
-  }, {
-    id: 6,
-    poolId: 'slushpool',
-    poolName: 'Slush Pool',
-    amount: 10000,
-    timestamp: new Date(Date.now() - 3600000 * 3),
-    isWin: false,
-    blockHeight: 843301
-  }, {
-    id: 7,
-    poolId: 'poolin',
-    poolName: 'Poolin',
-    amount: 500,
-    timestamp: new Date(Date.now() - 3600000),
-    isWin: true,
-    blockHeight: 843310
-  }]);
-  const [deposits, setDeposits] = useState<Array<{
-    id: number;
-    amount: number;
-    timestamp: Date;
-    txId: string;
-  }>>([{
-    id: 1,
-    amount: 10000000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 7),
-    txId: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
-  }, {
-    id: 2,
-    amount: 5000000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 3),
-    txId: "q1w2e3r4t5y6u7i8o9p0a1s2d3f4g5h6"
-  }, {
-    id: 3,
-    amount: 15000000,
-    timestamp: new Date(Date.now() - 3600000 * 10),
-    txId: "z1x2c3v4b5n6m7q8w9e0r1t2y3u4i5o6"
-  }]);
-  const [withdrawals, setWithdrawals] = useState<Array<{
-    id: number;
-    amount: number;
-    timestamp: Date;
-    txId: string;
-    status: 'completed' | 'pending' | 'failed';
-  }>>([{
-    id: 1,
-    amount: 8000000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 5),
-    txId: "j1k2l3m4n5o6p7q8w9e0r1t2y3u4i5o6",
-    status: 'completed'
-  }, {
-    id: 2,
-    amount: 3000000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2),
-    txId: "a1s2d3f4g5h6j7k8l9z1x2c3v4b5n6m7",
-    status: 'completed'
-  }, {
-    id: 3,
-    amount: 7000000,
-    timestamp: new Date(Date.now() - 3600000 * 2),
-    txId: "q1w2e3r4t5y6u7i8o9p0a1s2d3f4g5h6",
-    status: 'pending'
-  }]);
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
@@ -230,14 +118,6 @@ const BettingGrid = () => {
     const newBalance = walletBalance + 10000000; // Add 0.1 BTC
     setWalletBalance(newBalance);
 
-    // Add deposit to history
-    const newDeposit = {
-      id: deposits.length + 1,
-      amount: 10000000,
-      timestamp: new Date(),
-      txId: Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join('')
-    };
-    setDeposits([newDeposit, ...deposits]);
     toast({
       title: "Deposit successful",
       description: "Added 0.1 BTC to your wallet",
@@ -250,23 +130,6 @@ const BettingGrid = () => {
       const newBalance = walletBalance - 10000000; // Withdraw 0.1 BTC
       setWalletBalance(newBalance);
 
-      // Add withdrawal to history
-      const newWithdrawal = {
-        id: withdrawals.length + 1,
-        amount: 10000000,
-        timestamp: new Date(),
-        txId: Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join(''),
-        status: 'pending' as const
-      };
-      setWithdrawals([newWithdrawal, ...withdrawals]);
-
-      // Simulate withdrawal completing after 5 seconds
-      setTimeout(() => {
-        setWithdrawals(prev => prev.map(w => w.id === newWithdrawal.id ? {
-          ...w,
-          status: 'completed' as const
-        } : w));
-      }, 5000);
       toast({
         title: "Withdrawal successful",
         description: "Withdrawn 0.1 BTC from your wallet",
@@ -277,31 +140,6 @@ const BettingGrid = () => {
         title: "Insufficient funds",
         description: "You don't have enough funds to withdraw",
         variant: "destructive"
-      });
-    }
-  };
-
-  const handleAddBetToHistory = (poolId: string, amount: number, isWin: boolean) => {
-    const pool = miningPools.find(p => p.id === poolId);
-    const newBet = {
-      id: betHistory.length + 1,
-      poolId: poolId,
-      poolName: pool?.name || 'Unknown Pool',
-      amount: amount,
-      timestamp: new Date(),
-      isWin: isWin,
-      blockHeight: currentBlock + 1
-    };
-    setBetHistory(prev => [newBet, ...prev]);
-
-    // Update wallet balance based on bet outcome
-    if (isWin) {
-      const winAmount = amount * (pool?.odds || 2);
-      setWalletBalance(prev => prev + winAmount);
-      toast({
-        title: "Bet won!",
-        description: `You won ${formatSats(winAmount)} betting on ${pool?.name}!`,
-        variant: "default"
       });
     }
   };
@@ -522,7 +360,6 @@ const BettingGrid = () => {
   };
 
   const renderChipSelection = () => {
-    const isMobile = window.innerWidth < 768;
     return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "")}>
         {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
             {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
@@ -634,7 +471,7 @@ const BettingGrid = () => {
             {renderBetControlButtons()}
           </div>
         )}
-        {/* Add mobile-only buttons at the bottom right corner */}
+        {/* Mobile-only buttons at the bottom right corner */}
         {isMobile && (
           <div className="flex justify-end mt-2">
             <div className="flex gap-2">
