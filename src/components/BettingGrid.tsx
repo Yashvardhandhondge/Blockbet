@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -651,4 +652,12 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-
+        <h3 className="text-white text-sm mb-4">Step 3: Place your bets on the mining pool that will mine the next block.</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {/* Mining pool cards will go here */}
+        </div>
+      </Card>
+    </div>;
+};
+
+export default BettingGrid;
