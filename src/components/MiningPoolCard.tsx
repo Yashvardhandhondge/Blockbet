@@ -121,7 +121,7 @@ const MiningPoolCard = ({ pool, isSelected = false, onSelect, bets, disabled = f
             {getPoolLogo()}
           </div>
           <div className="text-xs font-medium bg-black/50 px-1.5 py-0.5 rounded text-white/90">
-            {pool.hashRatePercent.toFixed(1)}%
+            {pool.percentage.toFixed(1)}%
           </div>
         </div>
         
