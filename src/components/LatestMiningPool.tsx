@@ -3,13 +3,12 @@ import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { Block } from '@/utils/types';
 import { AuroraContainer } from '@/components/ui/aurora-container';
-import { ArrowLeft, ArrowRight, RefreshCw, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatTimeAgo } from '@/utils/mockData';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import { fetchWithRetry, hasNewBlock } from '@/utils/errorUtils';
 import { ToastContent } from './ui/toast-content';
-import { GlowEffect } from './ui/glow-effect';
 
 const LatestMiningPool = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
@@ -232,35 +231,23 @@ const LatestMiningPool = () => {
                   )}
                 >
                   {isLatestBlock && (
-                    <div className="absolute -inset-3 pointer-events-none opacity-80 z-10">
+                    <div className="absolute -inset-2 pointer-events-none opacity-70 z-10">
                       <SparklesText 
                         text="" 
                         colors={{ first: "#FFD700", second: "#FFF8E1" }}
                         className="absolute inset-0 w-full h-full"
-                        sparklesCount={50}
-                      />
-                      <GlowEffect 
-                        colors={["#FFD700", "#FFA500", "#FF8C00", "#FFDF00"]} 
-                        blur="stronger"
-                        mode="colorShift"
-                        scale={1.2}
-                        className="opacity-80"
+                        sparklesCount={30}
                       />
                     </div>
                   )}
                   
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-12 h-12 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center p-1 relative",
+                      "w-12 h-12 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center p-1",
                       isLatestBlock 
-                        ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700 shadow-[0_0_15px_rgba(255,215,0,0.7)]" 
+                        ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
                         : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
                     )}>
-                      {isLatestBlock && (
-                        <div className="absolute -top-1 -right-1 text-yellow-300">
-                          <Star className="h-4 w-4 fill-yellow-300 drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
-                        </div>
-                      )}
                       <div className="w-full h-full bg-black/80 rounded-full flex items-center justify-center p-1.5">
                         <img 
                           src={getPoolLogo(block.minedBy)} 
