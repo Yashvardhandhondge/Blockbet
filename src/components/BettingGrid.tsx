@@ -9,13 +9,17 @@ import { toast } from './ui/use-toast';
 import StatCard from './StatCard';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
-import LiveBlockData from './LiveBlockData';
+import LiveBlockData, { ROUND_DURATION } from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
-const BettingGrid = () => {
+interface BettingGridProps {
+  isBettingClosed?: boolean;
+}
+
+const BettingGrid = ({ isBettingClosed = false }: BettingGridProps) => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
     poolId: string | null;
@@ -23,7 +27,7 @@ const BettingGrid = () => {
     id: number;
   }[]>([]);
   const [nextBetId, setNextBetId] = useState(1);
-  const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
+  const [timeRemaining, setTimeRemaining] = useState(ROUND_DURATION);
   const [totalBet, setTotalBet] = useState(0);
   const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   const [timeVariation, setTimeVariation] = useState(0);
@@ -143,14 +147,13 @@ const BettingGrid = () => {
     status: 'pending'
   }]);
   const isMobile = useIsMobile();
-  const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
-  const progressPercentage = 100 - timeRemaining / totalTime * 100;
+  const progressPercentage = Math.min(100, 100 - (timeRemaining / ROUND_DURATION * 100));
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          return nextBlockEstimate.estimatedTimeMinutes * 60;
+          return 0;
         }
         return prev - 1;
       });
@@ -175,6 +178,15 @@ const BettingGrid = () => {
   }, [bets]);
 
   const handlePlaceBet = (poolId: string | null) => {
+    if (isBettingClosed) {
+      toast({
+        title: "Betting closed",
+        description: "Cannot place bets until next block is mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!selectedChip) {
       toast({
         title: "Select a chip first",
@@ -183,11 +195,25 @@ const BettingGrid = () => {
       });
       return;
     }
+    
+    if (selectedChip > walletBalance) {
+      toast({
+        title: "Insufficient funds",
+        description: "You don't have enough funds to place this bet",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setBets([...bets, {
       poolId,
       amount: selectedChip,
       id: nextBetId
     }]);
+    
+    // Deduct from wallet balance
+    setWalletBalance(prev => prev - selectedChip);
+    
     setNextBetId(prev => prev + 1);
     toast({
       title: "Bet placed!",
@@ -197,6 +223,19 @@ const BettingGrid = () => {
   };
 
   const handleClearBets = () => {
+    if (isBettingClosed) {
+      toast({
+        title: "Betting closed",
+        description: "Cannot modify bets until next block is mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Return funds to wallet
+    const totalBetAmount = bets.reduce((sum, bet) => sum + bet.amount, 0);
+    setWalletBalance(prev => prev + totalBetAmount);
+    
     setBets([]);
     toast({
       title: "Bets cleared",
@@ -206,6 +245,15 @@ const BettingGrid = () => {
   };
 
   const handleCancelLastBet = () => {
+    if (isBettingClosed) {
+      toast({
+        title: "Betting closed",
+        description: "Cannot modify bets until next block is mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (bets.length === 0) {
       toast({
         title: "No bets to cancel",
@@ -214,9 +262,14 @@ const BettingGrid = () => {
       });
       return;
     }
+    
     const lastBet = bets[bets.length - 1];
     const newBets = bets.slice(0, -1);
     setBets(newBets);
+    
+    // Return funds to wallet
+    setWalletBalance(prev => prev + lastBet.amount);
+    
     const poolName = lastBet.poolId ? miningPools.find(p => p.id === lastBet.poolId)?.name : 'Empty Block';
     toast({
       title: "Last bet cancelled",
@@ -319,7 +372,7 @@ const BettingGrid = () => {
   })();
 
   const getUrgencyClass = () => {
-    const percentageLeft = timeRemaining / totalTime * 100;
+    const percentageLeft = timeRemaining / ROUND_DURATION * 100;
     if (percentageLeft < 20) return "text-btc-orange";
     if (percentageLeft < 50) return "text-btc-orange";
     return "text-btc-orange";
@@ -545,11 +598,15 @@ const BettingGrid = () => {
 
   const renderBetControlButtons = () => {
     return <div className="flex gap-2 justify-end">
-        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full" 
+          onClick={handleCancelLastBet} 
+          disabled={bets.length === 0 || isBettingClosed}>
           <X className="w-3 h-3" />
           Cancel Last
         </Button>
-        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+        <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full" 
+          onClick={handleClearBets} 
+          disabled={bets.length === 0 || isBettingClosed}>
           <Trash2 className="w-3 h-3" />
           Clear All
         </Button>
@@ -569,11 +626,15 @@ const BettingGrid = () => {
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
             <Clock className="h-4 w-4 text-btc-orange mr-1.5" />
-            <span className="text-xs font-medium text-white">Betting closes in:</span>
+            <span className="text-xs font-medium text-white">
+              {isBettingClosed ? 'Betting closed until next block' : 'Betting closes in:'}
+            </span>
           </div>
           <div className="flex-grow mx-4 relative">
             <Progress value={progressPercentage} className="h-2 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
-            <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
+            <span className={`absolute right-0 top-1/2 transform -translate-y-1/2 text-xs font-mono font-bold ${isBettingClosed ? 'text-red-400' : 'text-btc-orange'}`}>
+              {isBettingClosed ? 'CLOSED' : formatTimeRemaining()}
+            </span>
           </div>
         </div>
       </div>
@@ -609,11 +670,15 @@ const BettingGrid = () => {
           {renderChipSelection()}
         </div>
         {isMobile && <div className="absolute bottom-3 right-3 flex gap-2">
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full" 
+              onClick={handleCancelLastBet} 
+              disabled={bets.length === 0 || isBettingClosed}>
               <X className="w-2.5 h-2.5" />
               Cancel
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full" 
+              onClick={handleClearBets} 
+              disabled={bets.length === 0 || isBettingClosed}>
               <Trash2 className="w-2.5 h-2.5" />
               Clear
             </Button>
@@ -626,7 +691,14 @@ const BettingGrid = () => {
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="text-white text-sm mb-3">Step 3: Place your chips on the next winning mining pool.</h3>
         <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3">
-          {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
+          {miningPools.map(pool => <MiningPoolCard 
+            key={pool.id} 
+            pool={pool} 
+            onSelect={handleSelectPool} 
+            isSelected={selectedPool?.id === pool.id} 
+            bets={getBetsOnPool(pool.id)}
+            disabled={isBettingClosed} 
+          />)}
         </div>
       </Card>
       
@@ -638,11 +710,15 @@ const BettingGrid = () => {
           {renderChipSelection()}
         </div>
         {isMobile && <div className="absolute bottom-3 right-3 flex gap-2">
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full" 
+              onClick={handleCancelLastBet} 
+              disabled={bets.length === 0 || isBettingClosed}>
               <X className="w-2.5 h-2.5" />
               Cancel
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full" 
+              onClick={handleClearBets} 
+              disabled={bets.length === 0 || isBettingClosed}>
               <Trash2 className="w-2.5 h-2.5" />
               Clear
             </Button>

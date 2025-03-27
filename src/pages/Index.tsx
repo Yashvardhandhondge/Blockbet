@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
-import LiveBlockData, { BLOCK_MINED_EVENT } from '@/components/LiveBlockData';
+import LiveBlockData, { BLOCK_MINED_EVENT, BETTING_CLOSED_EVENT, ROUND_DURATION } from '@/components/LiveBlockData';
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
 import WinConfetti from '@/components/WinConfetti';
@@ -14,6 +14,8 @@ import WinConfetti from '@/components/WinConfetti';
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isBettingClosed, setIsBettingClosed] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(ROUND_DURATION);
   const isMobile = useIsMobile();
 
   // Simulate initial loading
@@ -26,15 +28,31 @@ const Index = () => {
   // Listen for block mined events
   useEffect(() => {
     const handleBlockMined = (e: CustomEvent<any>) => {
+      console.log('Block mined event received:', e.detail);
+      
+      // Reset the betting state
+      setIsBettingClosed(false);
+      setTimeRemaining(ROUND_DURATION);
+      
       // Check if user has won (this would be determined by your betting logic)
-      // For now, we'll just show confetti for testing
-      setShowConfetti(true);
+      // For now, we'll simulate a win occasionally
+      const randomWin = Math.random() > 0.7;
+      if (randomWin) {
+        setShowConfetti(true);
+      }
+    };
+    
+    const handleBettingClosed = () => {
+      console.log('Betting closed event received');
+      setIsBettingClosed(true);
     };
 
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+    window.addEventListener(BETTING_CLOSED_EVENT, handleBettingClosed as EventListener);
     
     return () => {
       window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+      window.removeEventListener(BETTING_CLOSED_EVENT, handleBettingClosed as EventListener);
     };
   }, []);
 
@@ -110,7 +128,7 @@ const Index = () => {
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>
-            <BettingGrid />
+            <BettingGrid isBettingClosed={isBettingClosed} />
           </div>
         </main>
         
