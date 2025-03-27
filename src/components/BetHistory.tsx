@@ -37,14 +37,10 @@ const CombinedTransactionsList = ({ deposits, withdrawals }: {
   deposits: BetHistoryProps['deposits'], 
   withdrawals: BetHistoryProps['withdrawals'] 
 }) => {
-  // Ensure deposits and withdrawals are arrays before combining
-  const safeDeposits = deposits || [];
-  const safeWithdrawals = withdrawals || [];
-  
   // Combine deposits and withdrawals into one list and sort by timestamp (newest first)
   const combinedTransactions = [
-    ...safeDeposits.map(d => ({ ...d, type: 'deposit' as const })),
-    ...safeWithdrawals.map(w => ({ ...w, type: 'withdrawal' as const }))
+    ...deposits.map(d => ({ ...d, type: 'deposit' as const })),
+    ...withdrawals.map(w => ({ ...w, type: 'withdrawal' as const }))
   ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
   return (
@@ -97,7 +93,7 @@ const CombinedTransactionsList = ({ deposits, withdrawals }: {
   );
 };
 
-const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [], withdrawals = [] }) => {
+const BetHistory: React.FC<BetHistoryProps> = ({ betHistory, deposits, withdrawals }) => {
   const [activeTab, setActiveTab] = useState("bets");
   const isMobile = useIsMobile();
   
@@ -113,7 +109,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [],
   const betsContent = (
     <ScrollArea className="h-60">
       <div className="space-y-2">
-        {betHistory && betHistory.map(bet => (
+        {betHistory.map(bet => (
           <div 
             key={`bet-${bet.id}`} 
             className="flex items-center justify-between bg-[#0f0f0f] rounded-lg p-2 text-xs"
@@ -143,7 +139,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [],
           </div>
         ))}
         
-        {(!betHistory || betHistory.length === 0) && (
+        {betHistory.length === 0 && (
           <div className="text-center text-white/40 py-4">
             No betting history
           </div>
@@ -155,7 +151,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [],
   const depositsContent = (
     <ScrollArea className="h-60">
       <div className="space-y-2">
-        {deposits && deposits.map(deposit => (
+        {deposits.map(deposit => (
           <div 
             key={`deposit-${deposit.id}`} 
             className="flex items-center justify-between bg-[#0f0f0f] rounded-lg p-2 text-xs"
@@ -185,7 +181,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [],
           </div>
         ))}
         
-        {(!deposits || deposits.length === 0) && (
+        {deposits.length === 0 && (
           <div className="text-center text-white/40 py-4">
             No deposit history
           </div>
@@ -197,7 +193,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [],
   const withdrawalsContent = (
     <ScrollArea className="h-60">
       <div className="space-y-2">
-        {withdrawals && withdrawals.map(withdrawal => (
+        {withdrawals.map(withdrawal => (
           <div 
             key={`withdrawal-${withdrawal.id}`} 
             className="flex items-center justify-between bg-[#0f0f0f] rounded-lg p-2 text-xs"
@@ -234,7 +230,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [],
           </div>
         ))}
         
-        {(!withdrawals || withdrawals.length === 0) && (
+        {withdrawals.length === 0 && (
           <div className="text-center text-white/40 py-4">
             No withdrawal history
           </div>
