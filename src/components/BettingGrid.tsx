@@ -498,20 +498,41 @@ const BettingGrid = () => {
   };
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
-    return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1" : "")}>
-        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-8 h-8 flex-shrink-0 my-1" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
+    return <div className={cn(
+      "flex flex-wrap gap-2 justify-center mb-4", 
+      isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : ""
+    )}>
+        {CHIP_VALUES.map(value => <div 
+            key={value} 
+            className={cn(
+              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
+              selectedChip === value ? "transform scale-110" : "transform scale-100", 
+              isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-14 h-14"
+            )} 
+            onClick={() => handleSelectChip(value)}
+          >
             {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
             
             {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
             
-            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-7 h-7" : "w-12 h-12")}>
+            <div className={cn(
+              "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+              getChipColor(value), 
+              isMobile ? "w-8 h-8" : "w-12 h-12"
+            )}>
               <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(value)}`
-          }}></div>
+                borderColor: `${getChipSecondaryColor(value)}`
+              }}></div>
               
-              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
+              <div className={cn(
+                "absolute rounded-full border border-white/30", 
+                isMobile ? "inset-0.5" : "inset-1.5"
+              )}></div>
               
-              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[8px]" : "")}>
+              <span className={cn(
+                "relative z-10 text-white font-bold drop-shadow-md", 
+                isMobile ? "text-[9px]" : ""
+              )}>
                 {formatChipValue(value)}
               </span>
             </div>
@@ -569,8 +590,8 @@ const BettingGrid = () => {
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Step 2: Select chip value.</h3>
-        <div className="px-1 py-4">
+        <h3 className="text-white text-sm mb-2">Step 2: Select chip value.</h3>
+        <div className="px-0 py-2">
           {renderChipSelection()}
         </div>
       </Card>
@@ -628,7 +649,7 @@ const BettingGrid = () => {
         </Card>
         
         <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-          <h3 className="text-white text-sm mb-3">Select Chip Value</h3>
+          <h3 className="text-white text-sm mb-2">Select Chip Value</h3>
           {renderChipSelection()}
         </Card>
       </div>
