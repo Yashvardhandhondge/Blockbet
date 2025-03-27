@@ -81,6 +81,15 @@
     opacity: 1;
   }
   
+  /* Toast customizations */
+  [data-sonner-toast][data-styled="true"] {
+    @apply bg-btc-darker border border-btc-orange/20 text-white shadow-[0_4px_16px_rgba(247,147,26,0.15)];
+  }
+  
+  [data-sonner-toast][data-styled="true"][data-type="error"] {
+    @apply border-red-500/20 bg-[#140504] text-red-400;
+  }
+  
   /* Mobile miner grid (4 per row) */
   @media (max-width: 767px) {
     .miners-grid-mobile {

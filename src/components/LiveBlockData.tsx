@@ -7,6 +7,8 @@ import { fetchPendingTransactionsData } from '@/api/pendingTransactionsApi';
 import { fetchWithRetry } from '@/utils/errorUtils';
 import { toast } from './ui/use-toast';
 import { Badge } from './ui/badge';
+import { ToastContent } from './ui/toast-content';
+
 const LiveBlockData = () => {
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   const [avgBlockTime, setAvgBlockTime] = useState<number>(10);
@@ -16,6 +18,7 @@ const LiveBlockData = () => {
   const [error, setError] = useState<string | null>(null);
   const [minedBy, setMinedBy] = useState<string>('Unknown');
   const [poolLogo, setPoolLogo] = useState<string | null>(null);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,14 +59,25 @@ const LiveBlockData = () => {
     fetchData();
 
     // Refresh data every 30 seconds
-    const intervalId = setInterval(fetchData, 30000);
+    const intervalId = setInterval(() => {
+      fetchData().catch(err => {
+        console.error("Error in interval fetch:", err);
+        toast({
+          title: <ToastContent title="Data fetch error" variant="destructive" />,
+          description: ""
+        });
+      });
+    }, 30000);
+    
     return () => clearInterval(intervalId);
   }, []);
+  
   if (isLoading) {
     return <div className="flex flex-1 gap-4 overflow-x-auto hide-scrollbar">
         {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-8 bg-white/5 animate-pulse rounded flex-1 min-w-20"></div>)}
       </div>;
   }
+  
   if (error) {
     return <div className="bg-red-500/10 text-red-400 px-3 py-1 rounded-lg text-xs flex items-center">
         <span className="mr-2">{error}</span>
@@ -72,11 +86,12 @@ const LiveBlockData = () => {
         </button>
       </div>;
   }
+  
   return <div className="flex flex-1 gap-3 overflow-x-auto hide-scrollbar">
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
         <Server className="h-3 w-3 text-btc-orange flex-shrink-0" />
         <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Block:</span>
-        <span className="text-xs font-mono font-bold text-white">{currentBlock}</span>
+        <span className="text-xs font-mono font-bold text-white">{currentBlock.toString()}</span>
       </div>
       
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
@@ -109,4 +124,5 @@ const LiveBlockData = () => {
       </div>
     </div>;
 };
+
 export default LiveBlockData;

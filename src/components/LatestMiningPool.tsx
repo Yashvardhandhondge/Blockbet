@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { formatTimeAgo } from '@/utils/mockData';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import { fetchWithRetry, hasNewBlock } from '@/utils/errorUtils';
+import { ToastContent } from './ui/toast-content';
 
 const LatestMiningPool = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
@@ -34,8 +35,12 @@ const LatestMiningPool = () => {
         
         // Show toast notification for new block
         toast({
-          title: "New Block Found!",
-          description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
+          title: <ToastContent 
+                  title="New Block Found!" 
+                  description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
+                  poolName={data.latestBlock.minedBy}
+                />,
+          description: ""
         });
         
         // After a short delay, update the blocks
@@ -104,7 +109,9 @@ const LatestMiningPool = () => {
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
       'mara pool': '/pool-logos/marapool.svg', // Fixed MaraPool logo
-      'whitepool': '/pool-logos/whitepool.svg' // Fixed WhitePool logo
+      'whitepool': '/pool-logos/whitepool.svg', // Fixed WhitePool logo
+      'spiderpool': '/pool-logos/spiderpool.svg',
+      'sigmapool': '/pool-logos/sigmapoolcom.svg',
     };
     
     // Check if we have a logo for this pool
@@ -123,14 +130,13 @@ const LatestMiningPool = () => {
     try {
       await fetchData();
       toast({
-        title: "Data Refreshed",
-        description: "Mining pool data updated",
+        title: <ToastContent title="Data Refreshed" description="Mining pool data updated" />,
+        description: ""
       });
     } catch (err) {
       toast({
-        title: "Error",
-        description: "Failed to refresh data",
-        variant: "destructive",
+        title: <ToastContent title="Error" description="Failed to refresh data" variant="destructive" />,
+        description: ""
       });
     }
   };

@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Block, formatTimeAgo } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
@@ -8,6 +7,7 @@ import { SparklesText } from '@/components/ui/sparkles-text';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { useToast } from '@/hooks/use-toast';
 import { fetchWithRetry, hasNewBlock } from '@/utils/errorUtils';
+import { ToastContent } from './ui/toast-content';
 
 const BlockchainVisualization = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
@@ -36,8 +36,12 @@ const BlockchainVisualization = () => {
         
         // Show toast notification for new block
         toast({
-          title: "New Block Found!",
-          description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
+          title: <ToastContent 
+                  title="New Block Found!" 
+                  description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
+                  poolName={data.latestBlock.minedBy}
+                />,
+          description: ""
         });
         
         // After a short delay, update the blocks
@@ -121,6 +125,10 @@ const BlockchainVisualization = () => {
       'bitfury': '/pool-logos/bitfury.svg',
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
+      'mara pool': '/pool-logos/marapool.svg',
+      'whitepool': '/pool-logos/whitepool.svg',
+      'spiderpool': '/pool-logos/spiderpool.svg',
+      'sigmapool': '/pool-logos/sigmapoolcom.svg',
     };
     
     // Check if we have a logo for this pool
@@ -146,8 +154,12 @@ const BlockchainVisualization = () => {
         setIsNewBlockAppearing(true);
         
         toast({
-          title: "New Block Found!",
-          description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
+          title: <ToastContent 
+                  title="New Block Found!" 
+                  description={`Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`}
+                  poolName={data.latestBlock.minedBy}
+                />,
+          description: ""
         });
         
         setTimeout(() => {
@@ -158,8 +170,8 @@ const BlockchainVisualization = () => {
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
         
         toast({
-          title: "Data Refreshed",
-          description: "No new blocks found",
+          title: <ToastContent title="Data Refreshed" description="No new blocks found" />,
+          description: ""
         });
       }
       
@@ -169,9 +181,8 @@ const BlockchainVisualization = () => {
       console.error('Error fetching blockchain data:', err);
       
       toast({
-        title: "Error",
-        description: "Failed to fetch blockchain data",
-        variant: "destructive",
+        title: <ToastContent title="Error" description="Failed to fetch blockchain data" variant="destructive" />,
+        description: ""
       });
     } finally {
       setIsLoading(false);
