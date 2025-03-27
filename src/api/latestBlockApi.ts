@@ -1,6 +1,6 @@
 
 import { fetchRecentBlocks, calculateAverageBlockTime, estimateNextBlockTime } from '../services/mempoolService';
-import { Block } from '@/utils/mockData';
+import { Block } from '@/utils/types';
 
 export interface LatestBlockData {
   latestBlock: Block;
