@@ -5,7 +5,7 @@ import StatCard from './StatCard';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { fetchPendingTransactionsData } from '@/api/pendingTransactionsApi';
 import { fetchWithRetry } from '@/utils/errorUtils';
-import { toast } from '@/hooks/use-toast';
+import { toast } from './ui/use-toast';
 import { Badge } from './ui/badge';
 import { ToastContent } from './ui/toast-content';
 
@@ -63,9 +63,8 @@ const LiveBlockData = () => {
       fetchData().catch(err => {
         console.error("Error in interval fetch:", err);
         toast({
-          title: "Data fetch error",
-          description: "Could not update blockchain data",
-          variant: "destructive"
+          title: <ToastContent title="Data fetch error" variant="destructive" />,
+          description: ""
         });
       });
     }, 30000);
