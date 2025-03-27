@@ -8,6 +8,7 @@ import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
 import LiveBlockData from '@/components/LiveBlockData';
+import LatestMiningPool from '@/components/LatestMiningPool';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +26,9 @@ const Index = () => {
   });
   const blockchainAnimation = useElementAppear(!isLoading, {
     delay: 600
+  });
+  const miningPoolAnimation = useElementAppear(!isLoading, {
+    delay: 675
   });
   const liveDataAnimation = useElementAppear(!isLoading, {
     delay: 750
@@ -67,8 +71,13 @@ const Index = () => {
           </div>
           
           {/* Blockchain visualization */}
-          <div style={blockchainAnimation.style} className="mb-2">
+          <div style={blockchainAnimation.style} className="mb-6">
             <BlockchainVisualization />
+          </div>
+
+          {/* Latest mining pool display */}
+          <div style={miningPoolAnimation.style} className="mb-5">
+            <LatestMiningPool />
           </div>
           
           {/* Live Block Data (compact version) */}

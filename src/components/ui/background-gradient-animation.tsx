@@ -70,18 +70,26 @@ export const BackgroundGradientAnimation = ({
       requestAnimationFrame(move);
     }
     
+    function handleMouseMove(e: MouseEvent) {
+      const { clientX, clientY } = e;
+      if (!interactiveRef.current) return;
+      
+      const rect = interactiveRef.current.getBoundingClientRect();
+      setTgX(clientX - rect.left - rect.width / 2);
+      setTgY(clientY - rect.top - rect.height / 2);
+    }
+    
     if (interactive) {
-      window.addEventListener("mousemove", (e) => {
-        const { clientX, clientY } = e;
-        if (!interactiveRef.current) return;
-        
-        const rect = interactiveRef.current.getBoundingClientRect();
-        setTgX(clientX - rect.left - rect.width / 2);
-        setTgY(clientY - rect.top - rect.height / 2);
-      });
+      window.addEventListener("mousemove", handleMouseMove);
       
       move();
     }
+    
+    return () => {
+      if (interactive) {
+        window.removeEventListener("mousemove", handleMouseMove);
+      }
+    };
   }, [interactive, tgX, tgY]);
   
   const sizeClasses = {
