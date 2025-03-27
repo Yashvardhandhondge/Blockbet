@@ -101,6 +101,22 @@
     .miners-grid-mobile > div {
       width: 100%;
     }
+    
+    /* Ensure chip selection container is properly sized */
+    .chip-selection-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+    }
+    
+    /* Make chips smaller on mobile to fit */
+    .chip-element {
+      width: 2rem;
+      height: 2rem;
+      flex-shrink: 0;
+    }
   }
 }
 
@@ -123,6 +139,16 @@
   
   .bg-btc-dark {
     background-color: var(--btc-dark);
+  }
+  
+  /* Allow buttons to position absolutely in chip selection container */
+  .chip-buttons-container {
+    @apply absolute top-2 right-2 flex gap-1;
+  }
+  
+  /* Hover effects for chip selection buttons */
+  .chip-buttons-hover {
+    @apply hover:bg-btc-orange/10 hover:border-btc-orange/30 transition-colors;
   }
 }
 

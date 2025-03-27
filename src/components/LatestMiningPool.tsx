@@ -19,6 +19,8 @@ const LatestMiningPool = () => {
   const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
   const [previousLatestBlock, setPreviousLatestBlock] = useState<string | null>(null);
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
+  const [pendingTxCount, setPendingTxCount] = useState(12483);
+  const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -43,6 +45,18 @@ const LatestMiningPool = () => {
       } else if (blocks.length === 0) {
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
       }
+      
+      // Update pending transactions randomly
+      setPendingTxCount(prev => {
+        const variation = Math.random() * 100 - 20;
+        return Math.max(1000, Math.floor(prev + variation));
+      });
+      
+      // Update average block time with slight variations
+      setAvgBlockTime(prev => {
+        const variation = Math.random() * 0.4 - 0.2;
+        return Math.max(9.2, Math.min(10.5, prev + variation));
+      });
       
       setError(null);
     } catch (err) {
@@ -283,7 +297,11 @@ const LatestMiningPool = () => {
         
         <div className="p-3 border-t border-white/10 bg-[#070707]">
           <div className="flex flex-wrap items-center gap-2">
-            <LiveBlockData />
+            <LiveBlockData 
+              processBets={undefined}
+              pendingTransactions={pendingTxCount}
+              averageBlockTime={avgBlockTime.toFixed(1)}
+            />
           </div>
         </div>
       </div>
