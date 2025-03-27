@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
 import { BackgroundGradientAnimation } from './ui/background-gradient-animation';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
@@ -15,6 +16,7 @@ interface MiningPoolCardProps {
 
 const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const isMobile = useIsMobile();
   
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
@@ -86,22 +88,24 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           
           <div className="text-center">
             <h3 className="text-lg font-medium text-white">{pool.name}</h3>
-            <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>
+            {!isMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
           </div>
         </div>
         
-        <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
-          <div className="p-2">
-            <div className="text-white/60 text-xs">Hashrate</div>
-            <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
+        {!isMobile && (
+          <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+            <div className="p-2">
+              <div className="text-white/60 text-xs">Hashrate</div>
+              <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
+            </div>
+            <div className="p-2">
+              <div className="text-white/60 text-xs">Blocks (24h)</div>
+              <div className="font-medium text-white">{pool.blocksLast24h}</div>
+            </div>
           </div>
-          <div className="p-2">
-            <div className="text-white/60 text-xs">Blocks (24h)</div>
-            <div className="font-medium text-white">{pool.blocksLast24h}</div>
-          </div>
-        </div>
+        )}
         
-        <div className="mt-2 flex justify-center items-center p-2">
+        <div className={cn("mt-2 flex justify-center items-center p-2", isMobile && "mt-1")}>
           <div className="text-white/80 text-center">
             <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">{pool.odds.toFixed(2)}
               <span className="ml-0.5">×</span>
