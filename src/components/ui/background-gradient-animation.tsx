@@ -44,19 +44,31 @@ export const BackgroundGradientAnimation = ({
   const [tgY, setTgY] = useState(0);
   
   useEffect(() => {
-    document.body.style.setProperty("background", `linear-gradient(to bottom, ${gradientBackgroundStart}, ${gradientBackgroundEnd})`);
-    document.body.style.setProperty("background-repeat", "no-repeat");
+    // Apply background once to html element to prevent glitching during scroll
+    const htmlElement = document.documentElement;
+    htmlElement.style.setProperty("background", `linear-gradient(to bottom, ${gradientBackgroundStart}, ${gradientBackgroundEnd})`);
+    htmlElement.style.setProperty("background-attachment", "fixed");
+    htmlElement.style.setProperty("background-repeat", "no-repeat");
+    htmlElement.style.setProperty("min-height", "100vh");
     document.body.style.setProperty("overflow-x", "hidden");
+    document.body.style.setProperty("background", "transparent");
     
     // Clean up when component unmounts
     return () => {
-      document.body.style.removeProperty("background");
-      document.body.style.removeProperty("background-repeat");
+      htmlElement.style.removeProperty("background");
+      htmlElement.style.removeProperty("background-attachment");
+      htmlElement.style.removeProperty("background-repeat");
+      htmlElement.style.removeProperty("min-height");
       document.body.style.removeProperty("overflow-x");
+      document.body.style.removeProperty("background");
     };
   }, [gradientBackgroundStart, gradientBackgroundEnd]);
   
   useEffect(() => {
+    if (!interactive) return;
+    
+    let animationFrameId: number;
+    
     function move() {
       if (!interactiveRef.current) return;
       
@@ -67,22 +79,28 @@ export const BackgroundGradientAnimation = ({
         interactiveRef.current.style.transform = `translate(${curX}px, ${curY}px)`;
       }
       
-      requestAnimationFrame(move);
+      animationFrameId = requestAnimationFrame(move);
     }
     
-    if (interactive) {
-      window.addEventListener("mousemove", (e) => {
-        const { clientX, clientY } = e;
-        if (!interactiveRef.current) return;
-        
-        const rect = interactiveRef.current.getBoundingClientRect();
-        setTgX(clientX - rect.left - rect.width / 2);
-        setTgY(clientY - rect.top - rect.height / 2);
-      });
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      if (!interactiveRef.current) return;
       
-      move();
+      const rect = interactiveRef.current.getBoundingClientRect();
+      setTgX(clientX - rect.left - rect.width / 2);
+      setTgY(clientY - rect.top - rect.height / 2);
+    };
+    
+    if (interactive) {
+      window.addEventListener("mousemove", handleMouseMove);
+      animationFrameId = requestAnimationFrame(move);
     }
-  }, [interactive, tgX, tgY]);
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [interactive]);
   
   const sizeClasses = {
     small: "w-[250px] h-[250px] md:w-[500px] md:h-[500px]",
