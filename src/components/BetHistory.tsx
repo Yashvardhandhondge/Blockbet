@@ -43,6 +43,7 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'wins' | 'losses' | 'deposits' | 'withdrawals'>('all');
   const isMobile = useIsMobile();
+  const [isMoreTabsOpen, setIsMoreTabsOpen] = useState(false);
   
   // Sort transactions by newest first (using timestamp)
   const sortedBetHistory = [...betHistory].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
@@ -150,11 +151,23 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
           </TabsTrigger>
           
           {isMobile ? (
-            <CollapsibleTrigger asChild className="col-span-3 mt-1">
-              <Button variant="outline" size="sm" className="bg-[#121212]/40 text-xs border-white/10 hover:bg-[#202020]/40">
-                More Tabs
-              </Button>
-            </CollapsibleTrigger>
+            <Collapsible open={isMoreTabsOpen} onOpenChange={setIsMoreTabsOpen} className="col-span-3 mt-1">
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="bg-[#121212]/40 text-xs border-white/10 hover:bg-[#202020]/40 w-full">
+                  More Tabs
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <TabsList className="grid grid-cols-2 mt-1 mb-4 bg-[#121212]/40 w-full">
+                  <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
+                    Deposits
+                  </TabsTrigger>
+                  <TabsTrigger value="withdrawals" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
+                    Withdrawals
+                  </TabsTrigger>
+                </TabsList>
+              </CollapsibleContent>
+            </Collapsible>
           ) : (
             <>
               <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
@@ -166,21 +179,6 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
             </>
           )}
         </TabsList>
-        
-        {isMobile && (
-          <Collapsible>
-            <CollapsibleContent>
-              <TabsList className="grid grid-cols-2 mb-4 bg-[#121212]/40 w-full">
-                <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
-                  Deposits
-                </TabsTrigger>
-                <TabsTrigger value="withdrawals" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
-                  Withdrawals
-                </TabsTrigger>
-              </TabsList>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
         
         <TabsContent value="all" className="mt-0">
           <ScrollArea className="h-[300px]">
