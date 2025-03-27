@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -670,7 +671,187 @@ const BettingGrid = () => {
           </div>}
       </Card>
       
-      {/* Add your remaining code here */}
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <h3 className="text-white text-sm mb-3">Step 3: Place Your Bets On Mining Pools</h3>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {miningPools.slice(0, 10).map(pool => (
+            <MiningPoolCard 
+              key={pool.id}
+              pool={pool}
+              onSelect={handleSelectPool}
+              isSelected={selectedPool?.id === pool.id}
+              bets={getBetsOnPool(pool.id)}
+            />
+          ))}
+        </div>
+      </Card>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card className="w-full h-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-white text-sm">Your Bets</h3>
+            <div className="text-xs text-white/60">
+              Total: {formatSats(totalBet)}
+            </div>
+          </div>
+          
+          {bets.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div className="text-white/40 mb-2">No bets placed yet</div>
+              <div className="text-xs text-white/30 max-w-xs">
+                Select a chip value and click on a mining pool to place a bet
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+              {getConsolidatedBets().map((consolidatedBet, index) => {
+                const pool = miningPools.find(p => p.id === consolidatedBet.poolId);
+                return (
+                  <div 
+                    key={`bet-${consolidatedBet.poolId || 'empty'}-${index}`}
+                    className="flex items-center justify-between p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                  >
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full overflow-hidden mr-3">
+                        {consolidatedBet.poolId ? 
+                          getPoolLogo(consolidatedBet.poolId) : 
+                          <div className="w-full h-full bg-gray-800 flex items-center justify-center text-xs text-white/70">
+                            Empty
+                          </div>
+                        }
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-white">
+                          {consolidatedBet.poolId ? 
+                            pool?.name || 'Unknown Pool' : 
+                            'Empty Block'
+                          }
+                        </div>
+                        <div className="text-xs text-white/60">
+                          {consolidatedBet.poolId && pool ? 
+                            `${pool.odds.toFixed(2)}x payout` : 
+                            '50x payout'
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center">
+                      {renderRouletteCasualChips(consolidatedBet.amounts)}
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-white">
+                          {formatSats(consolidatedBet.totalAmount)}
+                        </div>
+                        <div className="text-xs text-white/60">
+                          {formatSatsToBTC(consolidatedBet.totalAmount)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+        
+        <LiveBlockData 
+          processBets={processBetsForBlock}
+          pendingTransactions={pendingTxCount}
+          averageBlockTime={avgBlockTime.toFixed(1)}
+        />
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white text-sm">Bet History</h3>
+            <Button variant="outline" size="sm" className="h-7 py-0 px-2 border-white/10 text-white/60 text-xs hover:bg-white/5">
+              <History className="h-3 w-3 mr-1" />
+              View All
+            </Button>
+          </div>
+          
+          <BetHistory bets={betHistory.slice(0, 5)} />
+        </Card>
+        
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white text-sm">Transaction History</h3>
+            <Button variant="outline" size="sm" className="h-7 py-0 px-2 border-white/10 text-white/60 text-xs hover:bg-white/5">
+              <History className="h-3 w-3 mr-1" />
+              View All
+            </Button>
+          </div>
+          
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {/* Deposits */}
+            {deposits.slice(0, 2).map(deposit => (
+              <div 
+                key={`deposit-${deposit.id}`}
+                className="flex items-center justify-between p-2 bg-white/5 rounded-lg"
+              >
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center mr-3">
+                    <ArrowDown className="h-4 w-4 text-green-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-white">
+                      Deposit
+                    </div>
+                    <div className="text-xs text-white/60">
+                      {deposit.timestamp.toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-green-500">
+                    +{formatSats(deposit.amount)}
+                  </div>
+                  <div className="text-xs text-white/60 truncate max-w-[150px]">
+                    {deposit.txId.substring(0, 6)}...{deposit.txId.substring(deposit.txId.length - 6)}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Withdrawals */}
+            {withdrawals.slice(0, 2).map(withdrawal => (
+              <div 
+                key={`withdrawal-${withdrawal.id}`}
+                className="flex items-center justify-between p-2 bg-white/5 rounded-lg"
+              >
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-red-500/10 rounded-full flex items-center justify-center mr-3">
+                    <ArrowDown className="h-4 w-4 text-red-500 transform rotate-180" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-white flex items-center">
+                      Withdrawal
+                      {withdrawal.status === 'pending' && (
+                        <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-yellow-500/20 text-yellow-500 rounded-full">
+                          Pending
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-white/60">
+                      {withdrawal.timestamp.toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-red-500">
+                    -{formatSats(withdrawal.amount)}
+                  </div>
+                  <div className="text-xs text-white/60 truncate max-w-[150px]">
+                    {withdrawal.txId.substring(0, 6)}...{withdrawal.txId.substring(withdrawal.txId.length - 6)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
     </div>;
 };
 
