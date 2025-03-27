@@ -6,9 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Trophy, Download, Upload, History } from 'lucide-react';
 import { format } from 'date-fns';
+import { formatSatsToBTC, formatSats } from '@/utils/formatters';
 
 interface BetHistoryProps {
-  betHistory: Array<{
+  betHistory?: Array<{
     id: number;
     poolId: string;
     poolName: string;
@@ -17,13 +18,13 @@ interface BetHistoryProps {
     isWin: boolean;
     blockHeight: number;
   }>;
-  deposits: Array<{
+  deposits?: Array<{
     id: number;
     amount: number;
     timestamp: Date;
     txId: string;
   }>;
-  withdrawals: Array<{
+  withdrawals?: Array<{
     id: number;
     amount: number;
     timestamp: Date;
@@ -37,10 +38,14 @@ const CombinedTransactionsList = ({ deposits, withdrawals }: {
   deposits: BetHistoryProps['deposits'], 
   withdrawals: BetHistoryProps['withdrawals'] 
 }) => {
+  // Handle undefined values with default empty arrays
+  const safeDeposits = deposits || [];
+  const safeWithdrawals = withdrawals || [];
+  
   // Combine deposits and withdrawals into one list and sort by timestamp (newest first)
   const combinedTransactions = [
-    ...deposits.map(d => ({ ...d, type: 'deposit' as const })),
-    ...withdrawals.map(w => ({ ...w, type: 'withdrawal' as const }))
+    ...safeDeposits.map(d => ({ ...d, type: 'deposit' as const })),
+    ...safeWithdrawals.map(w => ({ ...w, type: 'withdrawal' as const }))
   ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
   return (
@@ -75,7 +80,7 @@ const CombinedTransactionsList = ({ deposits, withdrawals }: {
           
           <div className="text-right">
             <div className={transaction.type === 'deposit' ? 'text-green-400' : 'text-btc-orange'}>
-              {transaction.type === 'deposit' ? '+' : '-'}{(transaction.amount / 100000000).toFixed(8)} BTC
+              {transaction.type === 'deposit' ? '+' : '-'}{formatSatsToBTC(transaction.amount)}
             </div>
             <div className="text-white/40 text-[10px] truncate max-w-28">
               {transaction.txId.substring(0, 8)}...{transaction.txId.substring(transaction.txId.length - 8)}
@@ -93,17 +98,9 @@ const CombinedTransactionsList = ({ deposits, withdrawals }: {
   );
 };
 
-const BetHistory: React.FC<BetHistoryProps> = ({ betHistory, deposits, withdrawals }) => {
+const BetHistory: React.FC<BetHistoryProps> = ({ betHistory = [], deposits = [], withdrawals = [] }) => {
   const [activeTab, setActiveTab] = useState("bets");
   const isMobile = useIsMobile();
-  
-  const formatAmount = (amount: number) => {
-    return amount.toLocaleString() + " sats";
-  };
-  
-  const formatBTC = (amount: number) => {
-    return (amount / 100000000).toFixed(8) + " BTC";
-  };
   
   // Generating the content for each tab
   const betsContent = (
@@ -133,7 +130,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory, deposits, withdrawa
                 {bet.isWin ? 'WIN' : 'LOSS'}
               </div>
               <div className="text-btc-orange font-mono">
-                {formatAmount(bet.amount)}
+                {formatSats(bet.amount)}
               </div>
             </div>
           </div>
@@ -172,7 +169,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory, deposits, withdrawa
             
             <div className="text-right">
               <div className="text-green-400">
-                +{formatBTC(deposit.amount)}
+                +{formatSatsToBTC(deposit.amount)}
               </div>
               <div className="text-white/40 text-[10px] truncate max-w-24">
                 {deposit.txId.substring(0, 6)}...{deposit.txId.substring(deposit.txId.length - 6)}
@@ -221,7 +218,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ betHistory, deposits, withdrawa
             
             <div className="text-right">
               <div className="text-btc-orange">
-                -{formatBTC(withdrawal.amount)}
+                -{formatSatsToBTC(withdrawal.amount)}
               </div>
               <div className="text-white/40 text-[10px] truncate max-w-24">
                 {withdrawal.txId.substring(0, 6)}...{withdrawal.txId.substring(withdrawal.txId.length - 6)}

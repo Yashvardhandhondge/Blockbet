@@ -4,7 +4,11 @@
  * @param amount BTC amount to format
  * @returns Formatted BTC string
  */
-export const formatBTC = (amount: number): string => {
+export const formatBTC = (amount: number | undefined | null): string => {
+  if (amount === undefined || amount === null) {
+    return "0.00000000 BTC";
+  }
+  
   if (amount < 0.001) {
     return `${amount.toFixed(8)} BTC`;
   } else if (amount < 0.1) {
@@ -12,6 +16,33 @@ export const formatBTC = (amount: number): string => {
   } else {
     return `${amount.toFixed(3)} BTC`;
   }
+};
+
+/**
+ * Formats a satoshi amount to BTC with 8 decimal places
+ * @param satoshis Satoshi amount to format
+ * @returns Formatted BTC string
+ */
+export const formatSatsToBTC = (satoshis: number | undefined | null): string => {
+  if (satoshis === undefined || satoshis === null) {
+    return "0.00000000 BTC";
+  }
+  
+  const btcValue = satoshis / 100000000;
+  return `${btcValue.toFixed(8)} BTC`;
+};
+
+/**
+ * Formats a satoshi amount to a readable string
+ * @param satoshis Satoshi amount to format
+ * @returns Formatted sats string
+ */
+export const formatSats = (satoshis: number | undefined | null): string => {
+  if (satoshis === undefined || satoshis === null) {
+    return "0 sats";
+  }
+  
+  return `${satoshis.toLocaleString()} sats`;
 };
 
 /**
