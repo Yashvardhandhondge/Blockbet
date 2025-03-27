@@ -7,7 +7,7 @@ export interface MiningPool {
   blocksLast24h: number;
   colorClass: string;
   odds: number;
-  region: 'Asia' | 'North America' | 'Europe' | 'Unknown';
+  region: string; // Changed from union type to string to match mockData.ts
   logoUrl: string;
   gradient: string;
 }
@@ -17,12 +17,12 @@ export interface Block {
   hash: string;
   minedBy: string;
   timestamp: number;
-  size: number;
-  transactionCount: number;
-  fees: number;
-  feesRangeText: string;
-  feeRange: string;
-  totalBtc: number;
+  size?: number;
+  transactionCount?: number;
+  fees?: number;
+  feesRangeText?: string;
+  feeRange?: string;
+  totalBtc?: number;
 }
 
 export interface UserBalance {
