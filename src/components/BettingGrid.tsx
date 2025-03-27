@@ -12,6 +12,7 @@ import MiningPoolCard from './MiningPoolCard';
 import LiveBlockData from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
+import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
@@ -564,8 +565,54 @@ const BettingGrid = () => {
     return satoshis.toLocaleString() + " sats";
   };
 
+  const processBetsForBlock = (blockData: any) => {
+    if (bets.length === 0) return;
+    
+    const winningPoolId = blockData.minedBy ? 
+      miningPools.find(p => 
+        blockData.minedBy.toLowerCase().includes(p.id.toLowerCase()) || 
+        p.id.toLowerCase().includes(blockData.minedBy.toLowerCase())
+      )?.id || null 
+      : null;
+      
+    console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
+    
+    // Track if the player has any winning bets
+    let playerHasWon = false;
+    
+    // Process each bet
+    bets.forEach(bet => {
+      const isWin = bet.poolId === winningPoolId;
+      handleAddBetToHistory(bet.poolId || 'unknown', bet.amount, isWin);
+      
+      if (isWin) {
+        playerHasWon = true;
+        // Find pool to get odds
+        const pool = miningPools.find(p => p.id === bet.poolId);
+        if (pool) {
+          const winAmount = Math.floor(bet.amount * pool.odds);
+          setWalletBalance(prev => prev + winAmount);
+          
+          toast({
+            title: "You won!",
+            description: `Received ${formatSats(winAmount)} from your bet on ${pool.name}!`,
+            variant: "default"
+          });
+        }
+      }
+    });
+    
+    // Only emit the win event if the player actually won
+    if (playerHasWon) {
+      emitPlayerWin();
+    }
+    
+    // Clear bets after processing
+    setBets([]);
+  };
+
   return <div className="w-full">
-      <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg mb-6 overflow-hidden">
+      <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
             <Clock className="h-4 w-4 text-btc-orange mr-1.5" />
@@ -618,98 +665,8 @@ const BettingGrid = () => {
               Clear
             </Button>
           </div>}
-        {!isMobile && <div className="flex justify-end mt-2">
-            {renderBetControlButtons()}
-          </div>}
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Step 3: Place your chips on the next winning mining pool.</h3>
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3">
-          {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
-        </div>
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-          <h3 className="text-white text-sm mb-2 md:mb-0">Select chip denomination.</h3>
-        </div>
-        <div className="px-0 py-2">
-          {renderChipSelection()}
-        </div>
-        {isMobile && <div className="absolute bottom-3 right-3 flex gap-2">
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-2.5 h-2.5" />
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-2.5 h-2.5" />
-              Clear
-            </Button>
-          </div>}
-        {!isMobile && <div className="flex justify-end mt-2">
-            {renderBetControlButtons()}
-          </div>}
-      </Card>
-      
-      <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
-        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-white text-sm">Your Bets</h3>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-3 h-3" />
-                Cancel Last
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-3 h-3" />
-                Clear All
-              </Button>
-            </div>
-          </div>
-          
-          {bets.length === 0 ? <div className="text-white/60 text-center py-4 text-sm">
-              No bets placed yet. Select a chip and click on a mining pool to place a bet.
-            </div> : <>
-              <div className="mb-3 space-y-1 max-h-[150px] overflow-y-auto hide-scrollbar">
-                {getConsolidatedBets().map((consolidatedBet, index) => {
-              const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
-              return <div key={index} className="flex justify-between items-center bg-[#151515]/50 p-1.5 rounded text-xs">
-                      <div className="text-white">
-                        {pool ? pool.name : 'Empty Block'}
-                      </div>
-                      <div className="flex items-center">
-                        {renderRouletteCasualChips(consolidatedBet.amounts)}
-                        <div className="text-btc-orange font-mono">
-                          {formatSats(consolidatedBet.totalAmount)}
-                        </div>
-                      </div>
-                    </div>;
-            })}
-              </div>
-              <div className="pt-2 border-t border-white/10">
-                <div className="flex justify-between text-white font-bold text-sm">
-                  <div>Total Bet:</div>
-                  <div className="text-btc-orange">{formatSats(totalBet)}</div>
-                </div>
-              </div>
-            </>}
-        </Card>
-        
-        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-3 rounded-xl">
-          <h3 className="text-white text-sm mb-3">Live Blockchain Stats:</h3>
-          <LiveBlockData />
-        </Card>
-      </div>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
-        <div className="flex items-center mb-3">
-          <History className="h-4 w-4 text-btc-orange mr-2" />
-          <h3 className="text-white text-sm">Wallet Account history Stats:</h3>
-        </div>
-        <BetHistory betHistory={betHistory} deposits={deposits} withdrawals={withdrawals} />
-      </Card>
-    </div>;
+        {!isMobile && <div className="flex justify-end
+  </div>;
 };
 
 export default BettingGrid;

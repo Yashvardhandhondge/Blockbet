@@ -1,4 +1,3 @@
-
 /**
  * Formats a BTC amount with appropriate precision
  * @param amount BTC amount to format
@@ -43,6 +42,16 @@ export const formatSats = (satoshis: number | undefined | null): string => {
   }
   
   return `${satoshis.toLocaleString()} sats`;
+};
+
+/**
+ * Emits a custom playerWin event for confetti effects
+ */
+export const emitPlayerWin = () => {
+  const event = new CustomEvent('playerWin', { 
+    detail: { timestamp: Date.now() }
+  });
+  window.dispatchEvent(event);
 };
 
 /**

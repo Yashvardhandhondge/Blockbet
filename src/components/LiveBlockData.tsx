@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Pickaxe, Star } from 'lucide-react';
+import { Pickaxe } from 'lucide-react';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { fetchWithRetry } from '@/utils/errorUtils';
 import { toast } from './ui/use-toast';
@@ -105,11 +105,7 @@ const LiveBlockData = () => {
           {poolLogo && <img src={poolLogo} alt={minedBy} className="h-4 w-4 mr-1" onError={e => {
           (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
         }} />}
-          <span className="text-xs font-mono font-bold text-white truncate max-w-16">{minedBy}</span>
-        </div>
-        <div className="relative ml-1">
-          <Star className="h-3 w-3 text-btc-orange absolute" />
-          <Star className="h-2 w-2 text-yellow-300 absolute -right-1.5 -top-0.5" />
+          <span className="text-xs font-mono font-bold text-white">{minedBy}</span>
         </div>
       </div>
     </div>;

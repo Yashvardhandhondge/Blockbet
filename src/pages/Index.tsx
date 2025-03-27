@@ -23,18 +23,18 @@ const Index = () => {
     }, 1500);
   }, []);
 
-  // Listen for block mined events
+  // Listen for player win events from BettingGrid
   useEffect(() => {
-    const handleBlockMined = (e: CustomEvent<any>) => {
-      // Check if user has won (this would be determined by your betting logic)
-      // For now, we'll just show confetti for testing
+    const handlePlayerWin = (e: CustomEvent<any>) => {
+      // This event will now only be triggered when player actually wins
       setShowConfetti(true);
     };
 
-    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+    // Event name for player winning
+    window.addEventListener('playerWin', handlePlayerWin as EventListener);
     
     return () => {
-      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+      window.removeEventListener('playerWin', handlePlayerWin as EventListener);
     };
   }, []);
 
@@ -96,17 +96,7 @@ const Index = () => {
             <LatestMiningPool />
           </div>
           
-          {/* Live Block Data (compact version) - hidden on mobile */}
-          {!isMobile && (
-            <div style={liveDataAnimation.style} className="mb-8">
-              <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
-                  <LiveBlockData />
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Live Block Data has been moved to LatestMiningPool component */}
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>
