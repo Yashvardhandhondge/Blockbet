@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -656,10 +657,10 @@ const BettingGrid = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-7">
+              <Button variant="outline" className="bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-7" onClick={handleDeposit}>
                 Deposit
               </Button>
-              <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-7">
+              <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-7" onClick={handleWithdraw}>
                 Withdraw
               </Button>
             </div>
@@ -690,7 +691,7 @@ const BettingGrid = () => {
         <h3 className="text-white text-sm mb-3">Step 3: Place Your Bets On Mining Pools</h3>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {miningPools.slice(0, 10).map(pool => (
+          {miningPools.map(pool => (
             <MiningPoolCard 
               key={pool.id}
               pool={pool}
@@ -759,6 +760,101 @@ const BettingGrid = () => {
           </div>
           <div className="px-0">
             {renderChipSelection()}
+          </div>
+        </Card>
+      </div>
+      
+      {/* Restored transaction history section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center">
+              <History className="h-4 w-4 text-btc-orange mr-1.5" />
+              <h3 className="text-white text-sm">Bet History</h3>
+            </div>
+          </div>
+          
+          <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
+            {betHistory.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <p className="text-white/50 text-sm">No bet history yet</p>
+              </div>
+            ) : (
+              betHistory.slice(0, 5).map((bet) => (
+                <div key={`history-${bet.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                  <div className="flex items-center">
+                    <div className={`w-2 h-full rounded-l-lg ${bet.isWin ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <div className="ml-2">
+                      <div className="text-sm text-white font-medium">{bet.poolName}</div>
+                      <div className="text-xs text-white/60">Block #{bet.blockHeight}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <div className={`text-sm font-mono ${bet.isWin ? 'text-green-500' : 'text-red-500'}`}>
+                      {bet.isWin ? '+' : '-'}{formatSats(bet.amount)}
+                    </div>
+                    <div className="text-xs text-white/60">
+                      {new Date(bet.timestamp).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+        
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center">
+              <Wallet className="h-4 w-4 text-btc-orange mr-1.5" />
+              <h3 className="text-white text-sm">Transaction History</h3>
+            </div>
+          </div>
+          
+          <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
+            {/* Deposits */}
+            {deposits.slice(0, 2).map((deposit) => (
+              <div key={`deposit-${deposit.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                <div className="flex items-center">
+                  <div className="w-2 h-full rounded-l-lg bg-green-500"></div>
+                  <div className="ml-2">
+                    <div className="text-sm text-white font-medium">Deposit</div>
+                    <div className="text-xs text-white/60">{deposit.txId.substring(0, 8)}...</div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end">
+                  <div className="text-sm font-mono text-green-500">
+                    +{formatSats(deposit.amount)}
+                  </div>
+                  <div className="text-xs text-white/60">
+                    {new Date(deposit.timestamp).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Withdrawals */}
+            {withdrawals.slice(0, 2).map((withdrawal) => (
+              <div key={`withdrawal-${withdrawal.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                <div className="flex items-center">
+                  <div className={`w-2 h-full rounded-l-lg ${withdrawal.status === 'completed' ? 'bg-red-500' : 'bg-yellow-500'}`}></div>
+                  <div className="ml-2">
+                    <div className="text-sm text-white font-medium">
+                      Withdrawal {withdrawal.status === 'pending' && <span className="text-xs text-yellow-500 ml-1">(Pending)</span>}
+                    </div>
+                    <div className="text-xs text-white/60">{withdrawal.txId.substring(0, 8)}...</div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end">
+                  <div className={`text-sm font-mono ${withdrawal.status === 'completed' ? 'text-red-500' : 'text-yellow-500'}`}>
+                    -{formatSats(withdrawal.amount)}
+                  </div>
+                  <div className="text-xs text-white/60">
+                    {new Date(withdrawal.timestamp).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </Card>
       </div>
