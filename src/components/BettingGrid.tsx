@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -677,58 +676,31 @@ const BettingGrid = () => {
         </div>
       </div>
       
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center mb-3 md:mb-0">
-            <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
-              <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
+      {/* Desktop: Step 1 and Step 2 side by side */}
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
+        {/* Step 1: Wallet Section */}
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
+          <div className="flex flex-col">
+            <div className="flex items-center mb-3">
+              <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
+                <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
+              </div>
+              <div>
+                <div className="text-xs text-white/60">Balance</div>
+                <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-white/60">Balance</div>
-              <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
+            <div className="flex gap-2 w-full justify-end">
+              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleDeposit}>
+                Deposit
+              </Button>
+              <Button variant="outline" className="flex-1 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleWithdraw}>
+                Withdraw
+              </Button>
             </div>
           </div>
-          <div className="flex gap-2 w-full md:w-auto justify-end">
-            <Button variant="outline" className="flex-1 md:flex-initial bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleDeposit}>
-              Deposit
-            </Button>
-            <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleWithdraw}>
-              Withdraw
-            </Button>
-          </div>
-        </div>
-      </Card>
-      
-      {/* Step 2: Chip selection and bet controls */}
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2. Place your bets.</h3>
-          {renderBetControlButtons()}
-        </div>
+        </Card>
         
-        <div className="mb-4">
-          {renderChipSelection()}
-        </div>
-      </Card>
-      
-      {/* Step 3: Mining pool betting grid */}
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
-        <h3 className="text-white text-sm mb-3">Step 3. Select a mining pool.</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-          {miningPools.map((pool) => (
-            <MiningPoolCard
-              key={pool.id}
-              pool={pool}
-              onSelect={handleSelectPool}
-              isSelected={selectedPool?.id === pool.id}
-              bets={getBetsOnPool(pool.id)}
-            />
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
-};
-
-export default BettingGrid;
+        {/* Step 2: Chip selection and bet controls */}
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-
