@@ -9,9 +9,11 @@ import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
 import LiveBlockData from '@/components/LiveBlockData';
 import LatestMiningPool from '@/components/LatestMiningPool';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   // Simulate initial loading
   useEffect(() => {
@@ -80,10 +82,10 @@ const Index = () => {
             <LatestMiningPool />
           </div>
           
-          {/* Live Block Data (compact version) */}
+          {/* Live Block Data (now responsive for mobile) */}
           <div style={liveDataAnimation.style} className="mb-8">
             <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className={`flex ${isMobile ? 'flex-col' : 'flex-wrap'} items-center gap-2`}>
                 <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
                 <LiveBlockData />
               </div>

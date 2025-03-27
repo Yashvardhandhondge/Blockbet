@@ -8,6 +8,7 @@ import { fetchWithRetry } from '@/utils/errorUtils';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from './ui/badge';
 import { ToastContent } from './ui/toast-content';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const LiveBlockData = () => {
   const [currentBlock, setCurrentBlock] = useState<number>(0);
@@ -18,6 +19,7 @@ const LiveBlockData = () => {
   const [error, setError] = useState<string | null>(null);
   const [minedBy, setMinedBy] = useState<string>('Unknown');
   const [poolLogo, setPoolLogo] = useState<string | null>(null);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const fetchData = async () => {
@@ -48,9 +50,14 @@ const LiveBlockData = () => {
         console.error('Error fetching live data:', err);
         setError('Failed to load data');
         toast({
-          title: "Data fetch error",
-          description: "Could not update blockchain data",
-          variant: "destructive"
+          description: "",
+          action: (
+            <ToastContent
+              title="Data fetch error"
+              description="Could not update blockchain data"
+              variant="destructive"
+            />
+          )
         });
       } finally {
         setIsLoading(false);
@@ -63,9 +70,14 @@ const LiveBlockData = () => {
       fetchData().catch(err => {
         console.error("Error in interval fetch:", err);
         toast({
-          title: "Data fetch error",
-          description: "Could not update blockchain data",
-          variant: "destructive"
+          description: "",
+          action: (
+            <ToastContent
+              title="Data fetch error"
+              description="Could not update blockchain data"
+              variant="destructive"
+            />
+          )
         });
       });
     }, 30000);
@@ -88,7 +100,8 @@ const LiveBlockData = () => {
       </div>;
   }
   
-  return <div className="flex flex-1 gap-3 overflow-x-auto hide-scrollbar">
+  return (
+    <div className={`flex flex-1 ${isMobile ? 'flex-wrap' : ''} gap-3 overflow-x-auto hide-scrollbar`}>
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
         <Server className="h-3 w-3 text-btc-orange flex-shrink-0" />
         <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Block:</span>
@@ -123,7 +136,8 @@ const LiveBlockData = () => {
           <span className="text-xs font-mono font-bold text-white truncate max-w-16">{minedBy}</span>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default LiveBlockData;
