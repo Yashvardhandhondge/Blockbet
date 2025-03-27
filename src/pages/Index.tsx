@@ -82,17 +82,15 @@ const Index = () => {
             <LatestMiningPool />
           </div>
           
-          {/* Live Block Data (visible on desktop only) */}
-          {!isMobile && (
-            <div style={liveDataAnimation.style} className="mb-8">
-              <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
-                  <LiveBlockData />
-                </div>
+          {/* Live Block Data (now responsive for mobile) */}
+          <div style={liveDataAnimation.style} className="mb-8">
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-2">
+              <div className={`flex ${isMobile ? 'flex-col' : 'flex-wrap'} items-center gap-2`}>
+                <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
+                <LiveBlockData />
               </div>
             </div>
-          )}
+          </div>
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>
