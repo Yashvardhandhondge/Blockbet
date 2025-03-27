@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, Question } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -149,12 +148,10 @@ const BettingGrid = () => {
   const [bettingEnabled, setBettingEnabled] = useState(true);
   const [roundInProgress, setRoundInProgress] = useState(true);
 
-  // Setup timer
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          // Time's up, finalize the betting round
           setBettingEnabled(false);
           setRoundInProgress(false);
           return 0;
@@ -165,26 +162,21 @@ const BettingGrid = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Listen for block mining events
   useEffect(() => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       const blockData = e.detail;
       console.log('Block mined event received in BettingGrid:', blockData);
 
-      // Process bets before resetting
-      if (!roundInProgress) return; // Skip if round already ended
-      
+      if (!roundInProgress) return;
+
       processBetsForBlock(blockData);
       
-      // Reset the timer
-      setTimeRemaining(8 * 60); // Reset to 8 minutes
+      setTimeRemaining(8 * 60);
       setRoundInProgress(true);
       setBettingEnabled(true);
       
-      // Update current block
       setCurrentBlock(blockData.height);
       
-      // Show toast
       toast({
         title: "New Block Mined!",
         description: `Block #${blockData.height} mined by ${blockData.minedBy}. New betting round started!`
@@ -193,24 +185,20 @@ const BettingGrid = () => {
 
     const handleBettingReset = () => {
       console.log('Betting reset event received');
-      // Reset timer
       setTimeRemaining(8 * 60);
       setRoundInProgress(true);
       setBettingEnabled(true);
     };
     
-    // Add event listeners
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     window.addEventListener(BETTING_RESET_EVENT, handleBettingReset);
     
     return () => {
-      // Remove event listeners
       window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
       window.removeEventListener(BETTING_RESET_EVENT, handleBettingReset);
     };
   }, [bets, roundInProgress]);
 
-  // Process bets when a block is mined
   const processBetsForBlock = (blockData: any) => {
     if (bets.length === 0) return;
     
@@ -223,13 +211,11 @@ const BettingGrid = () => {
       
     console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
     
-    // Process each bet
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       handleAddBetToHistory(bet.poolId || 'unknown', bet.amount, isWin);
       
       if (isWin) {
-        // Find pool to get odds
         const pool = miningPools.find(p => p.id === bet.poolId);
         if (pool) {
           const winAmount = Math.floor(bet.amount * pool.odds);
@@ -244,7 +230,6 @@ const BettingGrid = () => {
       }
     });
     
-    // Clear bets after processing
     setBets([]);
   };
 
@@ -312,10 +297,9 @@ const BettingGrid = () => {
   };
 
   const handleDeposit = () => {
-    const newBalance = walletBalance + 10000000; // Add 0.1 BTC
+    const newBalance = walletBalance + 10000000;
     setWalletBalance(newBalance);
 
-    // Add deposit to history
     const newDeposit = {
       id: deposits.length + 1,
       amount: 10000000,
@@ -332,10 +316,9 @@ const BettingGrid = () => {
 
   const handleWithdraw = () => {
     if (walletBalance >= 10000000) {
-      const newBalance = walletBalance - 10000000; // Withdraw 0.1 BTC
+      const newBalance = walletBalance - 10000000;
       setWalletBalance(newBalance);
 
-      // Add withdrawal to history
       const newWithdrawal = {
         id: withdrawals.length + 1,
         amount: 10000000,
@@ -345,7 +328,6 @@ const BettingGrid = () => {
       };
       setWithdrawals([newWithdrawal, ...withdrawals]);
 
-      // Simulate withdrawal completing after 5 seconds
       setTimeout(() => {
         setWithdrawals(prev => prev.map(w => w.id === newWithdrawal.id ? {
           ...w,
@@ -379,7 +361,6 @@ const BettingGrid = () => {
     };
     setBetHistory(prev => [newBet, ...prev]);
 
-    // Update wallet balance based on bet outcome
     if (isWin) {
       const winAmount = amount * (pool?.odds || 2);
       setWalletBalance(prev => prev + winAmount);
@@ -751,7 +732,6 @@ const BettingGrid = () => {
             </div>
           ))}
           
-          {/* "Empty Block" option */}
           <div
             className={cn(
               "relative rounded-lg border border-white/5 hover:border-btc-orange/30 hover:bg-black/40 bg-black/20 p-2 cursor-pointer transition-all",
@@ -790,7 +770,6 @@ const BettingGrid = () => {
         </div>
       </Card>
       
-      {/* Bet History */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <div className="flex items-center gap-2 mb-3">
           <History className="h-4 w-4 text-btc-orange" />
