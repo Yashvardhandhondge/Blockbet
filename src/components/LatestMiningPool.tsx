@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
@@ -20,15 +21,19 @@ const LatestMiningPool = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Fetch data function
   const fetchData = async () => {
     try {
       setIsLoading(true);
       const data = await fetchWithRetry(() => fetchLatestBlockData());
       
+      // Check if we have a new block
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
+        // Store the hash of the current latest block before updating
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
         
+        // Show toast notification for new block
         toast({
           description: "",
           action: (
@@ -40,11 +45,13 @@ const LatestMiningPool = () => {
           )
         });
         
+        // After a short delay, update the blocks
         setTimeout(() => {
           setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
           setIsNewBlockAppearing(false);
         }, 500);
       } else if (blocks.length === 0) {
+        // Initial load
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
       }
       
@@ -57,24 +64,31 @@ const LatestMiningPool = () => {
     }
   };
   
+  // Setup periodic refresh
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       setShouldRefresh(prev => !prev);
-    }, 30000);
+    }, 30000); // 30 seconds
     
     return () => clearInterval(refreshInterval);
   }, []);
   
+  // Fetch when refresh is triggered
   useEffect(() => {
     fetchData();
   }, [shouldRefresh]);
   
+  // Initial fetch
   useEffect(() => {
     fetchData();
   }, []);
 
+  // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
+    // Convert pool name to lowercase for case-insensitive matching
     const normalizedName = poolName.toLowerCase().trim();
+    
+    // Map of known pool names to their logo paths
     const poolLogoMap: { [key: string]: string } = {
       'foundry usa': '/pool-logos/foundryusa.svg',
       'antpool': '/pool-logos/antpool.svg',
@@ -96,21 +110,24 @@ const LatestMiningPool = () => {
       'bitfury': '/pool-logos/bitfury.svg',
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
-      'mara pool': '/pool-logos/marapool.svg',
-      'whitepool': '/pool-logos/whitepool.svg',
+      'mara pool': '/pool-logos/marapool.svg', // Fixed MaraPool logo
+      'whitepool': '/pool-logos/whitepool.svg', // Fixed WhitePool logo
       'spiderpool': '/pool-logos/spiderpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
     };
     
+    // Check if we have a logo for this pool
     for (const [key, value] of Object.entries(poolLogoMap)) {
       if (normalizedName.includes(key)) {
         return value;
       }
     }
     
+    // Return default logo if no match found
     return '/pool-logos/default.svg';
   };
 
+  // Manual refresh handler
   const handleManualRefresh = async () => {
     try {
       await fetchData();
@@ -130,6 +147,7 @@ const LatestMiningPool = () => {
     }
   };
 
+  // Scroll handlers
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
@@ -145,7 +163,7 @@ const LatestMiningPool = () => {
   return (
     <AuroraContainer className="w-full rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
-        <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
+        <h2 className="text-lg font-medium text-white">Latest Block Miners</h2>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -179,6 +197,7 @@ const LatestMiningPool = () => {
       </div>
 
       <div className="relative">
+        {/* Error state */}
         {error && (
           <div className="p-8 text-center">
             <p className="text-red-400">{error}</p>
@@ -191,6 +210,7 @@ const LatestMiningPool = () => {
           </div>
         )}
         
+        {/* Loading state */}
         {isLoading && blocks.length === 0 && !error && (
           <div className="p-8 text-center">
             <div className="flex justify-center space-x-2">
@@ -202,6 +222,7 @@ const LatestMiningPool = () => {
           </div>
         )}
         
+        {/* New block appearing animation */}
         <div className={cn(
           "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500 z-10",
           isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -212,6 +233,7 @@ const LatestMiningPool = () => {
           </div>
         </div>
 
+        {/* Horizontal blocks scrolling area - modified for mobile */}
         {blocks.length > 0 && (
           <div 
             ref={scrollRef}
@@ -219,7 +241,9 @@ const LatestMiningPool = () => {
             style={{ scrollbarWidth: 'none' }}
           >
             {blocks.map((block, index) => {
+              // Determine if this is the most recent block
               const isLatestBlock = index === 0;
+              // Check if this was the previous latest block that just got pushed
               const wasPreviousLatest = previousLatestBlock === block.hash;
               
               return (
@@ -230,6 +254,7 @@ const LatestMiningPool = () => {
                     isLatestBlock ? "animate-block-appear" : ""
                   )}
                 >
+                  {/* Gold glow effect on latest block for 5 seconds after it appears */}
                   {isLatestBlock && (
                     <div className="absolute -inset-2 pointer-events-none opacity-70 z-10">
                       <SparklesText 
@@ -243,7 +268,7 @@ const LatestMiningPool = () => {
                   
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-12 h-12 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center p-1",
+                      "w-10 h-10 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
                       isLatestBlock 
                         ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
                         : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
