@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
-import LiveBlockData, { BLOCK_MINED_EVENT } from '@/components/LiveBlockData';
+import LiveBlockData, { BLOCK_MINED_EVENT, BETTING_RESET_EVENT } from '@/components/LiveBlockData';
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
 import WinConfetti from '@/components/WinConfetti';
@@ -29,6 +29,8 @@ const Index = () => {
       // Check if user has won (this would be determined by your betting logic)
       // For now, we'll just show confetti for testing
       setShowConfetti(true);
+      
+      console.log('Block mined event received in Index.tsx:', e.detail);
     };
 
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
