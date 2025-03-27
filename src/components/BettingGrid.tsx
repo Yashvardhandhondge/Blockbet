@@ -615,38 +615,85 @@ const BettingGrid = () => {
 
   const renderChipSelection = () => {
     const isMobile = window.innerWidth < 768;
-    return <div className={cn("flex flex-wrap gap-2 justify-center", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "")}>
-        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-12 h-12")} onClick={() => handleSelectChip(value)}>
-            {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
+    return (
+      <div className={cn(
+        "flex flex-wrap gap-2 justify-center", 
+        isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "",
+        "md:h-full md:items-center" // Center items vertically on desktop
+      )}>
+        {CHIP_VALUES.map(value => (
+          <div 
+            key={value} 
+            className={cn(
+              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", 
+              selectedChip === value ? "transform scale-110" : "transform scale-100", 
+              isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-11 h-11" // Smaller size on desktop
+            )} 
+            onClick={() => handleSelectChip(value)}
+          >
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>
+            )}
             
-            {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>
+            )}
             
-            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-8 h-8" : "w-10 h-10")}>
-              <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(value)}`
-          }}></div>
+            <div className={cn(
+              "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+              getChipColor(value), 
+              isMobile ? "w-8 h-8" : "w-9 h-9" // Smaller chip on desktop
+            )}>
+              <div 
+                className="absolute inset-0 rounded-full border-2 border-dashed" 
+                style={{
+                  borderColor: `${getChipSecondaryColor(value)}`
+                }}
+              ></div>
               
-              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
+              <div className={cn(
+                "absolute rounded-full border border-white/30", 
+                isMobile ? "inset-0.5" : "inset-1.5"
+              )}></div>
               
-              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[9px]" : "text-xs")}>
+              <span className={cn(
+                "relative z-10 text-white font-bold drop-shadow-md", 
+                isMobile ? "text-[9px]" : "text-xs"
+              )}>
                 {formatChipValue(value)}
               </span>
             </div>
-          </div>)}
-      </div>;
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const renderBetControlButtons = () => {
-    return <div className="flex gap-2 justify-end">
-        <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+    return (
+      <div className="flex gap-2 justify-end mt-auto">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 py-0.5 h-5 text-[9px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
+          onClick={handleCancelLastBet} 
+          disabled={bets.length === 0}
+        >
           <X className="w-2.5 h-2.5" />
           Cancel Last
         </Button>
-        <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 py-0.5 h-5 text-[9px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
+          onClick={handleClearBets} 
+          disabled={bets.length === 0}
+        >
           <Trash2 className="w-2.5 h-2.5" />
           Clear All
         </Button>
-      </div>;
+      </div>
+    );
   };
 
   const formatBTCAmount = (satoshis: number) => {
@@ -692,14 +739,4 @@ const BettingGrid = () => {
               </div>
             </div>
             <div className="flex gap-2 w-full justify-end">
-              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-xs md:py-1 md:h-7 md:max-w-28" onClick={handleDeposit}>
-                Deposit
-              </Button>
-              <Button variant="outline" className="flex-1 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-xs md:py-1 md:h-7 md:max-w-28" onClick={handleWithdraw}>
-                Withdraw
-              </Button>
-            </div>
-          </div>
-        </Card>
-        
-        {/* Step
+              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py
