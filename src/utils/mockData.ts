@@ -1,3 +1,4 @@
+
 export interface MiningPool {
   id: string;
   name: string;
@@ -202,7 +203,7 @@ export const miningPools: MiningPool[] = [
     colorClass: 'bg-green-700',
     odds: 38.46,
     region: 'North America',
-    logoUrl: '/pool-logos/CarbonNegative.svg',
+    logoUrl: '/pool-logos/carbonnegative.svg',
     gradient: 'linear-gradient(135deg, #15803D, #166534)'
   },
   {
