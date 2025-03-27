@@ -42,13 +42,20 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'wins' | 'losses' | 'deposits' | 'withdrawals'>('all');
   
+  // Sort transactions by newest first (using timestamp)
+  const sortedBetHistory = [...betHistory].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  
   const filteredHistory = activeTab === 'all' 
-    ? betHistory 
+    ? sortedBetHistory
     : activeTab === 'wins' 
-      ? betHistory.filter(bet => bet.isWin) 
+      ? sortedBetHistory.filter(bet => bet.isWin) 
       : activeTab === 'losses'
-        ? betHistory.filter(bet => !bet.isWin)
-        : betHistory;
+        ? sortedBetHistory.filter(bet => !bet.isWin)
+        : sortedBetHistory;
+  
+  // Sort deposits and withdrawals by newest first
+  const sortedDeposits = [...deposits].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  const sortedWithdrawals = [...withdrawals].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   
   const totalBets = betHistory.length;
   const totalWins = betHistory.filter(bet => bet.isWin).length;
@@ -164,13 +171,13 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
         
         <TabsContent value="deposits" className="mt-0">
           <ScrollArea className="h-[300px]">
-            <DepositsList deposits={deposits} />
+            <DepositsList deposits={sortedDeposits} />
           </ScrollArea>
         </TabsContent>
         
         <TabsContent value="withdrawals" className="mt-0">
           <ScrollArea className="h-[300px]">
-            <WithdrawalsList withdrawals={withdrawals} />
+            <WithdrawalsList withdrawals={sortedWithdrawals} />
           </ScrollArea>
         </TabsContent>
       </Tabs>

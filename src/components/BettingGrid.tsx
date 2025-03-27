@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -544,8 +545,7 @@ const BettingGrid = () => {
   };
 
   const renderBetControlButtons = () => {
-    const isMobile = window.innerWidth < 768;
-    return <div className={cn("flex gap-2", isMobile ? "flex-col items-end" : "justify-end")}>
+    return <div className="flex gap-2 justify-end">
         <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
           <X className="w-3 h-3" />
           Cancel Last
@@ -623,13 +623,16 @@ const BettingGrid = () => {
                 Clear All
               </Button>
             </div>
-          ) : (
-            renderBetControlButtons()
-          )}
+          ) : null}
         </div>
         <div className="px-0 py-2">
           {renderChipSelection()}
         </div>
+        {!isMobile && (
+          <div className="flex justify-end mt-2">
+            {renderBetControlButtons()}
+          </div>
+        )}
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
@@ -637,6 +640,33 @@ const BettingGrid = () => {
         <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
         </div>
+      </Card>
+      
+      {/* Second copy of chip selection section */}
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2: Select chip value.</h3>
+          {isMobile ? (
+            <div className="flex flex-col items-end gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+                <X className="w-3 h-3" />
+                Cancel Last
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+                <Trash2 className="w-3 h-3" />
+                Clear All
+              </Button>
+            </div>
+          ) : null}
+        </div>
+        <div className="px-0 py-2">
+          {renderChipSelection()}
+        </div>
+        {!isMobile && (
+          <div className="flex justify-end mt-2">
+            {renderBetControlButtons()}
+          </div>
+        )}
       </Card>
       
       <div className="flex flex-col md:flex-row gap-4 items-start mb-6">
