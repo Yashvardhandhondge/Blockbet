@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
@@ -12,9 +11,16 @@ interface MiningPoolCardProps {
   onSelect: (pool: MiningPool) => void;
   isSelected: boolean;
   bets?: Array<{id: number; amount: number}>;
+  disabled?: boolean;
 }
 
-const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCardProps) => {
+const MiningPoolCard = ({ 
+  pool, 
+  onSelect, 
+  isSelected, 
+  bets = [], 
+  disabled = false 
+}: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useIsMobile();
   
@@ -25,17 +31,18 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
   return (
     <div 
       className={cn(
-        "relative rounded-xl overflow-hidden transition-all duration-300 border cursor-pointer",
+        "relative rounded-xl overflow-hidden transition-all duration-300 border",
         isSelected 
           ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" 
           : "border-white/10 hover:border-white/20",
-        isHovered ? "transform-gpu scale-[1.02]" : "transform-gpu scale-100"
+        isHovered ? "transform-gpu scale-[1.02]" : "transform-gpu scale-100",
+        disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onSelect(pool)}
+      onMouseEnter={() => !disabled && setIsHovered(true)}
+      onMouseLeave={() => !disabled && setIsHovered(false)}
+      onClick={() => !disabled && onSelect(pool)}
     >
-      {isHovered && (
+      {isHovered && !disabled && (
         <div className="absolute inset-0 z-0 overflow-hidden">
           <BackgroundGradientAnimation 
             firstColor={poolColor}
@@ -266,7 +273,6 @@ const getChipSecondaryColor = (value: number) => {
   }
 };
 
-// Function to format chip values to abbreviated form
 const formatChipValue = (value: number): string => {
   if (value >= 1000) {
     return `${value / 1000}K`;

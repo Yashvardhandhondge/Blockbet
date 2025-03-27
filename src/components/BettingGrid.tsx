@@ -9,7 +9,7 @@ import { toast } from './ui/use-toast';
 import StatCard from './StatCard';
 import { useRandomInterval } from '@/lib/animations';
 import MiningPoolCard from './MiningPoolCard';
-import LiveBlockData from './LiveBlockData';
+import LiveBlockData, { BLOCK_MINED_EVENT } from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
@@ -148,15 +148,26 @@ const BettingGrid = () => {
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          return nextBlockEstimate.estimatedTimeMinutes * 60;
+          return 8 * 60; // Reset to 8 minutes
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(interval);
+    
+    // Reset timer when a new block is mined
+    const handleBlockMined = () => {
+      setTimeRemaining(8 * 60); // Reset to 8 minutes when a new block is mined
+    };
+    
+    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined);
+    
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined);
+    };
   }, []);
 
   useRandomInterval(() => {
@@ -522,26 +533,50 @@ const BettingGrid = () => {
   };
 
   const renderChipSelection = () => {
-    const isMobile = window.innerWidth < 768;
-    return <div className={cn("flex flex-wrap gap-2 justify-center mb-4", isMobile ? "flex-nowrap overflow-x-auto hide-scrollbar pb-2 pt-1 px-1" : "")}>
-        {CHIP_VALUES.map(value => <div key={value} className={cn("relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110", selectedChip === value ? "transform scale-110" : "transform scale-100", isMobile ? "w-9 h-9 flex-shrink-0 my-1" : "w-14 h-14")} onClick={() => handleSelectChip(value)}>
-            {selectedChip === value && <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>}
+    return (
+      <div className="flex flex-nowrap overflow-x-auto hide-scrollbar gap-2 justify-center">
+        {CHIP_VALUES.map(value => (
+          <div 
+            key={value} 
+            className={cn(
+              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110 flex-shrink-0", 
+              selectedChip === value ? "transform scale-110" : "transform scale-100",
+              "w-12 h-12 my-1"
+            )} 
+            onClick={() => handleSelectChip(value)}
+          >
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>
+            )}
             
-            {selectedChip === value && <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>}
+            {selectedChip === value && (
+              <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>
+            )}
             
-            <div className={cn("relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(value), isMobile ? "w-8 h-8" : "w-12 h-12")}>
-              <div className="absolute inset-0 rounded-full border-2 border-dashed" style={{
-            borderColor: `${getChipSecondaryColor(value)}`
-          }}></div>
+            <div 
+              className={cn(
+                "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+                getChipColor(value),
+                "w-10 h-10"
+              )}
+            >
+              <div 
+                className="absolute inset-0 rounded-full border-2 border-dashed" 
+                style={{
+                  borderColor: `${getChipSecondaryColor(value)}`
+                }}
+              ></div>
               
-              <div className={cn("absolute rounded-full border border-white/30", isMobile ? "inset-0.5" : "inset-1.5")}></div>
+              <div className="absolute rounded-full border border-white/30 inset-1"></div>
               
-              <span className={cn("relative z-10 text-white font-bold drop-shadow-md", isMobile ? "text-[9px]" : "")}>
+              <span className="relative z-10 text-white font-bold drop-shadow-md text-[10px]">
                 {formatChipValue(value)}
               </span>
             </div>
-          </div>)}
-      </div>;
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const renderBetControlButtons = () => {
@@ -626,49 +661,44 @@ const BettingGrid = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-          <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center mb-3 md:mb-0">
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl h-[110px]">
+          <h3 className="text-white text-sm mb-2">Step 1. Found your Wallet.</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
               <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
-                <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
+                <Wallet className="h-5 w-5 text-btc-orange" strokeWidth={1.5} />
               </div>
               <div>
                 <div className="text-xs text-white/60">Balance</div>
-                <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
+                <div className="text-sm font-bold text-white">{formatSatsAmount(walletBalance)}</div>
               </div>
             </div>
-            <div className="flex gap-2 w-full md:w-auto justify-end">
-              <Button variant="outline" className="flex-1 md:flex-initial bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleDeposit}>
+            <div className="flex gap-2">
+              <Button variant="outline" className="bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-7">
                 Deposit
               </Button>
-              <Button variant="outline" className="flex-1 md:flex-initial border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-sm md:py-2 md:h-auto" onClick={handleWithdraw}>
+              <Button variant="outline" className="border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-7">
                 Withdraw
               </Button>
             </div>
           </div>
         </Card>
         
-        <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl relative">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-            <h3 className="text-white text-sm mb-2 md:mb-0">Step 2: Select chip value in sats.</h3>
-          </div>
-          <div className="px-0 py-2">
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
+          <h3 className="text-white text-sm mb-2">Step 2: Select chip value in sats.</h3>
+          <div className="px-0">
             {renderChipSelection()}
           </div>
-          {isMobile && <div className="absolute bottom-3 right-3 flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-2.5 h-2.5" />
-                Cancel
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-2.5 h-2.5" />
-                Clear
-              </Button>
-            </div>}
-          {!isMobile && <div className="flex justify-end">
-              {renderBetControlButtons()}
-            </div>}
+          <div className="absolute bottom-3 right-3 flex gap-2">
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <X className="w-2.5 h-2.5" />
+              Cancel
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-2.5 h-2.5" />
+              Clear
+            </Button>
+          </div>
         </Card>
       </div>
       
@@ -776,80 +806,20 @@ const BettingGrid = () => {
           <BetHistory bets={betHistory.slice(0, 5)} />
         </Card>
         
-        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white text-sm">Transaction History</h3>
-            <Button variant="outline" size="sm" className="h-7 py-0 px-2 border-white/10 text-white/60 text-xs hover:bg-white/5">
-              <History className="h-3 w-3 mr-1" />
-              View All
-            </Button>
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
+          <h3 className="text-white text-sm mb-2">Step 2: Select chip value in sats.</h3>
+          <div className="px-0">
+            {renderChipSelection()}
           </div>
-          
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
-            {/* Deposits */}
-            {deposits.slice(0, 2).map(deposit => (
-              <div 
-                key={`deposit-${deposit.id}`}
-                className="flex items-center justify-between p-2 bg-white/5 rounded-lg"
-              >
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center mr-3">
-                    <ArrowDown className="h-4 w-4 text-green-500" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-white">
-                      Deposit
-                    </div>
-                    <div className="text-xs text-white/60">
-                      {deposit.timestamp.toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-green-500">
-                    +{formatSats(deposit.amount)}
-                  </div>
-                  <div className="text-xs text-white/60 truncate max-w-[150px]">
-                    {deposit.txId.substring(0, 6)}...{deposit.txId.substring(deposit.txId.length - 6)}
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {/* Withdrawals */}
-            {withdrawals.slice(0, 2).map(withdrawal => (
-              <div 
-                key={`withdrawal-${withdrawal.id}`}
-                className="flex items-center justify-between p-2 bg-white/5 rounded-lg"
-              >
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-red-500/10 rounded-full flex items-center justify-center mr-3">
-                    <ArrowDown className="h-4 w-4 text-red-500 transform rotate-180" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-white flex items-center">
-                      Withdrawal
-                      {withdrawal.status === 'pending' && (
-                        <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-yellow-500/20 text-yellow-500 rounded-full">
-                          Pending
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs text-white/60">
-                      {withdrawal.timestamp.toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-red-500">
-                    -{formatSats(withdrawal.amount)}
-                  </div>
-                  <div className="text-xs text-white/60 truncate max-w-[150px]">
-                    {withdrawal.txId.substring(0, 6)}...{withdrawal.txId.substring(withdrawal.txId.length - 6)}
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="absolute bottom-3 right-3 flex gap-2">
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <X className="w-2.5 h-2.5" />
+              Cancel
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-2.5 h-2.5" />
+              Clear
+            </Button>
           </div>
         </Card>
       </div>
