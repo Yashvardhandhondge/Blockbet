@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Clock, Zap, Server, Pickaxe } from 'lucide-react';
 import StatCard from './StatCard';
@@ -75,7 +76,7 @@ const LiveBlockData = () => {
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
         <Server className="h-3 w-3 text-btc-orange flex-shrink-0" />
         <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Block:</span>
-        <span className="text-xs font-mono font-bold text-white">{currentBlock.toLocaleString()}</span>
+        <span className="text-xs font-mono font-bold text-white">{currentBlock}</span>
       </div>
       
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">

@@ -221,11 +221,11 @@ const LatestMiningPool = () => {
           </div>
         </div>
 
-        {/* Horizontal blocks scrolling area */}
+        {/* Horizontal blocks scrolling area - modified for mobile */}
         {blocks.length > 0 && (
           <div 
             ref={scrollRef}
-            className="flex overflow-x-auto hide-scrollbar py-4 px-4 space-x-4 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
+            className="flex md:flex-row miners-grid-mobile md:miners-grid-none md:overflow-x-auto hide-scrollbar py-4 px-4 space-x-0 md:space-x-4 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
             style={{ scrollbarWidth: 'none' }}
           >
             {blocks.map((block, index) => {
@@ -238,7 +238,7 @@ const LatestMiningPool = () => {
                 <div 
                   key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
                   className={cn(
-                    "flex-shrink-0 w-28 relative group transition-all duration-300",
+                    "md:flex-shrink-0 md:w-28 relative group transition-all duration-300 mb-4 md:mb-0",
                     isLatestBlock ? "animate-block-appear" : ""
                   )}
                 >
@@ -256,7 +256,7 @@ const LatestMiningPool = () => {
                   
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-16 h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
+                      "w-10 h-10 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
                       isLatestBlock 
                         ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
                         : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
@@ -275,22 +275,22 @@ const LatestMiningPool = () => {
                     </div>
                     
                     <div className={cn(
-                      "text-center mt-2 px-2 py-1 rounded-md",
+                      "text-center mt-1 md:mt-2 px-1 md:px-2 py-0.5 md:py-1 rounded-md",
                       isLatestBlock ? "bg-yellow-900/30" : ""
                     )}>
                       <p className={cn(
-                        "font-medium text-xs truncate w-full max-w-[112px]",
+                        "font-medium text-[10px] md:text-xs truncate w-full max-w-full md:max-w-[112px]",
                         isLatestBlock ? "text-yellow-400" : "text-white"
                       )}>
                         {block.minedBy}
                       </p>
                       <p className={cn(
-                        "text-xs mt-1",
+                        "text-[9px] md:text-xs mt-0.5 md:mt-1",
                         isLatestBlock ? "text-yellow-200" : "text-white/70"
                       )}>
-                        Block #{block.height}
+                        #{block.height}
                       </p>
-                      <p className="text-[10px] text-white/50 mt-1">
+                      <p className="text-[8px] md:text-[10px] text-white/50 mt-0.5 md:mt-1 hidden md:block">
                         {formatTimeAgo(block.timestamp)}
                       </p>
                     </div>

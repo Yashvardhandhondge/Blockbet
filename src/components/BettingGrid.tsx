@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -613,14 +612,14 @@ const BettingGrid = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
           <h3 className="text-white text-sm mb-2 md:mb-0">Step 2: Select chip value.</h3>
           {isMobile ? (
-            <div className="flex flex-col items-end gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-3 h-3" />
-                Cancel Last
+            <div className="flex gap-2 mb-2 self-end">
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+                <X className="w-2.5 h-2.5" />
+                Cancel
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-3 h-3" />
-                Clear All
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+                <Trash2 className="w-2.5 h-2.5" />
+                Clear
               </Button>
             </div>
           ) : null}
@@ -647,14 +646,14 @@ const BettingGrid = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
           <h3 className="text-white text-sm mb-2 md:mb-0">Step 2: Select chip value.</h3>
           {isMobile ? (
-            <div className="flex flex-col items-end gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-3 h-3" />
-                Cancel Last
+            <div className="flex gap-2 mb-2 self-end">
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+                <X className="w-2.5 h-2.5" />
+                Cancel
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-auto text-xs border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-3 h-3" />
-                Clear All
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-1 h-7 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+                <Trash2 className="w-2.5 h-2.5" />
+                Clear
               </Button>
             </div>
           ) : null}

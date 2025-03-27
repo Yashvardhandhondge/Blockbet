@@ -80,6 +80,19 @@
   .glow-effect:hover::before {
     opacity: 1;
   }
+  
+  /* Mobile miner grid (4 per row) */
+  @media (max-width: 767px) {
+    .miners-grid-mobile {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    
+    .miners-grid-mobile > div {
+      width: 100%;
+    }
+  }
 }
 
 @layer utilities {
