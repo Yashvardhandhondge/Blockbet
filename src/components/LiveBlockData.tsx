@@ -10,6 +10,7 @@ const LiveBlockData = () => {
   const [error, setError] = useState<string | null>(null);
   const [minedBy, setMinedBy] = useState<string>('Unknown');
   const [poolLogo, setPoolLogo] = useState<string | null>(null);
+  const [blockHeight, setBlockHeight] = useState<number | null>(null);
   
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +20,7 @@ const LiveBlockData = () => {
         // Fetch block data with retry logic
         const blockData = await fetchWithRetry(() => fetchLatestBlockData());
         setMinedBy(blockData.latestBlock.minedBy || 'Unknown');
+        setBlockHeight(blockData.latestBlock.height);
 
         // Set poolLogo based on pool name
         const normalizedPoolName = blockData.latestBlock.minedBy?.toLowerCase().replace(/\s+/g, '') || '';
@@ -77,9 +79,11 @@ const LiveBlockData = () => {
   return <div className="flex flex-1 gap-3 overflow-x-auto hide-scrollbar">
       <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
         <Pickaxe className="h-3 w-3 text-btc-orange flex-shrink-0" />
-        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Latest block mined by:</span>
+        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Latest block: </span>
+        <span className="text-xs font-mono font-bold text-white mr-2">{blockHeight}</span>
+        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">mined by:</span>
         <div className="flex items-center">
-          {poolLogo && <img src={poolLogo} alt={minedBy} className="h-3 w-3 mr-1" onError={e => {
+          {poolLogo && <img src={poolLogo} alt={minedBy} className="h-4 w-4 mr-1" onError={e => {
           (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
         }} />}
           <span className="text-xs font-mono font-bold text-white truncate max-w-16">{minedBy}</span>
