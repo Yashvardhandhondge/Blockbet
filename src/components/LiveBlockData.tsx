@@ -15,7 +15,17 @@ export function emitBlockMined(blockData: any) {
   window.dispatchEvent(event);
 }
 
-const LiveBlockData = () => {
+interface LiveBlockDataProps {
+  processBets?: (blockData: any) => void;
+  pendingTransactions?: number;
+  averageBlockTime?: string;
+}
+
+const LiveBlockData: React.FC<LiveBlockDataProps> = ({ 
+  processBets,
+  pendingTransactions,
+  averageBlockTime
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [minedBy, setMinedBy] = useState<string>('Unknown');
@@ -35,6 +45,11 @@ const LiveBlockData = () => {
         if (blockHeight !== null && blockData.latestBlock.height !== blockHeight) {
           // Emit block mined event
           emitBlockMined(blockData.latestBlock);
+          
+          // Process bets if provided
+          if (processBets) {
+            processBets(blockData.latestBlock);
+          }
         }
         
         setPrevBlockHeight(blockHeight);
@@ -78,7 +93,7 @@ const LiveBlockData = () => {
     }, 30000);
     
     return () => clearInterval(intervalId);
-  }, [blockHeight]);
+  }, [blockHeight, processBets]);
   
   if (isLoading) {
     return <div className="flex flex-1 gap-4 overflow-x-auto hide-scrollbar">
@@ -108,6 +123,22 @@ const LiveBlockData = () => {
           <span className="text-xs font-mono font-bold text-white">{minedBy}</span>
         </div>
       </div>
+      
+      {/* Display pending transactions if provided */}
+      {pendingTransactions && (
+        <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
+          <span className="text-xs text-white/70 mr-1">Pending tx:</span>
+          <span className="text-xs font-mono font-bold text-white">{pendingTransactions.toLocaleString()}</span>
+        </div>
+      )}
+      
+      {/* Display average block time if provided */}
+      {averageBlockTime && (
+        <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
+          <span className="text-xs text-white/70 mr-1">Avg block time:</span>
+          <span className="text-xs font-mono font-bold text-white">{averageBlockTime} min</span>
+        </div>
+      )}
     </div>;
 };
 

@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
@@ -282,7 +283,6 @@ const LatestMiningPool = () => {
         
         <div className="p-3 border-t border-white/10 bg-[#070707]">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-white text-xs font-medium whitespace-nowrap">Live Blockchain Stats:</h3>
             <LiveBlockData />
           </div>
         </div>
