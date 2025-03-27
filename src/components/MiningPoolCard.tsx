@@ -70,9 +70,9 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
       
-      <div className="relative z-10 p-4">
+      <div className="relative z-10 p-4 flex flex-col h-full">
         <div className="flex flex-col items-center mb-1">
-          <div className="h-20 w-20 rounded-lg overflow-hidden bg-transparent mb-1">
+          <div className="h-16 w-16 rounded-lg overflow-hidden bg-transparent mb-1">
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
                 src={pool.logoUrl} 
@@ -107,18 +107,24 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
         
         <div className={cn("mt-2 flex justify-center items-center p-2", isMobile && "mt-1")}>
           <div className="text-white/80 text-center">
-            <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">{pool.odds.toFixed(2)}
+            <span className={cn(
+              "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
+              isMobile ? "text-base" : "text-lg"
+            )}>
+              {pool.odds.toFixed(2)}
               <span className="ml-0.5">×</span>
             </span>
-            <span className="text-xs ml-1 text-white/60">payout</span>
+            <span className={cn("ml-1 text-white/60", isMobile ? "text-[10px]" : "text-xs")}>payout</span>
           </div>
         </div>
         
-        <div className="mt-3 h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-          <div 
-            className="h-full transition-all duration-1000 ease-out"
-            style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
-          ></div>
+        <div className="mt-auto pt-2">
+          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+            <div 
+              className="h-full transition-all duration-1000 ease-out"
+              style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
+            ></div>
+          </div>
         </div>
 
         {bets.length > 0 && renderStackedChips(bets)}
