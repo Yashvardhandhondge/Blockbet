@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, Zap, Server, Pickaxe } from 'lucide-react';
-import { Card } from './ui/card';
 import StatCard from './StatCard';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { fetchPendingTransactionsData } from '@/api/pendingTransactionsApi';
@@ -55,17 +54,9 @@ const LiveBlockData = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex flex-1 gap-4 overflow-x-auto hide-scrollbar">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="bg-[#0f0f0f] border-white/5 rounded-xl p-3 animate-pulse">
-            <div className="flex">
-              <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-white/10"></div>
-              <div className="ml-3 space-y-2">
-                <div className="h-3 w-20 bg-white/10 rounded"></div>
-                <div className="h-5 w-24 bg-white/10 rounded"></div>
-              </div>
-            </div>
-          </Card>
+          <div key={i} className="h-8 bg-white/5 animate-pulse rounded flex-1 min-w-20"></div>
         ))}
       </div>
     );
@@ -73,11 +64,11 @@ const LiveBlockData = () => {
 
   if (error) {
     return (
-      <div className="bg-[#0f0f0f] border-white/5 rounded-xl p-4 text-center">
-        <p className="text-red-400 mb-2">{error}</p>
+      <div className="bg-red-500/10 text-red-400 px-3 py-1 rounded-lg text-xs flex items-center">
+        <span className="mr-2">{error}</span>
         <button 
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-btc-orange/20 hover:bg-btc-orange/30 text-btc-orange rounded transition-colors"
+          className="px-2 py-0.5 bg-red-500/20 hover:bg-red-500/30 rounded text-xs"
         >
           Retry
         </button>
@@ -86,38 +77,30 @@ const LiveBlockData = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Card className="bg-[#0f0f0f] border-white/5 rounded-xl p-3 hover:border-white/10 transition-all duration-200">
-        <StatCard
-          icon={<Server className="h-5 w-5 text-btc-orange" />}
-          title="Current Block"
-          value={currentBlock.toLocaleString()}
-        />
-      </Card>
+    <div className="flex flex-1 gap-3 overflow-x-auto hide-scrollbar">
+      <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
+        <Server className="h-3 w-3 text-btc-orange flex-shrink-0" />
+        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Block:</span>
+        <span className="text-xs font-mono font-bold text-white">{currentBlock.toLocaleString()}</span>
+      </div>
       
-      <Card className="bg-[#0f0f0f] border-white/5 rounded-xl p-3 hover:border-white/10 transition-all duration-200">
-        <StatCard
-          icon={<Clock className="h-5 w-5 text-btc-orange" />}
-          title="Avg. Block Time"
-          value={`${avgBlockTime.toFixed(1)} min`}
-        />
-      </Card>
+      <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
+        <Clock className="h-3 w-3 text-btc-orange flex-shrink-0" />
+        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Avg:</span>
+        <span className="text-xs font-mono font-bold text-white">{avgBlockTime.toFixed(1)}m</span>
+      </div>
       
-      <Card className="bg-[#0f0f0f] border-white/5 rounded-xl p-3 hover:border-white/10 transition-all duration-200">
-        <StatCard
-          icon={<Zap className="h-5 w-5 text-btc-orange" />}
-          title="Pending TX"
-          value={pendingTxCount.toLocaleString()}
-        />
-      </Card>
+      <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
+        <Zap className="h-3 w-3 text-btc-orange flex-shrink-0" />
+        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Pending:</span>
+        <span className="text-xs font-mono font-bold text-white">{pendingTxCount.toLocaleString()}</span>
+      </div>
       
-      <Card className="bg-[#0f0f0f] border-white/5 rounded-xl p-3 hover:border-white/10 transition-all duration-200">
-        <StatCard
-          icon={<Clock className="h-5 w-5 text-btc-orange" />}
-          title="Next block est."
-          value={estimatedTime}
-        />
-      </Card>
+      <div className="flex items-center gap-1.5 bg-[#0f0f0f] border-white/5 rounded-lg px-2 py-1 min-w-24">
+        <Clock className="h-3 w-3 text-btc-orange flex-shrink-0" />
+        <span className="text-xs text-white/70 mr-1 whitespace-nowrap">Next:</span>
+        <span className="text-xs font-mono font-bold text-white">{estimatedTime}</span>
+      </div>
     </div>
   );
 };

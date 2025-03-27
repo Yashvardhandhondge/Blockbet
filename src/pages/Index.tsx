@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+import LiveBlockData from '@/components/LiveBlockData';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +25,9 @@ const Index = () => {
   });
   const blockchainAnimation = useElementAppear(!isLoading, {
     delay: 600
+  });
+  const liveDataAnimation = useElementAppear(!isLoading, {
+    delay: 750
   });
   const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
@@ -63,8 +67,18 @@ const Index = () => {
           </div>
           
           {/* Blockchain visualization */}
-          <div style={blockchainAnimation.style} className="mb-8">
+          <div style={blockchainAnimation.style} className="mb-4">
             <BlockchainVisualization />
+          </div>
+          
+          {/* Live Block Data (compact version) */}
+          <div style={liveDataAnimation.style} className="mb-8">
+            <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <h3 className="text-white text-xs font-medium mr-1">Live Blockchain Stats:</h3>
+                <LiveBlockData />
+              </div>
+            </div>
           </div>
           
           {/* Betting grid */}
