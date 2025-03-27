@@ -1,4 +1,3 @@
-
 import { Sparkles } from 'lucide-react';
 
 export interface MiningPool {
@@ -307,18 +306,6 @@ export const miningPools: MiningPool[] = [
     logoUrl: '/pool-logos/whitepool.svg',
     gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
     colorClass: 'bg-white/30'
-  },
-  {
-    id: 'mara pool',
-    name: 'Mara Pool',
-    hashRate: 1.4,
-    hashRatePercent: 0.4,
-    odds: 285.71,
-    region: 'North America',
-    blocksLast24h: 3,
-    logoUrl: '/pool-logos/marapool.svg',
-    gradient: 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)',
-    colorClass: 'bg-amber-700'
   },
   {
     id: 'carbon negative',

@@ -634,7 +634,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
         <h3 className="text-white text-sm mb-3">Step 3: Place your chips on the next winning mining pool.</h3>
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {miningPools.map(pool => <MiningPoolCard key={pool.id} pool={pool} onSelect={handleSelectPool} isSelected={selectedPool?.id === pool.id} bets={getBetsOnPool(pool.id)} />)}
         </div>
       </Card>
