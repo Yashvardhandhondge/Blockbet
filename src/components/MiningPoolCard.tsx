@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
@@ -224,7 +225,7 @@ const getPoolColor = (poolId: string): string => {
 };
 
 const getChipColor = (value: number) => {
-  switch (value) {
+  switch(value) {
     case 100:
       return "bg-blue-600";
     case 500:
@@ -245,7 +246,7 @@ const getChipColor = (value: number) => {
 };
 
 const getChipSecondaryColor = (value: number) => {
-  switch (value) {
+  switch(value) {
     case 100:
       return "bg-blue-500";
     case 500:
@@ -263,6 +264,14 @@ const getChipSecondaryColor = (value: number) => {
     default:
       return "bg-gray-500";
   }
+};
+
+// Function to format chip values to abbreviated form
+const formatChipValue = (value: number): string => {
+  if (value >= 1000) {
+    return `${value / 1000}K`;
+  }
+  return value.toString();
 };
 
 const renderStackedChips = (bets: Array<{
@@ -325,7 +334,7 @@ const renderStackedChips = (bets: Array<{
               
               <div 
                 className={cn(
-                  "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
+                  "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
                   getChipColor(amount)
                 )}
                 style={{
@@ -342,10 +351,14 @@ const renderStackedChips = (bets: Array<{
                     borderColor: `${getChipSecondaryColor(amount)}`
                   }}
                 ></div>
-                <span className="relative z-10 text-white font-bold drop-shadow-md flex items-center">
-                  {amount >= 10000 ? `${amount / 1000}k` : amount}
-                  {betCount > 1 && <span className="text-[8px] ml-0.5">×{betCount}</span>}
+                <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
+                  {formatChipValue(amount)}
                 </span>
+                {betCount > 1 && 
+                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
+                    ×{betCount}
+                  </span>
+                }
               </div>
             </div>
           );
