@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, Question } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -741,7 +741,7 @@ const BettingGrid = () => {
           >
             <div className="flex items-center gap-2 mb-1.5">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center">
-                <Question className="h-4 w-4 text-gray-400" />
+                <HelpCircle className="h-4 w-4 text-gray-400" />
               </div>
               <div>
                 <div className="text-xs font-medium text-white">Unknown Pool</div>
