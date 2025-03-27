@@ -27,8 +27,12 @@ const Index = () => {
   useEffect(() => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       // Check if user has won (this would be determined by your betting logic)
-      // For now, we'll just show confetti for testing
+      // For now, we'll just show confetti for new blocks
       setShowConfetti(true);
+      
+      // Get block details from the event
+      const blockData = e.detail;
+      console.log('New block mined:', blockData);
     };
 
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
@@ -52,7 +56,19 @@ const Index = () => {
     delay: 900
   });
 
-  return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
+  return <BackgroundGradientAnimation 
+      gradientBackgroundStart="rgb(0, 0, 0)" 
+      gradientBackgroundEnd="rgb(7, 7, 7)" 
+      firstColor="#FFCC66" 
+      secondColor="#D19CFF" 
+      thirdColor="#7AE5FF" 
+      fourthColor="#FFBB7A" 
+      fifthColor="#FFDF7A" 
+      pointerColor="rgba(255, 190, 60, 0.4)" 
+      blendingValue="hard-light" 
+      className="w-full h-full" 
+      containerClassName="min-h-screen"
+    >
       <div className="min-h-screen pb-20">
         {/* Win Confetti Effect */}
         <WinConfetti 
