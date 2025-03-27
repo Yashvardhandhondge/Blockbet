@@ -1,28 +1,82 @@
 
-import { useEffect, useState } from 'react';
-import { fetchLatestBlockData } from '@/api/latestBlockApi';
-import { fetchWithRetry } from '@/utils/errorUtils';
+import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { GlowEffect } from '@/components/ui/glow-effect';
+import { fetchLatestBlockData } from '@/api/latestBlockApi';
+import { Block } from '@/utils/types';
+import { AuroraContainer } from '@/components/ui/aurora-container';
+import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatTimeAgo } from '@/utils/mockData';
+import { SparklesText } from '@/components/ui/sparkles-text';
+import { fetchWithRetry, hasNewBlock } from '@/utils/errorUtils';
 
-interface LatestMiningPoolProps {
-  className?: string;
-}
-
-const LatestMiningPool = ({ className }: LatestMiningPoolProps) => {
-  const [latestPool, setLatestPool] = useState<{
-    name: string;
-    logoUrl: string;
-    height: number;
-  } | null>(null);
-  const [previousHeight, setPreviousHeight] = useState<number | null>(null);
-  const [isNewBlock, setIsNewBlock] = useState(false);
+const LatestMiningPool = () => {
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isNewBlockAppearing, setIsNewBlockAppearing] = useState(false);
+  const [previousLatestBlock, setPreviousLatestBlock] = useState<string | null>(null);
+  const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Function to get the logo URL for a mining pool
+  // Fetch data function
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchWithRetry(() => fetchLatestBlockData());
+      
+      // Check if we have a new block
+      if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
+        // Store the hash of the current latest block before updating
+        setPreviousLatestBlock(blocks[0].hash);
+        setIsNewBlockAppearing(true);
+        
+        // Show toast notification for new block
+        toast({
+          title: "New Block Found!",
+          description: `Block #${data.latestBlock.height} has been mined by ${data.latestBlock.minedBy}`,
+        });
+        
+        // After a short delay, update the blocks
+        setTimeout(() => {
+          setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
+          setIsNewBlockAppearing(false);
+        }, 500);
+      } else if (blocks.length === 0) {
+        // Initial load
+        setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
+      }
+      
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching blockchain data:', err);
+      setError('Failed to fetch blockchain data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Setup periodic refresh
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      setShouldRefresh(prev => !prev);
+    }, 30000); // 30 seconds
+    
+    return () => clearInterval(refreshInterval);
+  }, []);
+  
+  // Fetch when refresh is triggered
+  useEffect(() => {
+    fetchData();
+  }, [shouldRefresh]);
+  
+  // Initial fetch
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Function to get pool logo
   const getPoolLogo = (poolName: string): string => {
     // Convert pool name to lowercase for case-insensitive matching
     const normalizedName = poolName.toLowerCase().trim();
@@ -62,151 +116,190 @@ const LatestMiningPool = ({ className }: LatestMiningPoolProps) => {
     return '/pool-logos/default.svg';
   };
 
-  // Fetch the latest block data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchWithRetry(() => fetchLatestBlockData());
-        
-        // Check if we have a new block
-        if (latestPool && data.latestBlock.height > latestPool.height) {
-          setPreviousHeight(latestPool.height);
-          setIsNewBlock(true);
-          
-          // Show notification
-          toast({
-            title: "New Block Mined!",
-            description: `Block #${data.latestBlock.height} mined by ${data.latestBlock.minedBy}`,
-          });
-          
-          // Reset the animation after 5 seconds
-          setTimeout(() => {
-            setIsNewBlock(false);
-          }, 5000);
-        }
-        
-        // Update latest pool data
-        setLatestPool({
-          name: data.latestBlock.minedBy,
-          logoUrl: getPoolLogo(data.latestBlock.minedBy),
-          height: data.latestBlock.height
-        });
-        
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching latest block data:', err);
-        setError('Failed to fetch latest block data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Manual refresh handler
+  const handleManualRefresh = async () => {
+    try {
+      await fetchData();
+      toast({
+        title: "Data Refreshed",
+        description: "Mining pool data updated",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh data",
+        variant: "destructive",
+      });
+    }
+  };
 
-    // Initial fetch
-    fetchData();
+  // Scroll handlers
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
 
-    // Set up polling interval (every 30 seconds)
-    const intervalId = setInterval(fetchData, 30000);
-    
-    // Clean up on unmount
-    return () => clearInterval(intervalId);
-  }, [latestPool, toast]);
-
-  if (isLoading && !latestPool) {
-    return (
-      <div className={cn("p-8 text-center bg-btc-dark rounded-xl border border-white/5", className)}>
-        <div className="animate-pulse flex flex-col items-center justify-center h-40">
-          <div className="w-20 h-20 bg-white/10 rounded-full mb-4"></div>
-          <div className="h-5 bg-white/10 rounded w-32 mb-2"></div>
-          <div className="h-4 bg-white/10 rounded w-24"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && !latestPool) {
-    return (
-      <div className={cn("p-4 text-center bg-red-900/20 border border-red-500/20 rounded-xl", className)}>
-        <p className="text-red-400">{error}</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="mt-2 px-4 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded text-sm"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div className={cn(
-      "relative bg-btc-dark rounded-xl border border-white/5 overflow-hidden",
-      "transition-all duration-300 group",
-      className
-    )}>
-      {/* Header */}
-      <div className="p-3 border-b border-white/10">
-        <h2 className="text-lg font-medium text-white">Latest Block Mined By</h2>
-      </div>
-      
-      {/* Glow effect for new blocks */}
-      {isNewBlock && (
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <GlowEffect 
-            colors={['#FFD700', '#F7931A', '#FFBF00', '#FFA500']}
-            mode="pulse"
-            blur="stronger"
-            scale={1.2}
-            duration={1.5}
-            className="opacity-60"
-          />
+    <AuroraContainer className="w-full rounded-xl overflow-hidden">
+      <div className="p-3 border-b border-white/10 flex justify-between items-center">
+        <h2 className="text-lg font-medium text-white">Latest Block Miners</h2>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs text-white/70">Live</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={handleManualRefresh}
+              className={cn(
+                "p-1.5 rounded-full hover:bg-white/10 transition-colors",
+                isLoading && "animate-spin"
+              )}
+              disabled={isLoading}
+            >
+              <RefreshCw className="h-4 w-4 text-white/70" />
+            </button>
+            <button 
+              onClick={scrollLeft}
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 text-white/70" />
+            </button>
+            <button 
+              onClick={scrollRight}
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <ArrowRight className="h-4 w-4 text-white/70" />
+            </button>
+          </div>
         </div>
-      )}
-      
-      {/* Content */}
-      <div className="p-6 flex flex-col items-center justify-center relative z-10">
-        {latestPool && (
-          <>
-            <div className={cn(
-              "w-28 h-28 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center p-2 mb-4",
-              "border border-white/10 transition-all duration-300",
-              isNewBlock ? "border-btc-orange scale-110" : "group-hover:border-white/20"
-            )}>
-              <img 
-                src={latestPool.logoUrl} 
-                alt={latestPool.name}
-                className={cn(
-                  "w-20 h-20 object-contain transition-transform duration-300",
-                  isNewBlock ? "animate-pulse-subtle" : "group-hover:scale-110"
-                )}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
-                }}
-              />
+      </div>
+
+      <div className="relative">
+        {/* Error state */}
+        {error && (
+          <div className="p-8 text-center">
+            <p className="text-red-400">{error}</p>
+            <button 
+              onClick={handleManualRefresh}
+              className="mt-4 px-4 py-2 bg-btc-orange/20 hover:bg-btc-orange/30 text-btc-orange rounded transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+        
+        {/* Loading state */}
+        {isLoading && blocks.length === 0 && !error && (
+          <div className="p-8 text-center">
+            <div className="flex justify-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce"></div>
             </div>
-            
-            <h3 className={cn(
-              "text-xl font-bold mb-1 transition-colors duration-300",
-              isNewBlock ? "text-btc-orange" : "text-white group-hover:text-btc-orange"
-            )}>
-              {latestPool.name}
-            </h3>
-            
-            <p className="text-white/60 text-sm">
-              Block #{latestPool.height.toLocaleString()}
-            </p>
-            
-            {isNewBlock && previousHeight && (
-              <div className="mt-2 px-3 py-1 bg-btc-orange/10 border border-btc-orange/20 rounded-full">
-                <span className="text-xs text-btc-orange">
-                  New block mined!
-                </span>
-              </div>
-            )}
-          </>
+            <p className="mt-4 text-white/70">Loading blockchain data...</p>
+          </div>
+        )}
+        
+        {/* New block appearing animation */}
+        <div className={cn(
+          "absolute inset-0 bg-btc-orange/10 flex items-center justify-center transition-all duration-500 z-10",
+          isNewBlockAppearing ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}>
+          <div className="bg-btc-dark glass-panel rounded-xl p-4 transform transition-all duration-500 animate-block-appear">
+            <h3 className="text-base font-medium text-white mb-1">New Block Found!</h3>
+            <p className="text-xs text-white/70">Block #{blocks.length > 0 ? blocks[0].height + 1 : "..."} has been mined.</p>
+          </div>
+        </div>
+
+        {/* Horizontal blocks scrolling area */}
+        {blocks.length > 0 && (
+          <div 
+            ref={scrollRef}
+            className="flex overflow-x-auto hide-scrollbar py-4 px-4 space-x-4 bg-gradient-to-b from-[#0a0a0a] to-[#070707] rounded-b-xl"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {blocks.map((block, index) => {
+              // Determine if this is the most recent block
+              const isLatestBlock = index === 0;
+              // Check if this was the previous latest block that just got pushed
+              const wasPreviousLatest = previousLatestBlock === block.hash;
+              
+              return (
+                <div 
+                  key={`${block.height}-${block.hash?.substring(0, 10) || index}`} 
+                  className={cn(
+                    "flex-shrink-0 w-28 relative group transition-all duration-300",
+                    isLatestBlock ? "animate-block-appear" : ""
+                  )}
+                >
+                  {/* Gold glow effect on latest block for 5 seconds after it appears */}
+                  {isLatestBlock && (
+                    <div className="absolute -inset-2 pointer-events-none opacity-70 z-10">
+                      <SparklesText 
+                        text="" 
+                        colors={{ first: "#FFD700", second: "#FFF8E1" }}
+                        className="absolute inset-0 w-full h-full"
+                        sparklesCount={30}
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="flex flex-col items-center">
+                    <div className={cn(
+                      "w-16 h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
+                      isLatestBlock 
+                        ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
+                        : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
+                    )}>
+                      <div className="w-full h-full bg-black/80 rounded-full flex items-center justify-center p-1.5">
+                        <img 
+                          src={getPoolLogo(block.minedBy)} 
+                          alt={block.minedBy}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            console.error(`Error loading logo for ${block.minedBy}`);
+                            (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
+                          }}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className={cn(
+                      "text-center mt-2 px-2 py-1 rounded-md",
+                      isLatestBlock ? "bg-yellow-900/30" : ""
+                    )}>
+                      <p className={cn(
+                        "font-medium text-xs truncate w-full max-w-[112px]",
+                        isLatestBlock ? "text-yellow-400" : "text-white"
+                      )}>
+                        {block.minedBy}
+                      </p>
+                      <p className={cn(
+                        "text-xs mt-1",
+                        isLatestBlock ? "text-yellow-200" : "text-white/70"
+                      )}>
+                        Block #{block.height}
+                      </p>
+                      <p className="text-[10px] text-white/50 mt-1">
+                        {formatTimeAgo(block.timestamp)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
-    </div>
+    </AuroraContainer>
   );
 };
 
