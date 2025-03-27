@@ -154,7 +154,7 @@ const LatestMiningPool = () => {
   return (
     <AuroraContainer className="w-full rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
-        <h2 className="text-lg font-medium text-white">Latest Block Miners</h2>
+        <h2 className="text-lg font-medium text-white">Latest Blocks</h2>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -259,7 +259,7 @@ const LatestMiningPool = () => {
                   
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-10 h-10 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
+                      "w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
                       isLatestBlock 
                         ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
                         : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
@@ -282,13 +282,13 @@ const LatestMiningPool = () => {
                       isLatestBlock ? "bg-yellow-900/30" : ""
                     )}>
                       <p className={cn(
-                        "font-medium text-[10px] md:text-xs truncate w-full max-w-full md:max-w-[112px]",
+                        "font-medium text-[11px] md:text-xs truncate w-full max-w-full md:max-w-[112px]",
                         isLatestBlock ? "text-yellow-400" : "text-white"
                       )}>
                         {block.minedBy}
                       </p>
                       <p className={cn(
-                        "text-[9px] md:text-xs mt-0.5 md:mt-1",
+                        "text-[10px] md:text-xs mt-0.5 md:mt-1",
                         isLatestBlock ? "text-yellow-200" : "text-white/70"
                       )}>
                         #{block.height}
