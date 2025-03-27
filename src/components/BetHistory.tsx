@@ -41,7 +41,7 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
   deposits = [], 
   withdrawals = [] 
 }) => {
-  const [activeTab, setActiveTab] = useState<'all' | 'wins' | 'losses' | 'deposits' | 'withdrawals'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'wins' | 'losses' | 'deposits' | 'withdrawals' | 'transactions'>('all');
   const isMobile = useIsMobile();
   const [isMoreTabsOpen, setIsMoreTabsOpen] = useState(false);
   
@@ -59,6 +59,11 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
   // Sort deposits and withdrawals by newest first
   const sortedDeposits = [...deposits].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   const sortedWithdrawals = [...withdrawals].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  
+  // Combined transactions for the mobile view
+  const sortedTransactions = [...sortedDeposits.map(d => ({ ...d, type: 'deposit' })), 
+                             ...sortedWithdrawals.map(w => ({ ...w, type: 'withdrawal' }))]
+                             .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   
   const totalBets = betHistory.length;
   const totalWins = betHistory.filter(bet => bet.isWin).length;
@@ -138,7 +143,7 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
       <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setActiveTab(value as any)}>
         <TabsList className={cn(
           "mb-4 bg-[#121212]/40",
-          isMobile ? "grid grid-cols-3 mb-1" : "grid grid-cols-5"
+          isMobile ? "grid grid-cols-4 mb-1" : "grid grid-cols-5"
         )}>
           <TabsTrigger value="all" className="data-[state=active]:bg-btc-orange/20 data-[state=active]:text-btc-orange">
             All {!isMobile && `(${totalBets})`}
@@ -151,23 +156,9 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
           </TabsTrigger>
           
           {isMobile ? (
-            <Collapsible open={isMoreTabsOpen} onOpenChange={setIsMoreTabsOpen} className="col-span-3 mt-1">
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-[#121212]/40 text-xs border-white/10 hover:bg-[#202020]/40 w-full">
-                  More Tabs
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <TabsList className="grid grid-cols-2 mt-1 mb-4 bg-[#121212]/40 w-full">
-                  <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
-                    Deposits
-                  </TabsTrigger>
-                  <TabsTrigger value="withdrawals" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
-                    Withdrawals
-                  </TabsTrigger>
-                </TabsList>
-              </CollapsibleContent>
-            </Collapsible>
+            <TabsTrigger value="transactions" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-500">
+              Wallet
+            </TabsTrigger>
           ) : (
             <>
               <TabsTrigger value="deposits" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-500">
@@ -207,6 +198,12 @@ const BetHistory: React.FC<BetHistoryProps & WalletActivityProps> = ({
         <TabsContent value="withdrawals" className="mt-0">
           <ScrollArea className="h-[300px]">
             <WithdrawalsList withdrawals={sortedWithdrawals} />
+          </ScrollArea>
+        </TabsContent>
+        
+        <TabsContent value="transactions" className="mt-0">
+          <ScrollArea className="h-[300px]">
+            <CombinedTransactionsList deposits={sortedDeposits} withdrawals={sortedWithdrawals} />
           </ScrollArea>
         </TabsContent>
       </Tabs>
@@ -408,6 +405,117 @@ const WithdrawalsList: React.FC<WithdrawalsListProps> = ({ withdrawals }) => {
             </div>
           </div>
         ))
+      )}
+    </div>
+  );
+};
+
+interface CombinedTransactionsListProps {
+  deposits: Array<{
+    id: number;
+    amount: number;
+    timestamp: Date;
+    txId: string;
+  }>;
+  withdrawals: Array<{
+    id: number;
+    amount: number;
+    timestamp: Date;
+    txId: string;
+    status: 'completed' | 'pending' | 'failed';
+  }>;
+}
+
+const CombinedTransactionsList: React.FC<CombinedTransactionsListProps> = ({ deposits, withdrawals }) => {
+  const formatSats = (satoshis: number) => {
+    return satoshis.toLocaleString() + " sats";
+  };
+  
+  // Combine and sort transactions by timestamp (newest first)
+  const sortedTransactions = [
+    ...deposits.map(d => ({ ...d, type: 'deposit' as const })),
+    ...withdrawals.map(w => ({ ...w, type: 'withdrawal' as const }))
+  ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  
+  return (
+    <div className="space-y-2 pr-1">
+      {sortedTransactions.length === 0 ? (
+        <div className="text-center py-8 text-white/60">
+          No transactions yet
+        </div>
+      ) : (
+        sortedTransactions.map((transaction) => {
+          if (transaction.type === 'deposit') {
+            return (
+              <div 
+                key={`deposit-${transaction.id}`} 
+                className="flex items-center justify-between p-3 rounded-lg bg-blue-950/30 border border-blue-800/30"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center bg-blue-500/20">
+                    <Download className="h-5 w-5 text-blue-500" />
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-white">Deposit</div>
+                    </div>
+                    <div className="text-xs text-white/60 flex items-center">
+                      <Calendar className="h-3 w-3 mr-1 inline" />
+                      {format(transaction.timestamp, 'MMM d, yyyy HH:mm')}
+                      <span className="mx-1">•</span>
+                      <span className="text-blue-400/80 font-mono text-xs">{transaction.txId.slice(0, 8)}...{transaction.txId.slice(-8)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <div className="font-mono font-medium text-blue-500">
+                    +{formatSats(transaction.amount)}
+                  </div>
+                </div>
+              </div>
+            );
+          } else {
+            return (
+              <div 
+                key={`withdrawal-${transaction.id}`} 
+                className="flex items-center justify-between p-3 rounded-lg bg-purple-950/30 border border-purple-800/30"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center bg-purple-500/20">
+                    <Upload className="h-5 w-5 text-purple-500" />
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-white">Withdrawal</div>
+                      <span className={cn("text-xs font-medium px-1.5 py-0.5 rounded-full", 
+                        transaction.status === 'completed' ? 'bg-green-900/40 text-green-400' : 
+                        transaction.status === 'pending' ? 'bg-yellow-900/40 text-yellow-400' : 
+                        'bg-red-900/40 text-red-400'
+                      )}>
+                        {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                      </span>
+                    </div>
+                    <div className="text-xs text-white/60 flex items-center">
+                      <Calendar className="h-3 w-3 mr-1 inline" />
+                      {format(transaction.timestamp, 'MMM d, yyyy HH:mm')}
+                      <span className="mx-1">•</span>
+                      <span className="text-purple-400/80 font-mono text-xs">{transaction.txId.slice(0, 8)}...{transaction.txId.slice(-8)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <div className="font-mono font-medium text-purple-500">
+                    -{formatSats(transaction.amount)}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+        })
       )}
     </div>
   );
