@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
-import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -14,6 +13,7 @@ import { BLOCK_MINED_EVENT } from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
@@ -547,7 +547,7 @@ const BettingGrid = () => {
             onClick={() => handleSelectChip(value)}
           >
             {selectedChip === value && (
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500/60 animate-pulse blur-md -z-10 scale-110"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500 animate-pulse blur-md -z-10 scale-110"></div>
             )}
             
             {selectedChip === value && (
@@ -703,161 +703,188 @@ const BettingGrid = () => {
         </div>
       </Card>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="w-full h-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <Tabs defaultValue="bets" className="w-full">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-white text-sm">Your Bets</h3>
+            <TabsList className="bg-btc-dark/50 border border-white/5">
+              <TabsTrigger 
+                value="bets" 
+                className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
+              >
+                Your Bets
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history" 
+                className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
+              >
+                Bet History
+              </TabsTrigger>
+              <TabsTrigger 
+                value="transactions" 
+                className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
+              >
+                Transactions
+              </TabsTrigger>
+            </TabsList>
             <div className="text-xs text-white/60">
-              Total: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
+              <TabsContent value="bets" className="mt-0 p-0">
+                Total: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
+              </TabsContent>
             </div>
           </div>
           
-          {bets.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="bg-btc-dark/50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                <Server className="w-6 h-6 text-white/30" />
+          <TabsContent value="bets" className="mt-0 focus-visible:outline-none">
+            {bets.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="bg-btc-dark/50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                  <Server className="w-6 h-6 text-white/30" />
+                </div>
+                <p className="text-white/50 text-sm">No active bets</p>
+                <p className="text-white/30 text-xs mt-1">Select a chip and click on a mining pool to place a bet</p>
               </div>
-              <p className="text-white/50 text-sm">No active bets</p>
-              <p className="text-white/30 text-xs mt-1">Select a chip and click on a mining pool to place a bet</p>
-            </div>
-          ) : (
+            ) : (
+              <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
+                {getConsolidatedBets().map((bet, index) => {
+                  const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
+                  return (
+                    <div key={`bet-${bet.poolId || 'empty'}-${index}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                      <div className="flex items-center">
+                        {bet.poolId ? (
+                          <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-gradient-to-br from-gray-700 to-gray-900 p-0.5">
+                            <div className="w-full h-full bg-black rounded-full flex items-center justify-center overflow-hidden">
+                              {getPoolLogo(bet.poolId)}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-full mr-2 bg-gray-800 flex items-center justify-center">
+                            <X className="w-4 h-4 text-white/60" />
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-sm text-white font-medium">{pool?.name || 'Empty Block'}</div>
+                          <div className="text-xs text-white/60">Odds: {pool?.odds.toFixed(2) || '1.00'}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        {renderRouletteCasualChips(bet.amounts)}
+                        <div className="text-sm text-white font-mono">{formatSats(bet.totalAmount)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="history" className="mt-0 focus-visible:outline-none">
             <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
-              {getConsolidatedBets().map((bet, index) => {
-                const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
-                return (
-                  <div key={`bet-${bet.poolId || 'empty'}-${index}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
-                    <div className="flex items-center">
-                      {bet.poolId ? (
-                        <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-gradient-to-br from-gray-700 to-gray-900 p-0.5">
+              {betHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="bg-btc-dark/50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <History className="w-6 h-6 text-white/30" />
+                  </div>
+                  <p className="text-white/50 text-sm">No bet history yet</p>
+                  <p className="text-white/30 text-xs mt-1">Your betting history will appear here</p>
+                </div>
+              ) : (
+                betHistory.map((bet) => {
+                  const pool = miningPools.find(p => p.id === bet.poolId);
+                  return (
+                    <div key={`history-${bet.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                      <div className="flex items-center">
+                        <div className={`w-1 h-full self-stretch rounded-l-lg ${bet.isWin ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                        <div className="w-8 h-8 rounded-full overflow-hidden mx-2 bg-gradient-to-br from-gray-700 to-gray-900 p-0.5">
                           <div className="w-full h-full bg-black rounded-full flex items-center justify-center overflow-hidden">
                             {getPoolLogo(bet.poolId)}
                           </div>
                         </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-full mr-2 bg-gray-800 flex items-center justify-center">
-                          <X className="w-4 h-4 text-white/60" />
+                        <div>
+                          <div className="text-sm text-white font-medium">{bet.poolName}</div>
+                          <div className="text-xs text-white/60">Block #{bet.blockHeight}</div>
                         </div>
-                      )}
-                      <div>
-                        <div className="text-sm text-white font-medium">{pool?.name || 'Empty Block'}</div>
-                        <div className="text-xs text-white/60">Odds: {pool?.odds.toFixed(2) || '1.00'}</div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className={`text-sm font-mono ${bet.isWin ? 'text-green-500' : 'text-red-500'}`}>
+                          {bet.isWin ? '+' : '-'}{formatSats(bet.amount)}
+                        </div>
+                        <div className="text-xs text-white/60">
+                          {new Date(bet.timestamp).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center">
-                      {renderRouletteCasualChips(bet.amounts)}
-                      <div className="text-sm text-white font-mono">{formatSats(bet.totalAmount)}</div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
-          )}
-        </Card>
-        
-        <Card className="w-full h-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-white text-sm">Step 2: Select chip value in sats.</h3>
-          </div>
-          <div className="px-0">
-            {renderChipSelection()}
-          </div>
-        </Card>
-      </div>
-      
-      {/* Restored transaction history section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center">
-              <History className="h-4 w-4 text-btc-orange mr-1.5" />
-              <h3 className="text-white text-sm">Bet History</h3>
-            </div>
-          </div>
+          </TabsContent>
           
-          <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
-            {betHistory.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-white/50 text-sm">No bet history yet</p>
-              </div>
-            ) : (
-              betHistory.slice(0, 5).map((bet) => (
-                <div key={`history-${bet.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
-                  <div className="flex items-center">
-                    <div className={`w-2 h-full rounded-l-lg ${bet.isWin ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <div className="ml-2">
-                      <div className="text-sm text-white font-medium">{bet.poolName}</div>
-                      <div className="text-xs text-white/60">Block #{bet.blockHeight}</div>
-                    </div>
+          <TabsContent value="transactions" className="mt-0 focus-visible:outline-none">
+            <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
+              {deposits.length === 0 && withdrawals.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="bg-btc-dark/50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <Wallet className="w-6 h-6 text-white/30" />
                   </div>
-                  <div className="flex flex-col items-end">
-                    <div className={`text-sm font-mono ${bet.isWin ? 'text-green-500' : 'text-red-500'}`}>
-                      {bet.isWin ? '+' : '-'}{formatSats(bet.amount)}
-                    </div>
-                    <div className="text-xs text-white/60">
-                      {new Date(bet.timestamp).toLocaleDateString()}
-                    </div>
-                  </div>
+                  <p className="text-white/50 text-sm">No transaction history</p>
+                  <p className="text-white/30 text-xs mt-1">Deposits and withdrawals will appear here</p>
                 </div>
-              ))
-            )}
-          </div>
-        </Card>
-        
-        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center">
-              <Wallet className="h-4 w-4 text-btc-orange mr-1.5" />
-              <h3 className="text-white text-sm">Transaction History</h3>
+              ) : (
+                <>
+                  {/* Deposits */}
+                  {deposits.map((deposit) => (
+                    <div key={`deposit-${deposit.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                      <div className="flex items-center">
+                        <div className="w-1 h-full self-stretch rounded-l-lg bg-green-500"></div>
+                        <div className="w-8 h-8 rounded-full overflow-hidden mx-2 bg-gradient-to-br from-green-700/30 to-green-900/30 flex items-center justify-center">
+                          <ArrowDownLeft className="h-4 w-4 text-green-400" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-white font-medium">Deposit</div>
+                          <div className="text-xs text-white/60 font-mono">{deposit.txId.substring(0, 8)}...</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className="text-sm font-mono text-green-500">
+                          +{formatSats(deposit.amount)}
+                        </div>
+                        <div className="text-xs text-white/60">
+                          {new Date(deposit.timestamp).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Withdrawals */}
+                  {withdrawals.map((withdrawal) => (
+                    <div key={`withdrawal-${withdrawal.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
+                      <div className="flex items-center">
+                        <div className={`w-1 h-full self-stretch rounded-l-lg ${withdrawal.status === 'completed' ? 'bg-red-500' : 'bg-yellow-500'}`}></div>
+                        <div className="w-8 h-8 rounded-full overflow-hidden mx-2 bg-gradient-to-br from-red-700/30 to-red-900/30 flex items-center justify-center">
+                          <ArrowUpRight className="h-4 w-4 text-red-400" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-white font-medium">
+                            Withdrawal {withdrawal.status === 'pending' && <span className="text-xs text-yellow-500 ml-1">(Pending)</span>}
+                          </div>
+                          <div className="text-xs text-white/60 font-mono">{withdrawal.txId.substring(0, 8)}...</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className={`text-sm font-mono ${withdrawal.status === 'completed' ? 'text-red-500' : 'text-yellow-500'}`}>
+                          -{formatSats(withdrawal.amount)}
+                        </div>
+                        <div className="text-xs text-white/60">
+                          {new Date(withdrawal.timestamp).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
-          </div>
-          
-          <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
-            {/* Deposits */}
-            {deposits.slice(0, 2).map((deposit) => (
-              <div key={`deposit-${deposit.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-2 h-full rounded-l-lg bg-green-500"></div>
-                  <div className="ml-2">
-                    <div className="text-sm text-white font-medium">Deposit</div>
-                    <div className="text-xs text-white/60">{deposit.txId.substring(0, 8)}...</div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className="text-sm font-mono text-green-500">
-                    +{formatSats(deposit.amount)}
-                  </div>
-                  <div className="text-xs text-white/60">
-                    {new Date(deposit.timestamp).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {/* Withdrawals */}
-            {withdrawals.slice(0, 2).map((withdrawal) => (
-              <div key={`withdrawal-${withdrawal.id}`} className="flex items-center justify-between p-2 bg-btc-darker rounded-lg">
-                <div className="flex items-center">
-                  <div className={`w-2 h-full rounded-l-lg ${withdrawal.status === 'completed' ? 'bg-red-500' : 'bg-yellow-500'}`}></div>
-                  <div className="ml-2">
-                    <div className="text-sm text-white font-medium">
-                      Withdrawal {withdrawal.status === 'pending' && <span className="text-xs text-yellow-500 ml-1">(Pending)</span>}
-                    </div>
-                    <div className="text-xs text-white/60">{withdrawal.txId.substring(0, 8)}...</div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className={`text-sm font-mono ${withdrawal.status === 'completed' ? 'text-red-500' : 'text-yellow-500'}`}>
-                    -{formatSats(withdrawal.amount)}
-                  </div>
-                  <div className="text-xs text-white/60">
-                    {new Date(withdrawal.timestamp).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+          </TabsContent>
+        </Tabs>
+      </Card>
     </div>
   );
 };
