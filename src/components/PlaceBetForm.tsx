@@ -7,6 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 import { Bitcoin, ChevronUp, ChevronDown, Wallet, Info, Trophy } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PlaceBetFormProps {
   selectedPool: MiningPool;
@@ -17,6 +18,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
   const [betAmount, setBetAmount] = useState(0.001);
   const [isPending, setIsPending] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const isMobile = useIsMobile();
   
   const maxBet = mockUserBalance.availableBalance;
   const potentialWin = betAmount * selectedPool.odds;
@@ -114,7 +116,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
             </div>
           </div>
           
-          <div className="mb-6">
+          <div className={cn("mb-6", isMobile ? "relative" : "")}>
             <Slider
               value={[betAmount]}
               max={maxBet}
@@ -123,7 +125,10 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
               className="my-4"
             />
             
-            <div className="flex justify-between gap-2 mb-2">
+            <div className={cn(
+              "flex gap-2 mb-2",
+              isMobile ? "justify-between pr-24" : "justify-between" 
+            )}>
               <Button
                 size="sm"
                 variant="outline"
@@ -157,6 +162,25 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
                 Max
               </Button>
             </div>
+            
+            {isMobile && (
+              <div className="absolute bottom-0 right-0 flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-white/10 hover:border-red-500/50 hover:bg-red-500/5 text-red-400"
+                >
+                  Clear
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-white/10 hover:border-white/20 hover:bg-white/5"
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
             
             <div className="flex items-center text-xs text-white/60">
               <Wallet className="h-3.5 w-3.5 mr-1 text-white/40" />

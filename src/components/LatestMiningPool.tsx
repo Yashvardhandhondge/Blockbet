@@ -104,8 +104,8 @@ const LatestMiningPool = () => {
       'bitfury': '/pool-logos/bitfury.svg',
       'okex': '/pool-logos/okexpool.svg',
       'huobi pool': '/pool-logos/huobipool.svg',
-      'mara pool': '/pool-logos/marapool.svg', // Fixed MaraPool logo
-      'whitepool': '/pool-logos/whitepool.svg', // Fixed WhitePool logo
+      'mara pool': '/pool-logos/marapool.svg',
+      'whitepool': '/pool-logos/whitepool.svg',
       'spiderpool': '/pool-logos/spiderpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
     };
@@ -259,7 +259,7 @@ const LatestMiningPool = () => {
                   
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center p-1",
+                      "w-14 h-14 md:w-18 md:h-18 rounded-full overflow-hidden flex items-center justify-center p-1",
                       isLatestBlock 
                         ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
                         : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
@@ -282,7 +282,7 @@ const LatestMiningPool = () => {
                       isLatestBlock ? "bg-yellow-900/30" : ""
                     )}>
                       <p className={cn(
-                        "font-medium text-[11px] md:text-xs truncate w-full max-w-full md:max-w-[112px]",
+                        "font-medium text-xs md:text-sm truncate w-full max-w-full md:max-w-[112px]",
                         isLatestBlock ? "text-yellow-400" : "text-white"
                       )}>
                         {block.minedBy}
