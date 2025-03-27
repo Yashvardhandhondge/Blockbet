@@ -69,8 +69,8 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
       
       <div className="relative z-10 p-4">
-        <div className="flex flex-col items-center mb-3">
-          <div className="h-16 w-16 rounded-lg overflow-hidden bg-transparent mb-2">
+        <div className="flex flex-col items-center mb-1">
+          <div className="h-20 w-20 rounded-lg overflow-hidden bg-transparent mb-1">
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
                 src={pool.logoUrl} 
@@ -90,18 +90,18 @@ const MiningPoolCard = ({ pool, onSelect, isSelected, bets = [] }: MiningPoolCar
           </div>
         </div>
         
-        <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-lg p-2">
+        <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+          <div className="p-2">
             <div className="text-white/60 text-xs">Hashrate</div>
             <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
           </div>
-          <div className="rounded-lg p-2">
+          <div className="p-2">
             <div className="text-white/60 text-xs">Blocks (24h)</div>
             <div className="font-medium text-white">{pool.blocksLast24h}</div>
           </div>
         </div>
         
-        <div className="mt-3 flex justify-center items-center rounded-lg p-2">
+        <div className="mt-2 flex justify-center items-center p-2">
           <div className="text-white/80 text-center">
             <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">{pool.odds.toFixed(2)}
               <span className="ml-0.5">×</span>
