@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -658,4 +659,154 @@ const BettingGrid = () => {
               
               <span className={cn(
                 "relative z-10 text-white font-bold drop-shadow-md", 
-                isMobile ? "text-[9px]
+                isMobile ? "text-[9px]" : "text-xs"
+              )}>
+                {formatChipValue(value)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderBetControlButtons = () => {
+    return (
+      <div className="flex gap-2 justify-end mt-auto">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 py-0.5 h-5 text-[9px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
+          onClick={handleCancelLastBet} 
+          disabled={bets.length === 0}
+        >
+          <X className="w-2.5 h-2.5" />
+          Cancel Last
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1 py-0.5 h-5 text-[9px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" 
+          onClick={handleClearBets} 
+          disabled={bets.length === 0}
+        >
+          <Trash2 className="w-2.5 h-2.5" />
+          Clear All
+        </Button>
+      </div>
+    );
+  };
+
+  const formatBTCAmount = (satoshis: number) => {
+    return (satoshis / 100000000).toFixed(8) + " BTC";
+  };
+
+  const formatSatsAmount = (satoshis: number) => {
+    return satoshis.toLocaleString() + " sats";
+  };
+
+  return (
+    <div className="w-full">
+      <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg mb-6 overflow-hidden">
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 text-btc-orange mr-1.5" />
+            <span className="text-xs font-medium text-white">
+              {bettingEnabled 
+                ? "Betting closes in:" 
+                : "Waiting for next block:"}
+            </span>
+          </div>
+          <div className="flex-grow mx-4 relative">
+            <Progress value={progressPercentage} className="h-2 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
+            <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Desktop: Step 1 and Step 2 side by side */}
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
+        {/* Step 1: Wallet Section */}
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
+          <div className="flex flex-col">
+            <div className="flex items-center mb-3">
+              <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
+                <Wallet className="h-6 w-6 text-btc-orange" strokeWidth={1.5} />
+              </div>
+              <div>
+                <div className="text-xs text-white/60">Balance</div>
+                <div className="text-lg font-bold text-white">{formatSatsAmount(walletBalance)}</div>
+              </div>
+            </div>
+            <div className="flex gap-2 w-full justify-end">
+              <Button variant="outline" className="flex-1 bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-8 md:text-xs md:py-1 md:h-7 md:max-w-28" onClick={handleDeposit}>
+                Deposit
+              </Button>
+              <Button variant="outline" className="flex-1 border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30 rounded-full text-xs py-1 h-8 md:text-xs md:py-1 md:h-7 md:max-w-28" onClick={handleWithdraw}>
+                Withdraw
+              </Button>
+            </div>
+          </div>
+        </Card>
+        
+        {/* Step 2: Select Chip Section */}
+        <Card className="w-full md:w-1/2 bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+          <h3 className="text-white text-sm mb-3">Step 2. Select your bet amount</h3>
+          <div className="h-full flex flex-col">
+            {renderChipSelection()}
+            {renderBetControlButtons()}
+          </div>
+        </Card>
+      </div>
+      
+      {/* Step 3: Place Your Bets Section */}
+      <div className="mb-6">
+        <h3 className="text-white text-sm mb-3">Step 3. Place your bets</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {miningPools.slice(0, 8).map(pool => (
+            <div 
+              key={pool.id} 
+              className="relative bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden hover:border-btc-orange/50 transition-colors cursor-pointer"
+              onClick={() => handleSelectPool(pool)}
+            >
+              <div className="p-3 flex items-center gap-3">
+                <div className="w-10 h-10 flex-shrink-0 bg-gray-800 rounded-full overflow-hidden">
+                  {getPoolLogo(pool.id)}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-white text-sm font-medium truncate">
+                    {pool.name}
+                  </div>
+                  <div className="text-white/60 text-xs flex items-center gap-1">
+                    <span className="whitespace-nowrap">{pool.hashRatePercent}%</span>
+                    <span className="text-btc-orange">•</span>
+                    <span className="whitespace-nowrap">{pool.odds}x</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Show bets on this pool if any */}
+              {getBetsOnPool(pool.id).length > 0 && renderStackedChips(getBetsOnPool(pool.id))}
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* History */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <h3 className="text-white text-sm">Your bet history</h3>
+          <div className="flex-grow"></div>
+          <Button variant="outline" size="sm" className="h-6 py-0 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30">
+            <History className="w-3 h-3 mr-1" />
+            View all
+          </Button>
+        </div>
+        <BetHistory betHistory={betHistory.slice(0, 5)} />
+      </div>
+    </div>
+  );
+};
+
+export default BettingGrid;
