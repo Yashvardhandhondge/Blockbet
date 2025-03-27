@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool, mockUserBalance, formatBTC } from '@/utils/mockData';
 import { Button } from '@/components/ui/button';
