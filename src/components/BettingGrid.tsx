@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History } from 'lucide-react';
@@ -669,7 +670,7 @@ const BettingGrid = () => {
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Step 1. Found your Wallet.</h3>
+        <h3 className="text-white text-sm mb-3">Step 1. Fund your Wallet.</h3>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="flex items-center mb-3 md:mb-0">
             <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
@@ -693,4 +694,144 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6 relative">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-          <h3 className="text-white text-sm mb-
+          <h3 className="text-white text-sm mb-2 md:mb-0">Step 2. Place your bets on which pool will mine the next block.</h3>
+          {bets.length > 0 && (
+            <div className="flex items-center">
+              <div className="text-xs text-white/60 mr-2">Total Bet:</div>
+              <div className="text-sm font-bold text-white">{formatSatsAmount(totalBet)}</div>
+            </div>
+          )}
+        </div>
+        
+        {renderChipSelection()}
+        
+        {bets.length > 0 && (
+          <div className="mb-4">
+            {renderBetControlButtons()}
+          </div>
+        )}
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-2">
+          {miningPools.slice(0, 10).map(pool => (
+            <div
+              key={pool.id}
+              className={cn(
+                "relative rounded-lg border border-white/5 hover:border-btc-orange/30 hover:bg-black/40 bg-black/20 p-2 cursor-pointer transition-all",
+                bets.some(bet => bet.poolId === pool.id) ? "bg-black/50 border-btc-orange/40" : ""
+              )}
+              onClick={() => handlePlaceBet(pool.id)}
+            >
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  {getPoolLogo(pool.id)}
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-white truncate max-w-[90px]">{pool.name}</div>
+                  <div className="flex items-center">
+                    <span className="text-[9px] text-white/60 mr-1">Odds:</span>
+                    <span className="text-[10px] font-mono font-bold text-btc-orange">{pool.odds}x</span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-1.5">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${pool.hashRatePercent}%`,
+                    background: pool.gradient
+                  }}
+                ></div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="text-[9px] text-white/60">Hash Rate:</div>
+                <div className="text-[10px] font-mono font-bold text-white">{pool.hashRatePercent}%</div>
+              </div>
+              
+              {getBetsOnPool(pool.id).length > 0 && renderStackedChips(getBetsOnPool(pool.id))}
+            </div>
+          ))}
+          
+          {/* "Empty Block" option */}
+          <div
+            className={cn(
+              "relative rounded-lg border border-white/5 hover:border-btc-orange/30 hover:bg-black/40 bg-black/20 p-2 cursor-pointer transition-all",
+              bets.some(bet => bet.poolId === null) ? "bg-black/50 border-btc-orange/40" : ""
+            )}
+            onClick={() => handlePlaceBet(null)}
+          >
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center">
+                <Question className="h-4 w-4 text-gray-400" />
+              </div>
+              <div>
+                <div className="text-xs font-medium text-white">Unknown Pool</div>
+                <div className="flex items-center">
+                  <span className="text-[9px] text-white/60 mr-1">Odds:</span>
+                  <span className="text-[10px] font-mono font-bold text-btc-orange">10x</span>
+                </div>
+              </div>
+            </div>
+            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mb-1.5">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: "3%",
+                  background: "linear-gradient(135deg, #555, #333)"
+                }}
+              ></div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="text-[9px] text-white/60">Probability:</div>
+              <div className="text-[10px] font-mono font-bold text-white">~3%</div>
+            </div>
+            
+            {getBetsOnPool(null).length > 0 && renderStackedChips(getBetsOnPool(null))}
+          </div>
+        </div>
+      </Card>
+      
+      {/* Bet History */}
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-3 rounded-xl mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <History className="h-4 w-4 text-btc-orange" />
+          <h3 className="text-white text-sm">Bet History</h3>
+        </div>
+        
+        <div className="space-y-2 max-h-64 overflow-y-auto hide-scrollbar pr-1">
+          {betHistory.slice(0, 5).map(bet => (
+            <div key={bet.id} className="flex items-center justify-between bg-black/20 rounded-lg p-2 border border-white/5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  {getPoolLogo(bet.poolId)}
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-white">{bet.poolName}</div>
+                  <div className="flex items-center">
+                    <span className="text-[10px] text-white/60 mr-1">Block:</span>
+                    <span className="text-[10px] font-mono font-bold text-white">{bet.blockHeight}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className={cn("text-xs font-medium", bet.isWin ? "text-green-500" : "text-red-500")}>
+                  {bet.isWin ? "Won" : "Lost"}
+                </div>
+                <div className="text-[10px] font-mono font-bold text-white">
+                  {formatSatsAmount(bet.amount)}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {betHistory.length === 0 && (
+            <div className="text-center py-6 text-sm text-white/50">
+              No bets placed yet
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default BettingGrid;
