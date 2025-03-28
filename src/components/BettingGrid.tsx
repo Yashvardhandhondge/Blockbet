@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -476,24 +477,40 @@ const BettingGrid = () => {
     })).sort((a, b) => b.amount - a.amount);
     const chipsToShow = chipGroups.slice(0, 3);
     const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
-    return <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", getChipColor(chipGroup.amount))} style={{
-        zIndex: 5 - index,
-        transform: `translateX(${index * 4}px)`
-      }}>
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
+          <div 
+            key={`chip-${chipGroup.amount}-${index}`} 
+            className={cn(
+              "relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", 
+              getChipColor(chipGroup.amount)
+            )} 
+            style={{
+              zIndex: 5 - index,
+              transform: `translateX(${index * 4}px)`
+            }}
+          >
             <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
             <div className="flex items-center">
               {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
             </div>
-          </div>)}
-        {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
-        zIndex: 1,
-        transform: `translateX(${chipsToShow.length * 4}px)`
-      }}>
+          </div>
+        ))}
+        {remainingDenoms > 0 && (
+          <div 
+            className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" 
+            style={{
+              zIndex: 1,
+              transform: `translateX(${chipsToShow.length * 4}px)`
+            }}
+          >
             +{remainingDenoms}
-          </div>}
-      </div>;
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderStackedChips = (bets: Array<{
@@ -503,25 +520,38 @@ const BettingGrid = () => {
     if (bets.length === 0) return null;
     const displayBets = bets.slice(-5);
     const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
-    return <div className="absolute bottom-1 right-1 flex flex-col items-end">
+    return (
+      <div className="absolute bottom-1 right-1 flex flex-col items-end">
         <div className="relative h-12 w-8">
-          {displayBets.map((bet, index) => <div key={bet.id} className={cn("absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(bet.amount))} style={{
-          bottom: `${index * 4}px`,
-          right: `${index % 2 === 0 ? 0 : 2}px`,
-          zIndex: index,
-          transform: `rotate(${index * 5 - 10}deg)`
-        }}>
+          {displayBets.map((bet, index) => (
+            <div 
+              key={bet.id} 
+              className={cn(
+                "absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", 
+                getChipColor(bet.amount)
+              )} 
+              style={{
+                bottom: `${index * 4}px`,
+                right: `${index % 2 === 0 ? 0 : 2}px`,
+                zIndex: index,
+                transform: `rotate(${index * 5 - 10}deg)`
+              }}
+            >
               <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
               <div className="flex items-center">
                 {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
               </div>
-            </div>)}
+            </div>
+          ))}
         </div>
         
-        {remainingCount > 0 && <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
+        {remainingCount > 0 && (
+          <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
             +{remainingCount} more
-          </div>}
-      </div>;
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderChipSelection = () => {
@@ -732,4 +762,120 @@ const BettingGrid = () => {
             <div className="text-xs text-white/70 font-medium">
               Sats in play: <span className="text-btc-orange">{formatSats(totalBet)}</span>
             </div>
-            <
+            <Button 
+              variant="outline" 
+              className="border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/10 hover:border-red-500/30 rounded-full text-xs h-6 px-2 py-0" 
+              onClick={handleCancelLastBet}
+            >
+              <X className="h-3 w-3 mr-1" />
+              Cancel
+            </Button>
+            <Button 
+              variant="outline" 
+              className="border-white/20 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/30 rounded-full text-xs h-6 px-2 py-0" 
+              onClick={handleClearBets}
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              Clear
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {miningPools.map(pool => (
+            <MiningPoolCard 
+              key={pool.id} 
+              pool={pool} 
+              bets={getBetsOnPool(pool.id)} 
+              onSelect={handleSelectPool} 
+              selectedChip={selectedChip}
+            />
+          ))}
+        </div>
+      </Card>
+      
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-white text-sm">Player Stats:</h3>
+        </div>
+        
+        <div>
+          <OriginTabs defaultValue="history" className="w-full">
+            <OriginTabsList className="mb-4">
+              <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />}>
+                Bet History
+              </OriginTabsTrigger>
+              <OriginTabsTrigger value="deposits" icon={<ArrowDownLeft className="h-4 w-4" />}>
+                Deposits
+              </OriginTabsTrigger>
+              <OriginTabsTrigger value="withdrawals" icon={<ArrowUpRight className="h-4 w-4" />}>
+                Withdrawals
+              </OriginTabsTrigger>
+            </OriginTabsList>
+            
+            <OriginTabsContent value="history">
+              <BetHistory 
+                betHistory={betHistory}
+              />
+            </OriginTabsContent>
+            
+            <OriginTabsContent value="deposits">
+              <div className="space-y-3">
+                {deposits.map(deposit => (
+                  <div key={deposit.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium text-white">{formatSats(deposit.amount)}</div>
+                      <div className="text-xs text-white/60">{deposit.timestamp.toLocaleString()}</div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="bg-green-500/10 p-2 rounded-full">
+                        <ArrowDown className="h-4 w-4 text-green-500" />
+                      </div>
+                      <div className="ml-2 text-right">
+                        <div className="text-xs text-white/60">Tx ID</div>
+                        <div className="text-xs font-mono text-white/40">{deposit.txId.substring(0, 8)}...</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </OriginTabsContent>
+            
+            <OriginTabsContent value="withdrawals">
+              <div className="space-y-3">
+                {withdrawals.map(withdrawal => (
+                  <div key={withdrawal.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium text-white">{formatSats(withdrawal.amount)}</div>
+                      <div className="text-xs text-white/60">{withdrawal.timestamp.toLocaleString()}</div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className={`p-2 rounded-full ${
+                        withdrawal.status === 'completed' ? 'bg-green-500/10' : 
+                        withdrawal.status === 'pending' ? 'bg-yellow-500/10' : 'bg-red-500/10'
+                      }`}>
+                        <ArrowUpRight className={`h-4 w-4 ${
+                          withdrawal.status === 'completed' ? 'text-green-500' : 
+                          withdrawal.status === 'pending' ? 'text-yellow-500' : 'text-red-500'
+                        }`} />
+                      </div>
+                      <div className="ml-2 text-right">
+                        <div className="text-xs text-white/60">
+                          {withdrawal.status === 'completed' ? 'Completed' : 
+                          withdrawal.status === 'pending' ? 'Pending' : 'Failed'}
+                        </div>
+                        <div className="text-xs font-mono text-white/40">{withdrawal.txId.substring(0, 8)}...</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </OriginTabsContent>
+          </OriginTabs>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default BettingGrid;
