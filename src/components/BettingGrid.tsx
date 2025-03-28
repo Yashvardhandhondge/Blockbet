@@ -13,7 +13,7 @@ import { BLOCK_MINED_EVENT } from './LiveBlockData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from "@/components/ui/origin-tabs";
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
@@ -775,36 +775,27 @@ const BettingGrid = () => {
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
         <h3 className="text-white text-sm mb-3">Player Stats:</h3>
         
-        <Tabs defaultValue="bets" className="w-full">
+        <OriginTabs defaultValue="bets" className="w-full">
           <div className="flex justify-between items-center mb-3">
-            <TabsList className="bg-btc-dark/50 border border-white/5">
-              <TabsTrigger 
-                value="bets" 
-                className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
-              >
+            <OriginTabsList>
+              <OriginTabsTrigger value="bets">
                 Active Bets
-              </TabsTrigger>
-              <TabsTrigger 
-                value="history" 
-                className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
-              >
+              </OriginTabsTrigger>
+              <OriginTabsTrigger value="history">
                 Bet History
-              </TabsTrigger>
-              <TabsTrigger 
-                value="transactions" 
-                className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
-              >
+              </OriginTabsTrigger>
+              <OriginTabsTrigger value="transactions">
                 Transactions
-              </TabsTrigger>
-            </TabsList>
-            <div className="text-xs text-white/60">
-              <TabsContent value="bets" className="mt-0 p-0">
-                Sats in play: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
-              </TabsContent>
+              </OriginTabsTrigger>
+            </OriginTabsList>
+            <div className="text-sm font-medium text-white/60">
+              <OriginTabsContent value="bets" className="mt-0 p-0">
+                Sats in play: <span className="text-btc-orange font-bold text-lg">{formatSats(totalBet)}</span>
+              </OriginTabsContent>
             </div>
           </div>
           
-          <TabsContent value="bets" className="mt-0 focus-visible:outline-none">
+          <OriginTabsContent value="bets" className="mt-0 focus-visible:outline-none">
             {bets.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <div className="bg-btc-dark/50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
@@ -845,9 +836,9 @@ const BettingGrid = () => {
                 })}
               </div>
             )}
-          </TabsContent>
+          </OriginTabsContent>
           
-          <TabsContent value="history" className="mt-0 focus-visible:outline-none">
+          <OriginTabsContent value="history" className="mt-0 focus-visible:outline-none">
             <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
               {betHistory.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -887,9 +878,9 @@ const BettingGrid = () => {
                 })
               )}
             </div>
-          </TabsContent>
+          </OriginTabsContent>
           
-          <TabsContent value="transactions" className="mt-0 focus-visible:outline-none">
+          <OriginTabsContent value="transactions" className="mt-0 focus-visible:outline-none">
             <div className="space-y-2 max-h-[300px] overflow-y-auto hide-scrollbar pr-1">
               {deposits.length === 0 && withdrawals.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -953,8 +944,8 @@ const BettingGrid = () => {
                 </>
               )}
             </div>
-          </TabsContent>
-        </Tabs>
+          </OriginTabsContent>
+        </OriginTabs>
       </Card>
     </div>
   );

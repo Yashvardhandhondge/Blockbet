@@ -273,8 +273,8 @@ const LatestMiningPool = () => {
                       isLatestBlock ? "bg-yellow-900/30" : ""
                     )}>
                       <p className={cn(
-                        "font-medium text-xs md:text-sm truncate w-full max-w-full md:max-w-[112px]",
-                        isLatestBlock ? "text-yellow-400" : "text-white"
+                        "font-medium text-xs md:text-sm truncate w-full max-w-full md:max-w-[112px] title-gradient",
+                        isLatestBlock ? "text-yellow-400" : ""
                       )}>
                         {block.minedBy}
                       </p>
@@ -299,7 +299,7 @@ const LatestMiningPool = () => {
           <div className="flex flex-wrap items-center gap-2">
             <LiveBlockData 
               processBets={undefined}
-              pendingTransactions={pendingTxCount}
+              pendingTransactions={undefined}
               averageBlockTime={avgBlockTime.toFixed(1)}
             />
           </div>
