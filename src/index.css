@@ -90,6 +90,46 @@
     @apply border-red-500/20 bg-[#140504] text-red-400;
   }
   
+  /* Casino chip style */
+  .casino-chip {
+    @apply relative rounded-full shadow-lg;
+  }
+  
+  .casino-chip::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0.2;
+  }
+  
+  .casino-chip-notch {
+    @apply absolute w-[5px] h-[5px] rounded-full bg-white/30;
+  }
+  
+  .casino-chip-notch-top {
+    @apply top-0 left-1/2 -translate-x-1/2;
+  }
+  
+  .casino-chip-notch-bottom {
+    @apply bottom-0 left-1/2 -translate-x-1/2;
+  }
+  
+  .casino-chip-notch-left {
+    @apply left-0 top-1/2 -translate-y-1/2;
+  }
+  
+  .casino-chip-notch-right {
+    @apply right-0 top-1/2 -translate-y-1/2;
+  }
+  
+  .casino-chip-inner {
+    @apply absolute w-[70%] h-[70%] rounded-full bg-white;
+  }
+  
+  .casino-chip-ring {
+    @apply absolute w-[85%] h-[85%] rounded-full border-dashed border-2 border-white/40;
+  }
+  
   /* Mobile miner grid (4 per row) */
   @media (max-width: 767px) {
     .miners-grid-mobile {

@@ -524,6 +524,77 @@ const BettingGrid = () => {
       </div>;
   };
 
+  const renderImprovedChips = (amounts: number[]) => {
+    const groupedChips: {
+      [key: number]: number;
+    } = {};
+    amounts.forEach(amount => {
+      groupedChips[amount] = (groupedChips[amount] || 0) + 1;
+    });
+    
+    const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
+      amount: parseInt(amount),
+      count
+    })).sort((a, b) => b.amount - a.amount);
+    
+    const chipsToShow = chipGroups.slice(0, 3);
+    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
+    
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
+          <div 
+            key={`chip-${chipGroup.amount}-${index}`} 
+            className={cn(
+              "casino-chip relative w-7 h-7 flex flex-col items-center justify-center text-[9px] font-bold shadow-md",
+              getChipColor(chipGroup.amount)
+            )}
+            style={{
+              zIndex: 5 - index,
+              transform: `translateX(${index * 4}px)`
+            }}
+          >
+            {/* Notches */}
+            <div className="casino-chip-notch casino-chip-notch-top"></div>
+            <div className="casino-chip-notch casino-chip-notch-bottom"></div>
+            <div className="casino-chip-notch casino-chip-notch-left"></div>
+            <div className="casino-chip-notch casino-chip-notch-right"></div>
+            
+            {/* White inner circle */}
+            <div className="casino-chip-inner"></div>
+            
+            {/* Dashed ring */}
+            <div className="casino-chip-ring"></div>
+            
+            {/* Value */}
+            <div className="relative z-10 flex flex-col items-center justify-center">
+              <div className="text-black font-bold text-[10px]">
+                {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
+              </div>
+              {chipGroup.count > 1 && (
+                <div className="text-black font-bold text-[8px] -mt-[1px]">
+                  ×{chipGroup.count}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        
+        {remainingDenoms > 0 && (
+          <div 
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
+            style={{
+              zIndex: 1,
+              transform: `translateX(${chipsToShow.length * 4}px)`
+            }}
+          >
+            +{remainingDenoms}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderChipSelection = () => {
     return (
       <div className="flex flex-nowrap overflow-x-auto hide-scrollbar gap-2 justify-center">
@@ -547,130 +618,29 @@ const BettingGrid = () => {
             
             <div 
               className={cn(
-                "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+                "relative casino-chip flex items-center justify-center text-xs font-bold shadow-xl",
                 getChipColor(value),
                 isMobile ? "w-8 h-8" : "w-10 h-10"
               )}
             >
-              <div 
-                className="absolute inset-0 rounded-full border-2 border-dashed" 
-                style={{
-                  borderColor: `${getChipSecondaryColor(value)}`
-                }}
-              ></div>
+              {/* Notches */}
+              <div className="casino-chip-notch casino-chip-notch-top"></div>
+              <div className="casino-chip-notch casino-chip-notch-bottom"></div>
+              <div className="casino-chip-notch casino-chip-notch-left"></div>
+              <div className="casino-chip-notch casino-chip-notch-right"></div>
               
-              <div className="absolute rounded-full border border-white/30 inset-1"></div>
+              {/* White inner circle */}
+              <div className="casino-chip-inner"></div>
               
-              <span className="relative z-10 text-white font-bold drop-shadow-md text-[10px]">
+              {/* Dashed ring */}
+              <div className="casino-chip-ring"></div>
+              
+              <span className="relative z-10 text-black font-bold text-[10px]">
                 {formatChipValue(value)}
               </span>
             </div>
           </div>
         ))}
-      </div>
-    );
-  };
-
-  const processBetsForBlock = (blockData: any) => {
-    if (bets.length === 0) return;
-    
-    const winningPoolId = blockData.minedBy ? 
-      miningPools.find(p => 
-        blockData.minedBy.toLowerCase().includes(p.id.toLowerCase()) || 
-        p.id.toLowerCase().includes(blockData.minedBy.toLowerCase())
-      )?.id || null 
-      : null;
-      
-    console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
-    
-    // Track if the player has any winning bets
-    let playerHasWon = false;
-    
-    // Process each bet
-    bets.forEach(bet => {
-      const isWin = bet.poolId === winningPoolId;
-      handleAddBetToHistory(bet.poolId || 'unknown', bet.amount, isWin);
-      
-      if (isWin) {
-        playerHasWon = true;
-        // Find pool to get odds
-        const pool = miningPools.find(p => p.id === bet.poolId);
-        if (pool) {
-          const winAmount = Math.floor(bet.amount * pool.odds);
-          setWalletBalance(prev => prev + winAmount);
-          
-          toast({
-            title: "You won!",
-            description: `Received ${formatSats(winAmount)} from your bet on ${pool.name}!`,
-            variant: "default"
-          });
-        }
-      }
-    });
-    
-    // Only emit the win event if the player actually won
-    if (playerHasWon) {
-      emitPlayerWin();
-    }
-    
-    // Clear bets after processing
-    setBets([]);
-  };
-
-  // New improved function for rendering chips with counts on the bottom
-  const renderImprovedChips = (amounts: number[]) => {
-    const groupedChips: {
-      [key: number]: number;
-    } = {};
-    amounts.forEach(amount => {
-      groupedChips[amount] = (groupedChips[amount] || 0) + 1;
-    });
-    
-    const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
-      amount: parseInt(amount),
-      count
-    })).sort((a, b) => b.amount - a.amount);
-    
-    const chipsToShow = chipGroups.slice(0, 3);
-    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
-    
-    return (
-      <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => (
-          <div 
-            key={`chip-${chipGroup.amount}-${index}`} 
-            className={cn(
-              "relative w-6 h-6 rounded-full flex flex-col items-center justify-center text-[9px] font-bold text-white border border-white/40",
-              getChipColor(chipGroup.amount)
-            )}
-            style={{
-              zIndex: 5 - index,
-              transform: `translateX(${index * 4}px)`
-            }}
-          >
-            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
-            <div className="flex flex-col items-center justify-center">
-              <span className="leading-none">
-                {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              </span>
-              {chipGroup.count > 1 && (
-                <span className="text-[7px] leading-none mt-0.5">×{chipGroup.count}</span>
-              )}
-            </div>
-          </div>
-        ))}
-        
-        {remainingDenoms > 0 && (
-          <div 
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
-            style={{
-              zIndex: 1,
-              transform: `translateX(${chipsToShow.length * 4}px)`
-            }}
-          >
-            +{remainingDenoms}
-          </div>
-        )}
       </div>
     );
   };
@@ -752,7 +722,6 @@ const BettingGrid = () => {
         </div>
       </Card>
       
-      {/* Duplicate Chip Selection */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-white text-sm">Quick Chip Selection</h3>

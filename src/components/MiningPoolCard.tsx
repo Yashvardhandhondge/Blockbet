@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
@@ -317,7 +318,7 @@ const renderStackedChips = (bets: Array<{
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
+                    "relative rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7",
                     getChipColor(amount)
                   )}
                   style={{
@@ -328,19 +329,28 @@ const renderStackedChips = (bets: Array<{
                     boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
                   }}
                 >
-                  <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                  <div 
-                    className="absolute rounded-full border-dashed inset-0.5 border-2"
-                    style={{
-                      borderColor: `${getChipSecondaryColor(amount)}`
-                    }}
-                  ></div>
+                  {/* New chip design with notches */}
+                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 top-0 left-1/2 -translate-x-1/2"></div>
+                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 bottom-0 left-1/2 -translate-x-1/2"></div>
+                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 left-0 top-1/2 -translate-y-1/2"></div>
+                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 right-0 top-1/2 -translate-y-1/2"></div>
+                  
+                  {/* Inner white circle */}
+                  <div className="absolute w-[70%] h-[70%] rounded-full bg-white"></div>
+                  
+                  {/* Dashed ring */}
+                  <div className="absolute w-[85%] h-[85%] rounded-full border-dashed border-2 border-white/40"></div>
+                  
+                  {/* Chip value */}
+                  <div className="absolute text-black font-bold text-[10px] z-10">
+                    {formatChipValue(amount)}
+                  </div>
                 </div>
               ))}
               
               <div 
                 className={cn(
-                  "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+                  "relative rounded-full flex items-center justify-center font-bold shadow-xl w-7 h-7",
                   getChipColor(amount)
                 )}
                 style={{
@@ -350,20 +360,26 @@ const renderStackedChips = (bets: Array<{
                   right: 0,
                 }}
               >
-                <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                <div 
-                  className="absolute rounded-full border-dashed inset-0.5 border-2"
-                  style={{
-                    borderColor: `${getChipSecondaryColor(amount)}`
-                  }}
-                ></div>
-                <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
+                {/* New chip design with notches */}
+                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 top-0 left-1/2 -translate-x-1/2"></div>
+                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 bottom-0 left-1/2 -translate-x-1/2"></div>
+                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 left-0 top-1/2 -translate-y-1/2"></div>
+                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 right-0 top-1/2 -translate-y-1/2"></div>
+                
+                {/* Inner white circle */}
+                <div className="absolute w-[70%] h-[70%] rounded-full bg-white"></div>
+                
+                {/* Dashed ring */}
+                <div className="absolute w-[85%] h-[85%] rounded-full border-dashed border-2 border-white/40"></div>
+                
+                {/* Chip value */}
+                <div className="relative z-10 text-black font-bold text-[8px]">
                   {formatChipValue(amount)}
-                </span>
+                </div>
                 {betCount > 1 && 
-                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
+                  <div className="absolute bottom-[6px] text-black font-bold text-[6px]">
                     ×{betCount}
-                  </span>
+                  </div>
                 }
               </div>
             </div>
