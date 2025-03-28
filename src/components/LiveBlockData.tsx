@@ -19,11 +19,10 @@ const LiveBlockData = ({
   pendingTransactions,
   averageBlockTime = "10.0"
 }: LiveBlockDataProps) => {
-  // We're removing the display of average block time as requested
-  
+  // Empty component as requested
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Average block time display has been removed */}
+      {/* Component content has been removed */}
     </div>
   );
 };

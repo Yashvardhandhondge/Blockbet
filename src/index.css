@@ -118,6 +118,15 @@
       flex-shrink: 0;
     }
   }
+  
+  /* Desktop mining pool grid (6 per row) */
+  @media (min-width: 768px) {
+    .mining-pool-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+    }
+  }
 }
 
 @layer utilities {

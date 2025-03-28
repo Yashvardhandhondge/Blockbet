@@ -45,13 +45,11 @@ const LatestMiningPool = () => {
         setBlocks([data.latestBlock, ...data.previousBlocks.slice(0, 9)]);
       }
       
-      // Update pending transactions randomly
       setPendingTxCount(prev => {
         const variation = Math.random() * 100 - 20;
         return Math.max(1000, Math.floor(prev + variation));
       });
       
-      // Update average block time with slight variations
       setAvgBlockTime(prev => {
         const variation = Math.random() * 0.4 - 0.2;
         return Math.max(9.2, Math.min(10.5, prev + variation));
@@ -249,7 +247,7 @@ const LatestMiningPool = () => {
                   
                   <div className="flex flex-col items-center">
                     <div className={cn(
-                      "w-14 h-14 md:w-18 md:h-18 rounded-full overflow-hidden flex items-center justify-center p-1",
+                      "w-14 h-14 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center p-1",
                       isLatestBlock 
                         ? "bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700" 
                         : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"
@@ -293,10 +291,6 @@ const LatestMiningPool = () => {
             })}
           </div>
         )}
-        
-        <div className="p-3 border-t border-white/10 bg-[#070707]">
-          
-        </div>
       </div>
     </AuroraContainer>
   );
