@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -738,8 +739,18 @@ const BettingGrid = () => {
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-white text-sm">Step 3: Place Your Bets On Mining Pools</h3>
-          <div className="text-xs text-white/70 font-medium">
-            Sats in play: <span className="text-btc-orange">{formatSats(totalBet)}</span>
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-white/70 font-medium">
+              Sats in play: <span className="text-btc-orange">{formatSats(totalBet)}</span>
+            </div>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <X className="w-2.5 h-2.5" />
+              Cancel
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-2.5 h-2.5" />
+              Clear
+            </Button>
           </div>
         </div>
         
