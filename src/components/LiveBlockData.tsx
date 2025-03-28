@@ -19,19 +19,11 @@ const LiveBlockData = ({
   pendingTransactions,
   averageBlockTime = "10.0"
 }: LiveBlockDataProps) => {
-  // The display will now only show average block time
+  // We're removing the display of average block time as requested
   
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <div className="flex items-center bg-btc-dark/30 rounded-md px-2 py-1">
-        <div className="mr-1.5 text-btc-orange">
-          <Clock className="h-3.5 w-3.5" />
-        </div>
-        <div className="text-xs">
-          <span className="text-white/70">Avg. Block: </span>
-          <span className="text-white font-medium">{averageBlockTime}m</span>
-        </div>
-      </div>
+      {/* Average block time display has been removed */}
     </div>
   );
 };

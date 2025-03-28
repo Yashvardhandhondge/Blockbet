@@ -1,6 +1,7 @@
 
 import * as React from "react"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
+import { LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -21,10 +22,14 @@ const OriginTabsList = React.forwardRef<
 ))
 OriginTabsList.displayName = TabsPrimitive.List.displayName
 
+interface OriginTabsTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
+  icon?: React.ReactElement<LucideIcon>
+}
+
 const OriginTabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+  OriginTabsTriggerProps
+>(({ className, icon, children, ...props }, ref) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -32,7 +37,10 @@ const OriginTabsTrigger = React.forwardRef<
       className
     )}
     {...props}
-  />
+  >
+    {icon && <span className="mr-2">{icon}</span>}
+    {children}
+  </TabsPrimitive.Trigger>
 ))
 OriginTabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 

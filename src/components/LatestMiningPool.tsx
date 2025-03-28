@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
@@ -296,13 +295,7 @@ const LatestMiningPool = () => {
         )}
         
         <div className="p-3 border-t border-white/10 bg-[#070707]">
-          <div className="flex flex-wrap items-center gap-2">
-            <LiveBlockData 
-              processBets={undefined}
-              pendingTransactions={undefined}
-              averageBlockTime={avgBlockTime.toFixed(1)}
-            />
-          </div>
+          
         </div>
       </div>
     </AuroraContainer>
