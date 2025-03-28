@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -125,6 +124,15 @@
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 1rem;
+    }
+  }
+  
+  /* Mobile mining pool grid (3 per row) */
+  @media (max-width: 767px) {
+    .mining-pool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
     }
   }
 }

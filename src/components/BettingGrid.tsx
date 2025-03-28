@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { MiningPoolCard } from './MiningPoolCard';
+import MiningPoolCard from './MiningPoolCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PlaceBetForm from './PlaceBetForm';
 import BetHistory from './BetHistory';

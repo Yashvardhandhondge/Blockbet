@@ -1,5 +1,5 @@
+
 import { useState } from 'react';
-import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
@@ -7,26 +7,33 @@ import { BackgroundGradientAnimation } from './ui/background-gradient-animation'
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MiningPoolCardProps {
-  pool: MiningPool;
-  onSelect: (pool: MiningPool) => void;
+  id: string;
+  name: string;
+  probability: number;
   isSelected: boolean;
-  bets?: Array<{id: number; amount: number}>;
-  disabled?: boolean;
+  onClick: () => void;
+  selectedChip: number;
 }
 
 const MiningPoolCard = ({ 
-  pool, 
-  onSelect, 
+  id, 
+  name, 
+  probability, 
   isSelected, 
-  bets = [], 
-  disabled = false 
+  onClick,
+  selectedChip
 }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useIsMobile();
   
-  const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
+  // Calculate payout based on probability
+  const payout = probability > 0 ? (1 / probability).toFixed(2) : "∞";
   
-  const poolColor = getPoolColor(pool.id);
+  // Simulate a hashrate percentage based on probability
+  const hashRatePercent = probability * 100;
+  const displayedHashrate = useCountUp(hashRatePercent, 1500, 300);
+  
+  const poolColor = getPoolColor(id);
   
   return (
     <div 
@@ -35,14 +42,13 @@ const MiningPoolCard = ({
         isSelected 
           ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" 
           : "border-white/10 hover:border-white/20",
-        isHovered ? "transform-gpu scale-[1.02]" : "transform-gpu scale-100",
-        disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        isHovered ? "transform-gpu scale-[1.02]" : "transform-gpu scale-100"
       )}
-      onMouseEnter={() => !disabled && setIsHovered(true)}
-      onMouseLeave={() => !disabled && setIsHovered(false)}
-      onClick={() => !disabled && onSelect(pool)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
     >
-      {isHovered && !disabled && (
+      {isHovered && (
         <div className="absolute inset-0 z-0 overflow-hidden">
           <BackgroundGradientAnimation 
             firstColor={poolColor}
@@ -73,7 +79,7 @@ const MiningPoolCard = ({
         "absolute inset-0 opacity-30 transition-opacity duration-300",
         isSelected ? "opacity-40" : "opacity-20"
       )}
-      style={{ background: getDarkerTechGradient(pool.id) }}></div>
+      style={{ background: getDarkerTechGradient(id) }}></div>
       
       <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
       
@@ -85,11 +91,11 @@ const MiningPoolCard = ({
           )}>
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
-                src={pool.logoUrl} 
-                alt={`${pool.name} logo`} 
+                src={`/${id} Bitcoin Explorer.svg`} 
+                alt={`${name} logo`} 
                 className="w-full h-full object-contain" 
                 onError={(e) => {
-                  console.log(`Error loading logo for ${pool.id}: ${pool.logoUrl}`);
+                  console.log(`Error loading logo for ${id}: /${id} Bitcoin Explorer.svg`);
                   e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
                 }} 
               />
@@ -100,23 +106,9 @@ const MiningPoolCard = ({
             <h3 className={cn(
               "font-medium text-white truncate max-w-full",
               isMobile ? "text-xs" : "text-lg"
-            )}>{pool.name}</h3>
-            {!isMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
+            )}>{name}</h3>
           </div>
         </div>
-        
-        {!isMobile && (
-          <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
-            <div className="p-2">
-              <div className="text-white/60 text-xs">Hashrate</div>
-              <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
-            </div>
-            <div className="p-2">
-              <div className="text-white/60 text-xs">Blocks (24h)</div>
-              <div className="font-medium text-white">{pool.blocksLast24h}</div>
-            </div>
-          </div>
-        )}
         
         <div className="mt-auto">
           <div className={cn(
@@ -128,7 +120,7 @@ const MiningPoolCard = ({
                 "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
                 isMobile ? "text-sm" : "text-lg"
               )}>
-                {pool.odds.toFixed(2)}
+                {payout}
                 <span className="ml-0.5">×</span>
               </span>
               <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
@@ -138,20 +130,22 @@ const MiningPoolCard = ({
           <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
             <div 
               className="h-full transition-all duration-1000 ease-out"
-              style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
+              style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(id) }}
             ></div>
           </div>
         </div>
 
-        {bets.length > 0 && renderStackedChips(bets)}
+        {isSelected && renderChip(selectedChip)}
       </div>
     </div>
   );
 };
 
+// Helper functions for getting colors, gradients, etc.
+
 const getDarkerTechGradient = (poolId: string): string => {
   switch(poolId) {
-    case 'braiinspool':
+    case 'braiins':
       return 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)';
     case 'f2pool':
       return 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)';
@@ -171,18 +165,12 @@ const getDarkerTechGradient = (poolId: string): string => {
       return 'linear-gradient(135deg, #664d1a 0%, #33270d 100%)';
     case 'ultimuspool':
       return 'linear-gradient(135deg, #1a1a66 0%, #0d0d33 100%)';
-    case 'ocean':
+    case 'btccom':
       return 'linear-gradient(135deg, #1a3366 0%, #0d1933 100%)';
-    case 'secpool':
-      return 'linear-gradient(135deg, #33195e 0%, #1a0d2f 100%)';
-    case 'carbonnegative':
-      return 'linear-gradient(135deg, #1a4d33 0%, #0d2619 100%)';
-    case 'bitfufupool':
-      return 'linear-gradient(135deg, #4d1a33 0%, #260d19 100%)';
-    case 'whitepool':
-      return 'linear-gradient(135deg, #474747 0%, #242424 100%)';
     case 'binance':
       return 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)';
+    case 'whitepool':
+      return 'linear-gradient(135deg, #474747 0%, #242424 100%)';
     case 'foundry':
       return 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)';
     default:
@@ -192,7 +180,7 @@ const getDarkerTechGradient = (poolId: string): string => {
 
 const getPoolColor = (poolId: string): string => {
   switch(poolId) {
-    case 'braiinspool':
+    case 'braiins':
       return '#1ABC9C';
     case 'f2pool':
       return '#3498DB';
@@ -212,14 +200,8 @@ const getPoolColor = (poolId: string): string => {
       return '#F0BB31';
     case 'ultimuspool':
       return '#1652EE';
-    case 'ocean':
+    case 'btccom':
       return '#72BBFF';
-    case 'secpool':
-      return '#9333EA';
-    case 'carbonnegative':
-      return '#15803D';
-    case 'bitfufupool':
-      return '#DB2777';
     case 'whitepool':
       return '#FFFFFF';
     case 'binance':
@@ -280,101 +262,28 @@ const formatChipValue = (value: number): string => {
   return value.toString();
 };
 
-const renderStackedChips = (bets: Array<{
-    id: number;
-    amount: number;
-  }>) => {
-  if (bets.length === 0) return null;
-  
-  const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
-  
-  bets.forEach(bet => {
-    if (!groupedBets[bet.amount]) {
-      groupedBets[bet.amount] = [];
-    }
-    groupedBets[bet.amount].push(bet);
-  });
-  
-  const denominations = Object.keys(groupedBets).map(Number).sort((a, b) => b - a);
-  
-  const displayDenominations = denominations.slice(0, 5);
-  const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
-  
+const renderChip = (value: number) => {
   return (
-    <div className="absolute bottom-3 right-0 left-0 px-4 flex justify-end">
-      <div className="flex flex-row-reverse items-end gap-4 h-12">
-        {displayDenominations.map((amount, index) => {
-          const betCount = groupedBets[amount].length;
-          const stackSize = Math.min(betCount, 4);
-          
-          return (
-            <div 
-              key={`stack-${amount}`} 
-              className="relative"
-              style={{ zIndex: 10 - index }}
-            >
-              {Array.from({ length: stackSize - 1 }).map((_, stackIndex) => (
-                <div 
-                  key={`chip-${amount}-${stackIndex}`}
-                  className={cn(
-                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
-                    getChipColor(amount)
-                  )}
-                  style={{
-                    position: 'absolute',
-                    bottom: stackIndex * 4,
-                    right: 0,
-                    transform: `rotate(${(stackIndex * 5) - 7}deg)`,
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
-                  }}
-                >
-                  <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                  <div 
-                    className="absolute rounded-full border-dashed inset-0.5 border-2"
-                    style={{
-                      borderColor: `${getChipSecondaryColor(amount)}`
-                    }}
-                  ></div>
-                </div>
-              ))}
-              
-              <div 
-                className={cn(
-                  "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
-                  getChipColor(amount)
-                )}
-                style={{
-                  boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
-                  position: stackSize > 1 ? 'relative' : 'relative',
-                  bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
-                  right: 0,
-                }}
-              >
-                <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                <div 
-                  className="absolute rounded-full border-dashed inset-0.5 border-2"
-                  style={{
-                    borderColor: `${getChipSecondaryColor(amount)}`
-                  }}
-                ></div>
-                <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
-                  {formatChipValue(amount)}
-                </span>
-                {betCount > 1 && 
-                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
-                    ×{betCount}
-                  </span>
-                }
-              </div>
-            </div>
-          );
-        })}
-        
-        {remainingDenominations > 0 && (
-          <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1.5 py-0.5 rounded-full shadow-md">
-            +{remainingDenominations}
-          </div>
+    <div className="absolute bottom-3 right-3">
+      <div 
+        className={cn(
+          "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+          getChipColor(value)
         )}
+        style={{
+          boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
+        }}
+      >
+        <div className="absolute rounded-full border border-white/30 inset-1"></div>
+        <div 
+          className="absolute rounded-full border-dashed inset-0.5 border-2"
+          style={{
+            borderColor: `${getChipSecondaryColor(value)}`
+          }}
+        ></div>
+        <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
+          {formatChipValue(value)}
+        </span>
       </div>
     </div>
   );
