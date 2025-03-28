@@ -19,7 +19,7 @@ const LiveBlockData = ({
   pendingTransactions,
   averageBlockTime = "10.0"
 }: LiveBlockDataProps) => {
-  // We've completely removed the content as requested
+  // The component is completely empty as requested
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {/* Component content has been removed as requested */}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -815,7 +814,7 @@ const BettingGrid = () => {
             
             <OriginTabsContent value="history">
               <BetHistory 
-                betHistory={betHistory}
+                bets={betHistory}
               />
             </OriginTabsContent>
             
