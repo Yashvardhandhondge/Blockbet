@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
@@ -318,7 +317,7 @@ const renderStackedChips = (bets: Array<{
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "relative rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+                    "casino-chip relative flex items-center justify-center",
                     getChipColor(amount)
                   )}
                   style={{
@@ -327,30 +326,30 @@ const renderStackedChips = (bets: Array<{
                     right: 0,
                     transform: `rotate(${(stackIndex * 5) - 7}deg)`,
                     boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                    width: '28px',
+                    height: '28px',
                   }}
                 >
-                  {/* New chip design with notches */}
-                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 top-0 left-1/2 -translate-x-1/2"></div>
-                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 bottom-0 left-1/2 -translate-x-1/2"></div>
-                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 left-0 top-1/2 -translate-y-1/2"></div>
-                  <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 right-0 top-1/2 -translate-y-1/2"></div>
+                  {/* Casino chip segments */}
+                  <div className="casino-chip-segments"></div>
+                  <div className="casino-chip-diagonal-segments"></div>
                   
                   {/* Inner white circle */}
-                  <div className="absolute w-[70%] h-[70%] rounded-full bg-white"></div>
+                  <div className="casino-chip-inner"></div>
                   
-                  {/* Dashed ring */}
-                  <div className="absolute w-[85%] h-[85%] rounded-full border-dashed border-2 border-white/40"></div>
+                  {/* Middle ring */}
+                  <div className="casino-chip-ring"></div>
                   
-                  {/* Chip value */}
-                  <div className="absolute text-black font-bold text-[10px] z-10">
-                    {formatChipValue(amount)}
+                  {/* Value */}
+                  <div className="casino-chip-denomination">
+                    <span className="text-black font-bold text-[10px]">{formatChipValue(amount)}</span>
                   </div>
                 </div>
               ))}
               
               <div 
                 className={cn(
-                  "relative rounded-full flex items-center justify-center font-bold shadow-xl w-7 h-7",
+                  "casino-chip relative flex items-center justify-center",
                   getChipColor(amount)
                 )}
                 style={{
@@ -358,29 +357,31 @@ const renderStackedChips = (bets: Array<{
                   position: stackSize > 1 ? 'relative' : 'relative',
                   bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
                   right: 0,
+                  width: '28px',
+                  height: '28px',
                 }}
               >
-                {/* New chip design with notches */}
-                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 top-0 left-1/2 -translate-x-1/2"></div>
-                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 bottom-0 left-1/2 -translate-x-1/2"></div>
-                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 left-0 top-1/2 -translate-y-1/2"></div>
-                <div className="absolute w-[5px] h-[5px] rounded-full bg-white/30 right-0 top-1/2 -translate-y-1/2"></div>
+                {/* Casino chip segments */}
+                <div className="casino-chip-segments"></div>
+                <div className="casino-chip-diagonal-segments"></div>
                 
                 {/* Inner white circle */}
-                <div className="absolute w-[70%] h-[70%] rounded-full bg-white"></div>
+                <div className="casino-chip-inner"></div>
                 
-                {/* Dashed ring */}
-                <div className="absolute w-[85%] h-[85%] rounded-full border-dashed border-2 border-white/40"></div>
+                {/* Middle ring */}
+                <div className="casino-chip-ring"></div>
                 
-                {/* Chip value */}
-                <div className="relative z-10 text-black font-bold text-[8px]">
-                  {formatChipValue(amount)}
-                </div>
-                {betCount > 1 && 
-                  <div className="absolute bottom-[6px] text-black font-bold text-[6px]">
-                    ×{betCount}
+                {/* Chip denomination with count */}
+                <div className="casino-chip-denomination">
+                  <div className="text-black font-bold text-[10px]">
+                    {formatChipValue(amount)}
                   </div>
-                }
+                  {betCount > 1 && 
+                    <div className="text-black font-bold text-[8px] -mt-[1px]">
+                      ×{betCount}
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           );

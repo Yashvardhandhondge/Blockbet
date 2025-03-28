@@ -618,26 +618,25 @@ const BettingGrid = () => {
             
             <div 
               className={cn(
-                "relative casino-chip flex items-center justify-center text-xs font-bold shadow-xl",
+                "casino-chip relative flex items-center justify-center",
                 getChipColor(value),
                 isMobile ? "w-8 h-8" : "w-10 h-10"
               )}
             >
-              {/* Notches */}
-              <div className="casino-chip-notch casino-chip-notch-top"></div>
-              <div className="casino-chip-notch casino-chip-notch-bottom"></div>
-              <div className="casino-chip-notch casino-chip-notch-left"></div>
-              <div className="casino-chip-notch casino-chip-notch-right"></div>
+              {/* Casino chip segments */}
+              <div className="casino-chip-segments"></div>
+              <div className="casino-chip-diagonal-segments"></div>
               
-              {/* White inner circle */}
+              {/* Inner white circle */}
               <div className="casino-chip-inner"></div>
               
-              {/* Dashed ring */}
+              {/* Middle ring */}
               <div className="casino-chip-ring"></div>
               
-              <span className="relative z-10 text-black font-bold text-[10px]">
-                {formatChipValue(value)}
-              </span>
+              {/* Chip denomination */}
+              <div className="casino-chip-denomination">
+                <span className="text-[10px]">{formatChipValue(value)}</span>
+              </div>
             </div>
           </div>
         ))}
