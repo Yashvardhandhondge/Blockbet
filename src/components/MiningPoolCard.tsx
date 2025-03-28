@@ -317,7 +317,7 @@ const renderStackedChips = (bets: Array<{
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "playing-chip w-7 h-7 text-[10px]",
+                    "casino-chip relative flex items-center justify-center",
                     getChipColor(amount)
                   )}
                   style={{
@@ -326,16 +326,30 @@ const renderStackedChips = (bets: Array<{
                     right: 0,
                     transform: `rotate(${(stackIndex * 5) - 7}deg)`,
                     boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                    width: '28px',
+                    height: '28px',
                   }}
                 >
-                  <div className="playing-chip-inner"></div>
-                  <div className="playing-chip-ridges"></div>
+                  {/* Casino chip segments */}
+                  <div className="casino-chip-segments"></div>
+                  <div className="casino-chip-diagonal-segments"></div>
+                  
+                  {/* Inner white circle */}
+                  <div className="casino-chip-inner"></div>
+                  
+                  {/* Middle ring */}
+                  <div className="casino-chip-ring"></div>
+                  
+                  {/* Value */}
+                  <div className="casino-chip-denomination">
+                    <span className="text-black font-bold text-[10px]">{formatChipValue(amount)}</span>
+                  </div>
                 </div>
               ))}
               
               <div 
                 className={cn(
-                  "playing-chip w-7 h-7",
+                  "casino-chip relative flex items-center justify-center",
                   getChipColor(amount)
                 )}
                 style={{
@@ -343,18 +357,31 @@ const renderStackedChips = (bets: Array<{
                   position: stackSize > 1 ? 'relative' : 'relative',
                   bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
                   right: 0,
+                  width: '28px',
+                  height: '28px',
                 }}
               >
-                <div className="playing-chip-inner"></div>
-                <div className="playing-chip-ridges"></div>
-                <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
-                  {formatChipValue(amount)}
-                </span>
-                {betCount > 1 && 
-                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
-                    ×{betCount}
-                  </span>
-                }
+                {/* Casino chip segments */}
+                <div className="casino-chip-segments"></div>
+                <div className="casino-chip-diagonal-segments"></div>
+                
+                {/* Inner white circle */}
+                <div className="casino-chip-inner"></div>
+                
+                {/* Middle ring */}
+                <div className="casino-chip-ring"></div>
+                
+                {/* Chip denomination with count */}
+                <div className="casino-chip-denomination">
+                  <div className="text-black font-bold text-[10px]">
+                    {formatChipValue(amount)}
+                  </div>
+                  {betCount > 1 && 
+                    <div className="text-black font-bold text-[8px] -mt-[1px]">
+                      ×{betCount}
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           );

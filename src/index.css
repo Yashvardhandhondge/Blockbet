@@ -81,28 +81,6 @@
     opacity: 1;
   }
   
-  /* Playing chip styling - updated with fewer ridges */
-  .playing-chip {
-    @apply relative rounded-full flex items-center justify-center text-white shadow-lg;
-  }
-  
-  .playing-chip-inner {
-    @apply absolute rounded-full border border-white/30 inset-1;
-  }
-  
-  .playing-chip-ridges {
-    @apply absolute rounded-full inset-0;
-    background: repeating-radial-gradient(
-      circle at center,
-      transparent 0px,
-      transparent 3px,
-      rgba(255, 255, 255, 0.15) 3px,
-      transparent 5px
-    );
-    /* Reduced number of ridges */
-    background-size: 12px 12px;
-  }
-  
   /* Toast customizations */
   [data-sonner-toast][data-styled="true"] {
     @apply bg-btc-darker border border-btc-orange/20 text-white shadow-[0_4px_16px_rgba(247,147,26,0.15)];
@@ -110,6 +88,74 @@
   
   [data-sonner-toast][data-styled="true"][data-type="error"] {
     @apply border-red-500/20 bg-[#140504] text-red-400;
+  }
+  
+  /* Updated Casino chip style based on the reference image */
+  .casino-chip {
+    @apply relative rounded-full shadow-lg overflow-hidden;
+  }
+  
+  .casino-chip::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0.2;
+  }
+  
+  /* New notch style - 8 segments around the chip */
+  .casino-chip-segments {
+    @apply absolute inset-0 rounded-full;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+  }
+  
+  .casino-chip-segments::before,
+  .casino-chip-segments::after {
+    content: '';
+    @apply absolute bg-black/30;
+    width: 100%;
+    height: 2px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .casino-chip-segments::after {
+    transform: translateY(-50%) rotate(90deg);
+  }
+  
+  .casino-chip-diagonal-segments::before,
+  .casino-chip-diagonal-segments::after {
+    content: '';
+    @apply absolute bg-black/30;
+    width: 100%;
+    height: 2px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  
+  .casino-chip-diagonal-segments::after {
+    transform: translateY(-50%) rotate(-45deg);
+  }
+  
+  .casino-chip-inner {
+    @apply absolute w-[70%] h-[70%] rounded-full bg-white border border-black/20;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .casino-chip-ring {
+    @apply absolute rounded-full border border-black/20;
+    width: 85%;
+    height: 85%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .casino-chip-denomination {
+    @apply absolute inset-0 flex flex-col items-center justify-center text-black font-bold z-10;
   }
   
   /* Mobile miner grid (4 per row) */
