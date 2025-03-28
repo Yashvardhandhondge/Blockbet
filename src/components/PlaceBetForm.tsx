@@ -20,8 +20,16 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const isMobile = useIsMobile();
   
+  // Make sure we have a valid selectedPool object
+  if (!selectedPool) {
+    return <div className="glass-panel rounded-xl p-5 border border-white/10">
+      <p className="text-white">Please select a mining pool to place your bet.</p>
+    </div>;
+  }
+  
   const maxBet = mockUserBalance.availableBalance;
-  const potentialWin = betAmount * selectedPool.odds;
+  // Safely access the odds property with a default value
+  const potentialWin = betAmount * (selectedPool.odds || 1);
   
   const handleBetChange = (value: number) => {
     if (value > maxBet) {
@@ -215,7 +223,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
           
           <div className="mb-4">
             <div className="text-sm text-white/70 mb-1">Odds</div>
-            <div className="text-lg font-medium text-white">{selectedPool.odds.toFixed(2)}x</div>
+            <div className="text-lg font-medium text-white">{(selectedPool.odds || 1).toFixed(2)}x</div>
           </div>
           
           <div className="mb-4">
@@ -246,7 +254,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
             
             <div className="flex items-center text-btc-orange text-sm font-medium">
               <Trophy className="h-4 w-4 mr-1.5" />
-              #{selectedPool.blocksLast24h} last 24h
+              #{selectedPool.blocksLast24h || 0} last 24h
             </div>
           </div>
           

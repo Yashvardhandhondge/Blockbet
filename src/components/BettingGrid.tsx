@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -31,7 +30,7 @@ const BettingGrid = () => {
   const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   const [timeVariation, setTimeVariation] = useState(0);
   const [pendingTxCount, setPendingTxCount] = useState(12483);
-  const [currentBlock, setCurrentBlock] = useState(miningPools[0].blocksLast24h);
+  const [currentBlock, setCurrentBlock] = useState(miningPools[0]?.blocksLast24h || 0);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const [walletBalance, setWalletBalance] = useState(25000000); // 0.25 BTC in satoshis
   const [betHistory, setBetHistory] = useState<Array<{
@@ -185,7 +184,11 @@ const BettingGrid = () => {
   }, 3000, 8000);
 
   useEffect(() => {
-    setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
+    if (bets && Array.isArray(bets)) {
+      setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
+    } else {
+      setTotalBet(0);
+    }
   }, [bets]);
 
   const handlePlaceBet = (poolId: string | null) => {
@@ -197,15 +200,25 @@ const BettingGrid = () => {
       });
       return;
     }
-    setBets([...bets, {
-      poolId,
-      amount: selectedChip,
-      id: nextBetId
-    }]);
+    setBets(prevBets => {
+      if (!prevBets) return [{
+        poolId,
+        amount: selectedChip,
+        id: nextBetId
+      }];
+      
+      return [...prevBets, {
+        poolId,
+        amount: selectedChip,
+        id: nextBetId
+      }];
+    });
     setNextBetId(prev => prev + 1);
+    
+    const poolName = poolId ? miningPools.find(p => p.id === poolId)?.name || 'Unknown' : 'Empty Block';
     toast({
       title: "Bet placed!",
-      description: `${(selectedChip / 100000).toFixed(5)} BTC on ${poolId ? miningPools.find(p => p.id === poolId)?.name : 'Empty Block'}`,
+      description: `${(selectedChip / 100000).toFixed(5)} BTC on ${poolName}`,
       variant: "default"
     });
   };
@@ -220,7 +233,7 @@ const BettingGrid = () => {
   };
 
   const handleCancelLastBet = () => {
-    if (bets.length === 0) {
+    if (!bets || bets.length === 0) {
       toast({
         title: "No bets to cancel",
         description: "You haven't placed any bets yet",
@@ -231,7 +244,7 @@ const BettingGrid = () => {
     const lastBet = bets[bets.length - 1];
     const newBets = bets.slice(0, -1);
     setBets(newBets);
-    const poolName = lastBet.poolId ? miningPools.find(p => p.id === lastBet.poolId)?.name : 'Empty Block';
+    const poolName = lastBet.poolId ? miningPools.find(p => p.id === lastBet.poolId)?.name || 'Unknown' : 'Empty Block';
     toast({
       title: "Last bet cancelled",
       description: `Removed bet of ${(lastBet.amount / 100000).toFixed(5)} BTC on ${poolName}`,
@@ -296,6 +309,8 @@ const BettingGrid = () => {
 
   const handleAddBetToHistory = (poolId: string, amount: number, isWin: boolean) => {
     const pool = miningPools.find(p => p.id === poolId);
+    if (!pool) return;
+    
     const newBet = {
       id: betHistory.length + 1,
       poolId: poolId,
@@ -378,6 +393,7 @@ const BettingGrid = () => {
   };
 
   const getBetsOnPool = (poolId: string | null) => {
+    if (!bets || !Array.isArray(bets)) return [];
     return bets.filter(bet => bet.poolId === poolId);
   };
 
@@ -573,7 +589,7 @@ const BettingGrid = () => {
   };
 
   const processBetsForBlock = (blockData: any) => {
-    if (bets.length === 0) return;
+    if (!bets || bets.length === 0) return;
     
     const winningPoolId = blockData.minedBy ? 
       miningPools.find(p => 
@@ -590,7 +606,9 @@ const BettingGrid = () => {
     // Process each bet
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
-      handleAddBetToHistory(bet.poolId || 'unknown', bet.amount, isWin);
+      if (bet.poolId) {
+        handleAddBetToHistory(bet.poolId, bet.amount, isWin);
+      }
       
       if (isWin) {
         playerHasWon = true;
@@ -720,18 +738,18 @@ const BettingGrid = () => {
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-white text-sm">Step 2: Select chip value in sats.</h3>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={!bets || bets.length === 0}>
                 <X className="w-2.5 h-2.5" />
                 Cancel
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={!bets || bets.length === 0}>
                 <Trash2 className="w-2.5 h-2.5" />
                 Clear
               </Button>
             </div>
           </div>
           <div className="px-0">
-            {renderChipSelection()}
+            {renderChipSelection && typeof renderChipSelection === 'function' && renderChipSelection()}
           </div>
         </Card>
       </div>
