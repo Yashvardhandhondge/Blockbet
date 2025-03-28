@@ -617,6 +617,64 @@ const BettingGrid = () => {
     setBets([]);
   };
 
+  // New improved function for rendering chips with counts on the bottom
+  const renderImprovedChips = (amounts: number[]) => {
+    const groupedChips: {
+      [key: number]: number;
+    } = {};
+    amounts.forEach(amount => {
+      groupedChips[amount] = (groupedChips[amount] || 0) + 1;
+    });
+    
+    const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
+      amount: parseInt(amount),
+      count
+    })).sort((a, b) => b.amount - a.amount);
+    
+    const chipsToShow = chipGroups.slice(0, 3);
+    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
+    
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
+          <div 
+            key={`chip-${chipGroup.amount}-${index}`} 
+            className={cn(
+              "relative w-6 h-6 rounded-full flex flex-col items-center justify-center text-[9px] font-bold text-white border border-white/40",
+              getChipColor(chipGroup.amount)
+            )}
+            style={{
+              zIndex: 5 - index,
+              transform: `translateX(${index * 4}px)`
+            }}
+          >
+            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
+            <div className="flex flex-col items-center justify-center">
+              <span className="leading-none">
+                {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
+              </span>
+              {chipGroup.count > 1 && (
+                <span className="text-[7px] leading-none mt-0.5">×{chipGroup.count}</span>
+              )}
+            </div>
+          </div>
+        ))}
+        
+        {remainingDenoms > 0 && (
+          <div 
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
+            style={{
+              zIndex: 1,
+              transform: `translateX(${chipsToShow.length * 4}px)`
+            }}
+          >
+            +{remainingDenoms}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
@@ -694,7 +752,29 @@ const BettingGrid = () => {
         </div>
       </Card>
       
+      {/* Duplicate Chip Selection */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-white text-sm">Quick Chip Selection</h3>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+              <X className="w-2.5 h-2.5" />
+              Cancel
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+              <Trash2 className="w-2.5 h-2.5" />
+              Clear
+            </Button>
+          </div>
+        </div>
+        <div className="px-0">
+          {renderChipSelection()}
+        </div>
+      </Card>
+      
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
+        <h3 className="text-white text-sm mb-3">Player Stats:</h3>
+        
         <Tabs defaultValue="bets" className="w-full">
           <div className="flex justify-between items-center mb-3">
             <TabsList className="bg-btc-dark/50 border border-white/5">
@@ -757,7 +837,7 @@ const BettingGrid = () => {
                         </div>
                       </div>
                       <div className="flex items-center">
-                        {renderRouletteCasualChips(bet.amounts)}
+                        {renderImprovedChips(bet.amounts)}
                         <div className="text-sm text-white font-mono">{formatSats(bet.totalAmount)}</div>
                       </div>
                     </div>
