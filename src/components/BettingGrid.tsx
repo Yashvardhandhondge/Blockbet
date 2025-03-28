@@ -348,29 +348,20 @@ const BettingGrid = () => {
   };
 
   const getPoolLogo = (poolId: string) => {
-    const logoMap: Record<string, string> = {
-      'foundry': '/pool-logos/foundryusa.png',
-      'antpool': '/Antpool Bitcoin Explorer.svg',
-      'f2pool': '/Bitcoin Explorer f2pool.svg',
-      'binance': '/Binance Pool.svg',
-      'viabtc': '/Viabtc Bitcoin Explorer.svg',
-      'slushpool': '/Mempool Bitcoin Explorer.svg',
-      'poolin': '/pool-logos/poolin.svg',
-      'btc-com': '/Bitcoin Explorer.svg',
-      'genesis': '/pool-logos/genesisdigitalassets.svg',
-      'bitfury': '/pool-logos/bitfury.svg',
-      'kanopool': '/pool-logos/kanopool.svg',
-      'pegapool': '/Spiderpool Bitcoin Explorer.svg',
-      'emcd': '/Luxor Bitcoin Explorer.svg',
-      'unknown': '/Mempool Bitcoin Explorer (2).svg'
-    };
-    const logoPath = logoMap[poolId] || '/Mempool Bitcoin Explorer (2).svg';
-    return <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden p-0.5">
-        <img src={logoPath} alt={`${poolId} logo`} className="w-full h-full object-contain" onError={e => {
-        console.log(`Error loading logo for ${poolId}: ${logoPath}`);
-        e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
-      }} />
-      </div>;
+    const logoPath = `/pool-logos/${poolId}.svg`;
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-black rounded-full overflow-hidden p-0.5">
+        <img 
+          src={logoPath} 
+          alt={`${poolId} logo`} 
+          className="w-full h-full object-contain" 
+          onError={e => {
+            console.log(`Error loading logo for ${poolId}: ${logoPath}`);
+            e.currentTarget.src = '/pool-logos/default.svg';
+          }} 
+        />
+      </div>
+    );
   };
 
   const getPoolGradientStyle = (poolId: string): React.CSSProperties => {
@@ -711,7 +702,7 @@ const BettingGrid = () => {
                 value="bets" 
                 className="data-[state=active]:bg-btc-orange/10 data-[state=active]:text-btc-orange data-[state=active]:border-btc-orange"
               >
-                Your Bets
+                Active Bets
               </TabsTrigger>
               <TabsTrigger 
                 value="history" 
@@ -728,7 +719,7 @@ const BettingGrid = () => {
             </TabsList>
             <div className="text-xs text-white/60">
               <TabsContent value="bets" className="mt-0 p-0">
-                Total: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
+                Sats in play: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
               </TabsContent>
             </div>
           </div>
