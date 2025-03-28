@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -719,16 +718,6 @@ const BettingGrid = () => {
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-white text-sm">Step 2: Select chip value in sats.</h3>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-2.5 h-2.5" />
-                Cancel
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-2.5 h-2.5" />
-                Clear
-              </Button>
-            </div>
           </div>
           <div className="px-0">
             {renderChipSelection()}
@@ -743,87 +732,4 @@ const BettingGrid = () => {
             <div className="text-xs text-white/70 font-medium">
               Sats in play: <span className="text-btc-orange">{formatSats(totalBet)}</span>
             </div>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-2.5 h-2.5" />
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-2.5 h-2.5" />
-              Clear
-            </Button>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {miningPools.map(pool => (
-            <MiningPoolCard 
-              key={pool.id}
-              pool={pool}
-              onSelect={handleSelectPool}
-              isSelected={selectedPool?.id === pool.id}
-              bets={getBetsOnPool(pool.id)}
-            />
-          ))}
-        </div>
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Quick Chip Selection</h3>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-2.5 h-2.5" />
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-2.5 h-2.5" />
-              Clear
-            </Button>
-          </div>
-        </div>
-        <div className="px-0">
-          {renderChipSelection()}
-        </div>
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Player Stats:</h3>
-        
-        <OriginTabs defaultValue="bets" className="w-full">
-          <div className="flex justify-between items-center mb-3">
-            <OriginTabsList>
-              <OriginTabsTrigger value="bets" icon={<Zap className="h-4 w-4" />}>
-                Active Bets
-              </OriginTabsTrigger>
-              <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />}>
-                Bet History
-              </OriginTabsTrigger>
-              <OriginTabsTrigger value="transactions" icon={<Wallet className="h-4 w-4" />}>
-                Transactions
-              </OriginTabsTrigger>
-            </OriginTabsList>
-            <div className="text-sm font-medium text-white/60">
-              <OriginTabsContent value="bets" className="mt-0 p-0">
-                Sats in play: <span className="text-btc-orange font-bold text-lg">{formatSats(totalBet)}</span>
-              </OriginTabsContent>
-            </div>
-          </div>
-          
-          <OriginTabsContent value="bets" className="mt-0 focus-visible:outline-none">
-            {/* ... keep existing code (bets content) */}
-          </OriginTabsContent>
-          
-          <OriginTabsContent value="history" className="mt-0 focus-visible:outline-none">
-            {/* ... keep existing code (history content) */}
-          </OriginTabsContent>
-          
-          <OriginTabsContent value="transactions" className="mt-0 focus-visible:outline-none">
-            {/* ... keep existing code (transactions content) */}
-          </OriginTabsContent>
-        </OriginTabs>
-      </Card>
-    </div>
-  );
-};
-
-export default BettingGrid;
+            <
