@@ -547,26 +547,77 @@ const BettingGrid = () => {
             
             <div 
               className={cn(
-                "relative rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl",
+                "playing-chip",
                 getChipColor(value),
                 isMobile ? "w-8 h-8" : "w-10 h-10"
               )}
             >
-              <div 
-                className="absolute inset-0 rounded-full border-2 border-dashed" 
-                style={{
-                  borderColor: `${getChipSecondaryColor(value)}`
-                }}
-              ></div>
-              
-              <div className="absolute rounded-full border border-white/30 inset-1"></div>
-              
+              <div className="playing-chip-inner"></div>
+              <div className="playing-chip-ridges"></div>
               <span className="relative z-10 text-white font-bold drop-shadow-md text-[10px]">
                 {formatChipValue(value)}
               </span>
             </div>
           </div>
         ))}
+      </div>
+    );
+  };
+
+  const renderImprovedChips = (amounts: number[]) => {
+    const groupedChips: {
+      [key: number]: number;
+    } = {};
+    amounts.forEach(amount => {
+      groupedChips[amount] = (groupedChips[amount] || 0) + 1;
+    });
+    
+    const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
+      amount: parseInt(amount),
+      count
+    })).sort((a, b) => b.amount - a.amount);
+    
+    const chipsToShow = chipGroups.slice(0, 3);
+    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
+    
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
+          <div 
+            key={`chip-${chipGroup.amount}-${index}`} 
+            className={cn(
+              "playing-chip w-6 h-6 border border-white/40",
+              getChipColor(chipGroup.amount)
+            )}
+            style={{
+              zIndex: 5 - index,
+              transform: `translateX(${index * 4}px)`
+            }}
+          >
+            <div className="playing-chip-inner"></div>
+            <div className="playing-chip-ridges"></div>
+            <div className="flex flex-col items-center justify-center">
+              <span className="leading-none text-[9px]">
+                {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
+              </span>
+              {chipGroup.count > 1 && (
+                <span className="text-[7px] leading-none mt-0.5">×{chipGroup.count}</span>
+              )}
+            </div>
+          </div>
+        ))}
+        
+        {remainingDenoms > 0 && (
+          <div 
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
+            style={{
+              zIndex: 1,
+              transform: `translateX(${chipsToShow.length * 4}px)`
+            }}
+          >
+            +{remainingDenoms}
+          </div>
+        )}
       </div>
     );
   };
@@ -615,64 +666,6 @@ const BettingGrid = () => {
     
     // Clear bets after processing
     setBets([]);
-  };
-
-  // New improved function for rendering chips with counts on the bottom
-  const renderImprovedChips = (amounts: number[]) => {
-    const groupedChips: {
-      [key: number]: number;
-    } = {};
-    amounts.forEach(amount => {
-      groupedChips[amount] = (groupedChips[amount] || 0) + 1;
-    });
-    
-    const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
-      amount: parseInt(amount),
-      count
-    })).sort((a, b) => b.amount - a.amount);
-    
-    const chipsToShow = chipGroups.slice(0, 3);
-    const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
-    
-    return (
-      <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => (
-          <div 
-            key={`chip-${chipGroup.amount}-${index}`} 
-            className={cn(
-              "relative w-6 h-6 rounded-full flex flex-col items-center justify-center text-[9px] font-bold text-white border border-white/40",
-              getChipColor(chipGroup.amount)
-            )}
-            style={{
-              zIndex: 5 - index,
-              transform: `translateX(${index * 4}px)`
-            }}
-          >
-            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
-            <div className="flex flex-col items-center justify-center">
-              <span className="leading-none">
-                {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              </span>
-              {chipGroup.count > 1 && (
-                <span className="text-[7px] leading-none mt-0.5">×{chipGroup.count}</span>
-              )}
-            </div>
-          </div>
-        ))}
-        
-        {remainingDenoms > 0 && (
-          <div 
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
-            style={{
-              zIndex: 1,
-              transform: `translateX(${chipsToShow.length * 4}px)`
-            }}
-          >
-            +{remainingDenoms}
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -752,7 +745,6 @@ const BettingGrid = () => {
         </div>
       </Card>
       
-      {/* Duplicate Chip Selection */}
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-white text-sm">Quick Chip Selection</h3>
@@ -797,7 +789,7 @@ const BettingGrid = () => {
                 Transactions
               </TabsTrigger>
             </TabsList>
-            <div className="text-xs text-white/60">
+            <div className="text-xl font-bold text-btc-orange">
               <TabsContent value="bets" className="mt-0 p-0">
                 Sats in play: <span className="text-btc-orange font-bold">{formatSats(totalBet)}</span>
               </TabsContent>

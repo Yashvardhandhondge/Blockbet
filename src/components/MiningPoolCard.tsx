@@ -317,7 +317,7 @@ const renderStackedChips = (bets: Array<{
                 <div 
                   key={`chip-${amount}-${stackIndex}`}
                   className={cn(
-                    "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
+                    "playing-chip w-7 h-7 text-[10px]",
                     getChipColor(amount)
                   )}
                   style={{
@@ -328,19 +328,14 @@ const renderStackedChips = (bets: Array<{
                     boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
                   }}
                 >
-                  <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                  <div 
-                    className="absolute rounded-full border-dashed inset-0.5 border-2"
-                    style={{
-                      borderColor: `${getChipSecondaryColor(amount)}`
-                    }}
-                  ></div>
+                  <div className="playing-chip-inner"></div>
+                  <div className="playing-chip-ridges"></div>
                 </div>
               ))}
               
               <div 
                 className={cn(
-                  "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+                  "playing-chip w-7 h-7",
                   getChipColor(amount)
                 )}
                 style={{
@@ -350,13 +345,8 @@ const renderStackedChips = (bets: Array<{
                   right: 0,
                 }}
               >
-                <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                <div 
-                  className="absolute rounded-full border-dashed inset-0.5 border-2"
-                  style={{
-                    borderColor: `${getChipSecondaryColor(amount)}`
-                  }}
-                ></div>
+                <div className="playing-chip-inner"></div>
+                <div className="playing-chip-ridges"></div>
                 <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
                   {formatChipValue(amount)}
                 </span>
