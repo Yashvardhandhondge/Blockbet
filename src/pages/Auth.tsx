@@ -54,7 +54,7 @@ const Auth = () => {
             </p>
           </div>
           
-          <div className="bg-btc-darker/40 backdrop-blur-md border border-white/5 rounded-lg p-6 shadow-xl">
+          <div className="bg-btc-darker/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-xl">
             <AuthTabs />
           </div>
         </div>
