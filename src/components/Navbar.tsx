@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ const Navbar = () => {
   const walletBalance = '0.00125';
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
   
   // New wallet counter in sats (1 BTC = 100,000,000 sats)
   const walletBalanceInSats = Math.floor(parseFloat(walletBalance) * 100000000).toLocaleString();
@@ -29,19 +31,47 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-btc-darker/80 backdrop-blur-md border-b border-white/5">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Bitcoin className="h-6 w-6 text-btc-orange" />
-          <h1 className="text-xl font-bold tracking-tight">
-            <span className="text-gradient">Block</span>
-            <span className="text-white">Bet</span>
-          </h1>
+          <Link to="/" className="flex items-center space-x-2">
+            <Bitcoin className="h-6 w-6 text-btc-orange" />
+            <h1 className="text-xl font-bold tracking-tight">
+              <span className="text-gradient">Block</span>
+              <span className="text-white">Bet</span>
+            </h1>
+          </Link>
         </div>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">Home</a>
-          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">How to Play</a>
-          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">Leaderboard</a>
-          <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105">FAQ</a>
+          <Link 
+            to="/" 
+            className={cn(
+              "text-sm font-semibold transition-colors duration-200 transform hover:scale-105",
+              location.pathname === "/" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+            )}
+          >
+            Home
+          </Link>
+          <Link 
+            to="/how-to-play" 
+            className={cn(
+              "text-sm font-semibold transition-colors duration-200 transform hover:scale-105",
+              location.pathname === "/how-to-play" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+            )}
+          >
+            How to Play
+          </Link>
+          <Link 
+            to="#" 
+            className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105"
+          >
+            Leaderboard
+          </Link>
+          <Link 
+            to="#" 
+            className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105"
+          >
+            FAQ
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-3">
@@ -124,10 +154,40 @@ const Navbar = () => {
           <div className="container mx-auto px-4 py-3 flex flex-col">
             {/* Navigation links */}
             <nav className="flex flex-col space-y-4 py-4 border-b border-white/5">
-              <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange">Home</a>
-              <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange">How to Play</a>
-              <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange">Leaderboard</a>
-              <a href="#" className="text-sm font-semibold text-white hover:text-btc-orange">FAQ</a>
+              <Link 
+                to="/" 
+                className={cn(
+                  "text-sm font-semibold",
+                  location.pathname === "/" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/how-to-play" 
+                className={cn(
+                  "text-sm font-semibold",
+                  location.pathname === "/how-to-play" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                How to Play
+              </Link>
+              <Link 
+                to="#" 
+                className="text-sm font-semibold text-white hover:text-btc-orange"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Leaderboard
+              </Link>
+              <Link 
+                to="#" 
+                className="text-sm font-semibold text-white hover:text-btc-orange"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                FAQ
+              </Link>
             </nav>
             
             {/* Wallet and buttons */}
