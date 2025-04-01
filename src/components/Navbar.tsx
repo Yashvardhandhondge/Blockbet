@@ -74,12 +74,6 @@ const Navbar = () => {
               Leaderboard
             </span>
           </Link>
-          <Link 
-            to="#" 
-            className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105"
-          >
-            FAQ
-          </Link>
         </nav>
 
         <div className="flex items-center space-x-3">
@@ -192,13 +186,6 @@ const Navbar = () => {
               >
                 <Award className="mr-2 h-4 w-4" />
                 Leaderboard
-              </Link>
-              <Link 
-                to="#" 
-                className="text-sm font-semibold text-white hover:text-btc-orange"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                FAQ
               </Link>
               <Link 
                 to="/auth" 

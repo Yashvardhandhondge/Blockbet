@@ -7,6 +7,7 @@ import { BackgroundGradientAnimation } from '@/components/ui/background-gradient
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/context/AuthContext';
+import { formatSats } from '@/utils/formatters';
 
 // Demo leaderboard data with sample users
 const leaderboardData = [
@@ -145,6 +146,11 @@ const LeaderboardPage = () => {
     }
   };
 
+  // Convert BTC to satoshis
+  const convertToSats = (btc: number): number => {
+    return Math.floor(btc * 100000000);
+  };
+
   return (
     <BackgroundGradientAnimation
       gradientBackgroundStart="rgb(0, 0, 0)" 
@@ -163,20 +169,18 @@ const LeaderboardPage = () => {
         <Navbar />
         
         <div className="container mx-auto px-4 pt-32 pb-20 flex-grow">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-2">
-                <Trophy className="h-8 w-8 text-btc-orange" />
-                <span className="text-white">Leaderboard</span>
-              </h1>
-              <p className="text-white/60">
-                Top players ranked by total winnings
-              </p>
-            </div>
+          <div className="flex flex-col items-center text-center mb-8">
+            <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-2">
+              <Trophy className="h-8 w-8 text-btc-orange" />
+              <span className="text-white">Leaderboard</span>
+            </h1>
+            <p className="text-white/60">
+              Top players ranked by total winnings
+            </p>
             
             {/* Current user rank information */}
             {currentUserRank && (
-              <div className="bg-btc-darker/40 backdrop-blur-md border border-white/5 rounded-xl p-3 flex items-center gap-4">
+              <div className="mt-4 bg-btc-darker/40 backdrop-blur-md border border-white/5 rounded-xl p-3 flex items-center gap-4">
                 <span className="text-white/60">Your Rank:</span>
                 <span className="font-bold text-white text-lg">{currentUserRank}</span>
               </div>
@@ -220,7 +224,7 @@ const LeaderboardPage = () => {
                     <TableCell className="text-right hidden md:table-cell">{player.bets}</TableCell>
                     <TableCell className="text-right hidden sm:table-cell">{player.winRate}</TableCell>
                     <TableCell className="text-right font-medium">
-                      <span className="font-mono">{player.totalWinnings.toFixed(8)}</span> BTC
+                      <span className="font-mono">{formatSats(convertToSats(player.totalWinnings))}</span>
                     </TableCell>
                   </TableRow>
                 ))}
