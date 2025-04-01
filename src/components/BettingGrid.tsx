@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -755,20 +756,22 @@ const BettingGrid = () => {
       </div>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-white text-sm">Step 3: Place Your Bets On Mining Pools</h3>
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-start mb-3 flex-col md:flex-row">
+          <h3 className="text-white text-sm mb-2 md:mb-0">Step 3: Place Your Bets On Mining Pools</h3>
+          <div className="flex items-center gap-2 w-full md:w-auto justify-between">
             <div className="text-xs text-white/70 font-medium">
               Sats in play: <span className="text-btc-orange">{formatSats(totalBet)}</span>
             </div>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-2.5 h-2.5" />
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-2.5 h-2.5" />
-              Clear
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
+                <X className="w-2.5 h-2.5" />
+                Cancel
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
+                <Trash2 className="w-2.5 h-2.5" />
+                Clear
+              </Button>
+            </div>
           </div>
         </div>
         
@@ -787,7 +790,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Quick Chip Selection</h3>
+          <h3 className="text-white text-sm">Chip Selection</h3>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
               <X className="w-2.5 h-2.5" />
@@ -799,7 +802,7 @@ const BettingGrid = () => {
             </Button>
           </div>
         </div>
-        <div className="px-0">
+        <div className="px-0 overflow-x-auto hide-scrollbar">
           {renderChipSelection()}
         </div>
       </Card>
@@ -808,19 +811,19 @@ const BettingGrid = () => {
         <h3 className="text-white text-sm mb-3">Player Stats:</h3>
         
         <OriginTabs defaultValue="bets" className="w-full">
-          <div className="flex justify-between items-center mb-3">
-            <OriginTabsList>
-              <OriginTabsTrigger value="bets" icon={<Zap className="h-4 w-4" />}>
+          <div className="flex justify-between items-center mb-3 flex-col sm:flex-row">
+            <OriginTabsList className="mb-2 sm:mb-0 overflow-x-auto hide-scrollbar w-full sm:w-auto">
+              <OriginTabsTrigger value="bets" icon={<Zap className="h-4 w-4" />} className="text-[10px] sm:text-xs">
                 Active Bets
               </OriginTabsTrigger>
-              <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />}>
+              <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />} className="text-[10px] sm:text-xs">
                 Bet History
               </OriginTabsTrigger>
-              <OriginTabsTrigger value="transactions" icon={<Wallet className="h-4 w-4" />}>
+              <OriginTabsTrigger value="transactions" icon={<Wallet className="h-4 w-4" />} className="text-[10px] sm:text-xs">
                 Transactions
               </OriginTabsTrigger>
             </OriginTabsList>
-            <div className="text-sm font-medium text-white/60">
+            <div className="text-sm font-medium text-white/60 w-full sm:w-auto text-center sm:text-right">
               <OriginTabsContent value="bets" className="mt-0 p-0">
                 Sats in play: <span className="text-btc-orange font-bold text-lg">{formatSats(totalBet)}</span>
               </OriginTabsContent>
