@@ -544,7 +544,7 @@ const BettingGrid = () => {
 
   const renderChipSelection = () => {
     return (
-      <div className="flex flex-nowrap overflow-x-auto hide-scrollbar gap-2 justify-center">
+      <div className="flex flex-nowrap overflow-x-auto hide-scrollbar gap-2 justify-between px-2 mobile-chip-row">
         {CHIP_VALUES.map(value => (
           <div 
             key={value} 
@@ -831,15 +831,145 @@ const BettingGrid = () => {
           </div>
           
           <OriginTabsContent value="bets" className="mt-0 focus-visible:outline-none">
-            {/* ... keep existing code (bets content) */}
+            {/* Active bets content */}
+            {bets && bets.length > 0 ? (
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {getConsolidatedBets().map((consolidatedBet, index) => {
+                  const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
+                  return (
+                    <div 
+                      key={`bet-${index}-${consolidatedBet.poolId || 'empty'}`}
+                      className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-black mr-3 flex items-center justify-center">
+                          {consolidatedBet.poolId ? (
+                            <img 
+                              src={`/pool-logos/${consolidatedBet.poolId}.svg`} 
+                              alt={pool?.name || 'Pool'}
+                              className="w-6 h-6 object-contain"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
+                              }}
+                            />
+                          ) : (
+                            <span className="text-white/70 text-xs">Empty</span>
+                          )}
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-white">
+                            {pool?.name || 'Empty Block'}
+                          </div>
+                          <div className="text-xs text-white/60">
+                            {consolidatedBet.amounts.length} {consolidatedBet.amounts.length === 1 ? 'bet' : 'bets'}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        {renderImprovedChips(consolidatedBet.amounts)}
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-white">{formatSats(consolidatedBet.totalAmount)}</div>
+                          <div className="text-xs text-white/60">
+                            Potential win: {formatSats((pool?.odds || 2) * consolidatedBet.totalAmount)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-white/40">
+                <p>No active bets</p>
+                <p className="text-sm mt-2">Select a chip and place your bet on a mining pool</p>
+              </div>
+            )}
           </OriginTabsContent>
           
           <OriginTabsContent value="history" className="mt-0 focus-visible:outline-none">
-            {/* ... keep existing code (history content) */}
+            <BetHistory bets={betHistory} />
           </OriginTabsContent>
           
           <OriginTabsContent value="transactions" className="mt-0 focus-visible:outline-none">
-            {/* ... keep existing code (transactions content) */}
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-white mb-2">Deposits</h4>
+                <div className="space-y-2 max-h-[150px] overflow-y-auto">
+                  {deposits.map((deposit) => (
+                    <div 
+                      key={`deposit-${deposit.id}`}
+                      className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3 bg-green-500/10">
+                          <ArrowDownLeft className="h-4 w-4 text-green-400" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-white">Deposit</div>
+                          <div className="text-xs text-white/60">
+                            {deposit.timestamp.toLocaleDateString()} • 
+                            <span className="ml-1 text-white/40 font-mono text-[10px]">
+                              {deposit.txId.substring(0, 6)}...{deposit.txId.substring(deposit.txId.length - 6)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-green-400">+{formatSats(deposit.amount)}</div>
+                        <div className="text-xs text-white/60">
+                          {formatBTC(deposit.amount / 100000000)} BTC
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-medium text-white mb-2">Withdrawals</h4>
+                <div className="space-y-2 max-h-[150px] overflow-y-auto">
+                  {withdrawals.map((withdrawal) => (
+                    <div 
+                      key={`withdrawal-${withdrawal.id}`}
+                      className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3 bg-red-500/10">
+                          <ArrowUpRight className="h-4 w-4 text-red-400" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-white">
+                            Withdrawal
+                            {withdrawal.status === 'pending' && (
+                              <span className="ml-2 text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full">
+                                Pending
+                              </span>
+                            )}
+                            {withdrawal.status === 'completed' && (
+                              <span className="ml-2 text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded-full">
+                                Completed
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-white/60">
+                            {withdrawal.timestamp.toLocaleDateString()} • 
+                            <span className="ml-1 text-white/40 font-mono text-[10px]">
+                              {withdrawal.txId.substring(0, 6)}...{withdrawal.txId.substring(withdrawal.txId.length - 6)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-red-400">-{formatSats(withdrawal.amount)}</div>
+                        <div className="text-xs text-white/60">
+                          {formatBTC(withdrawal.amount / 100000000)} BTC
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </OriginTabsContent>
         </OriginTabs>
       </Card>

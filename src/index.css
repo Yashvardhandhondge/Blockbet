@@ -90,7 +90,7 @@
     @apply border-red-500/20 bg-[#140504] text-red-400;
   }
   
-  /* Mobile miner grid (4 per row) */
+  /* Mobile miner grid and chip display improvements */
   @media (max-width: 767px) {
     .miners-grid-mobile {
       display: grid;
@@ -109,6 +109,7 @@
       flex-wrap: nowrap;
       overflow-x: auto;
       padding: 0.5rem 0;
+      width: 100%;
     }
     
     /* Make chips smaller on mobile to fit */
@@ -138,6 +139,8 @@
       width: 100%;
       padding-bottom: 0.5rem;
       flex-wrap: nowrap;
+      justify-content: space-between;
+      padding: 0 6px;
     }
     
     .mobile-chip-row > div {

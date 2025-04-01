@@ -82,13 +82,13 @@ const Index = () => {
         <main className="container max-w-7xl mx-auto px-4 pt-24">
           {/* Header */}
           <div style={headerAnimation.style} className="mb-8 text-center">
-            <div className="inline-block px-3 py-1 rounded-full bg-btc-orange/10 border border-btc-orange/20 text-btc-orange text-sm font-medium mb-4">
-              Bitcoin Mining Pool Prediction Game
-            </div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               <span className="text-gradient">Bitcoin</span>
               <span className="text-white"> Roulette</span>
             </h1>
+            <div className="inline-block px-3 py-1 rounded-full bg-btc-orange/10 border border-btc-orange/20 text-btc-orange text-sm font-medium">
+              Bitcoin Mining Pool Prediction Game
+            </div>
           </div>
 
           {/* Latest mining pool display */}
