@@ -1,10 +1,11 @@
 
-import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, UserPlus, Menu, X } from 'lucide-react';
+import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, UserPlus, Menu, X, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +14,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
-  // This would typically come from an auth context
-  const isLoggedIn = false;
-  const walletBalance = '0.00125';
+  const { user, signOut } = useAuth();
+  const isLoggedIn = !!user;
+  const walletBalance = isLoggedIn ? '0.00125' : '0.00000000';
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -25,6 +26,10 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
@@ -49,7 +54,7 @@ const Navbar = () => {
               location.pathname === "/" ? "text-btc-orange" : "text-white hover:text-btc-orange"
             )}
           >
-            Home
+            Play
           </Link>
           <Link 
             to="/how-to-play" 
@@ -83,6 +88,25 @@ const Navbar = () => {
                 <span className="text-white font-medium text-sm">{walletBalance} BTC</span>
               </div>
               
+              {/* User dropdown menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
+                    <User className="mr-1 h-4 w-4 text-btc-orange" />
+                    <span className="sr-md:inline">Account</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-btc-darker border-white/10">
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               {/* Deposit/Withdraw dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -111,28 +135,17 @@ const Navbar = () => {
                 <span className="text-white font-medium text-sm">{walletBalanceInSats} sats</span>
               </div>
             
-              {/* Desktop buttons */}
-              <div className="hidden md:flex space-x-2">
-                {/* Deposit button - Updated with rounded corners */}
+              {/* Desktop Auth button */}
+              <Link to="/auth">
                 <Button 
                   variant="outline" 
                   size="sm"
                   className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide rounded-full"
                 >
-                  <ArrowDownToLine className="mr-1 h-4 w-4" />
-                  <span>Deposit</span>
+                  <LogIn className="mr-1 h-4 w-4" />
+                  <span>Sign / Login</span>
                 </Button>
-                
-                {/* Withdraw button */}
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-white hover:text-btc-orange hover:bg-btc-darker/40 font-semibold tracking-wide rounded-full"
-                >
-                  <ArrowUpFromLine className="mr-1 h-4 w-4" />
-                  <span>Withdraw</span>
-                </Button>
-              </div>
+              </Link>
               
               {/* Mobile menu toggle button */}
               <Button 
@@ -162,7 +175,7 @@ const Navbar = () => {
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Home
+                Play
               </Link>
               <Link 
                 to="/how-to-play" 
@@ -187,6 +200,16 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
+              </Link>
+              <Link 
+                to="/auth" 
+                className={cn(
+                  "text-sm font-semibold",
+                  location.pathname === "/auth" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign / Login
               </Link>
             </nav>
             
