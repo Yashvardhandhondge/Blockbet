@@ -1,5 +1,4 @@
-
-import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, UserPlus, Menu, X, User, LogOut } from 'lucide-react';
+import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, Menu, X, User, LogOut, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -21,7 +20,6 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   
-  // New wallet counter in sats (1 BTC = 100,000,000 sats)
   const walletBalanceInSats = Math.floor(parseFloat(walletBalance) * 100000000).toLocaleString();
 
   const toggleMobileMenu = () => {
@@ -45,7 +43,6 @@ const Navbar = () => {
           </Link>
         </div>
         
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link 
             to="/" 
@@ -66,10 +63,16 @@ const Navbar = () => {
             How to Play
           </Link>
           <Link 
-            to="#" 
-            className="text-sm font-semibold text-white hover:text-btc-orange transition-colors duration-200 transform hover:scale-105"
+            to="/leaderboard" 
+            className={cn(
+              "text-sm font-semibold transition-colors duration-200 transform hover:scale-105",
+              location.pathname === "/leaderboard" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+            )}
           >
-            Leaderboard
+            <span className="flex items-center">
+              <Award className="mr-1 h-4 w-4" />
+              Leaderboard
+            </span>
           </Link>
           <Link 
             to="#" 
@@ -82,13 +85,11 @@ const Navbar = () => {
         <div className="flex items-center space-x-3">
           {isLoggedIn ? (
             <>
-              {/* Wallet display */}
               <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5">
                 <Wallet className="h-4 w-4 text-btc-orange" />
                 <span className="text-white font-medium text-sm">{walletBalance} BTC</span>
               </div>
               
-              {/* User dropdown menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
@@ -107,7 +108,6 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              {/* Deposit/Withdraw dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
@@ -129,13 +129,11 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {/* Wallet amount counter - Desktop only */}
               <div className="hidden md:flex bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 items-center gap-1.5">
                 <Wallet className="h-4 w-4 text-btc-orange" />
                 <span className="text-white font-medium text-sm">{walletBalanceInSats} sats</span>
               </div>
             
-              {/* Desktop Auth button */}
               <Link to="/auth">
                 <Button 
                   variant="outline" 
@@ -147,7 +145,6 @@ const Navbar = () => {
                 </Button>
               </Link>
               
-              {/* Mobile menu toggle button */}
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -161,11 +158,9 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile menu */}
       {mobileMenuOpen && !isLoggedIn && (
         <div className="md:hidden bg-btc-darker border-t border-white/5 animate-in slide-in-from-top-5 duration-200">
           <div className="container mx-auto px-4 py-3 flex flex-col">
-            {/* Navigation links */}
             <nav className="flex flex-col space-y-4 py-4 border-b border-white/5">
               <Link 
                 to="/" 
@@ -188,10 +183,14 @@ const Navbar = () => {
                 How to Play
               </Link>
               <Link 
-                to="#" 
-                className="text-sm font-semibold text-white hover:text-btc-orange"
+                to="/leaderboard" 
+                className={cn(
+                  "text-sm font-semibold flex items-center",
+                  location.pathname === "/leaderboard" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+                )}
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <Award className="mr-2 h-4 w-4" />
                 Leaderboard
               </Link>
               <Link 
@@ -213,15 +212,12 @@ const Navbar = () => {
               </Link>
             </nav>
             
-            {/* Wallet and buttons */}
             <div className="py-4 space-y-3">
-              {/* Wallet counter */}
               <div className="bg-btc-darker/90 border border-white/10 rounded-full py-2 px-4 flex items-center justify-center gap-2">
                 <Wallet className="h-4 w-4 text-btc-orange" />
                 <span className="text-white font-medium">{walletBalanceInSats} sats</span>
               </div>
               
-              {/* Buttons - Updated with rounded corners */}
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <Button 
                   variant="outline" 

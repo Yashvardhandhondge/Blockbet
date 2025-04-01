@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import HowToPlay from "./pages/HowToPlay";
 import Auth from "./pages/Auth";
+import Leaderboard from "./pages/Leaderboard";
 import { useState } from "react";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -26,6 +27,7 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/how-to-play" element={<HowToPlay />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
