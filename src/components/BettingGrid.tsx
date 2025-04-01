@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -721,7 +720,7 @@ const BettingGrid = () => {
               </div>
               <div>
                 <div className="text-xs text-white/60">Balance</div>
-                <div className="text-sm font-bold text-white">{formatSats(walletBalance)}</div>
+                <div className="text-xs font-bold text-white">{formatSats(walletBalance)}</div>
               </div>
             </div>
             <div className="flex gap-2">
@@ -893,80 +892,51 @@ const BettingGrid = () => {
           <OriginTabsContent value="transactions" className="mt-0 focus-visible:outline-none">
             <div className="space-y-4">
               <div>
-                <h4 className="text-sm font-medium text-white mb-2">Deposits</h4>
-                <div className="space-y-2 max-h-[150px] overflow-y-auto">
-                  {deposits.map((deposit) => (
-                    <div 
-                      key={`deposit-${deposit.id}`}
-                      className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                    >
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3 bg-green-500/10">
-                          <ArrowDownLeft className="h-4 w-4 text-green-400" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white">Deposit</div>
-                          <div className="text-xs text-white/60">
-                            {deposit.timestamp.toLocaleDateString()} • 
-                            <span className="ml-1 text-white/40 font-mono text-[10px]">
-                              {deposit.txId.substring(0, 6)}...{deposit.txId.substring(deposit.txId.length - 6)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-green-400">+{formatSats(deposit.amount)}</div>
-                        <div className="text-xs text-white/60">
-                          {formatBTC(deposit.amount / 100000000)} BTC
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium text-white mb-2">Withdrawals</h4>
-                <div className="space-y-2 max-h-[150px] overflow-y-auto">
-                  {withdrawals.map((withdrawal) => (
-                    <div 
-                      key={`withdrawal-${withdrawal.id}`}
-                      className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                    >
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3 bg-red-500/10">
-                          <ArrowUpRight className="h-4 w-4 text-red-400" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white">
-                            Withdrawal
-                            {withdrawal.status === 'pending' && (
-                              <span className="ml-2 text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full">
-                                Pending
-                              </span>
-                            )}
-                            {withdrawal.status === 'completed' && (
-                              <span className="ml-2 text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded-full">
-                                Completed
-                              </span>
+                <h4 className="text-sm font-medium text-white mb-2">Transaction History</h4>
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  {[...deposits.map(d => ({...d, type: 'deposit'})), 
+                    ...withdrawals.map(w => ({...w, type: 'withdrawal'}))]
+                    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+                    .map((tx) => (
+                      <div 
+                        key={`tx-${tx.id}-${tx.type}`}
+                        className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                      >
+                        <div className="flex items-center">
+                          <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3 ${tx.type === 'deposit' ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                            {tx.type === 'deposit' ? (
+                              <ArrowDownLeft className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <ArrowUpRight className="h-4 w-4 text-red-400" />
                             )}
                           </div>
+                          <div>
+                            <div className="text-sm font-medium text-white">
+                              {tx.type === 'deposit' ? 'Deposit' : 'Withdrawal'}
+                              {tx.type === 'withdrawal' && 'status' in tx && (
+                                <span className={`ml-2 text-xs px-1.5 py-0.5 ${tx.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'} rounded-full`}>
+                                  {tx.status === 'pending' ? 'Pending' : 'Completed'}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-white/60">
+                              {tx.timestamp.toLocaleDateString()} • 
+                              <span className="ml-1 text-white/40 font-mono text-[10px]">
+                                {tx.txId.substring(0, 6)}...{tx.txId.substring(tx.txId.length - 6)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`text-sm font-medium ${tx.type === 'deposit' ? 'text-green-400' : 'text-red-400'}`}>
+                            {tx.type === 'deposit' ? '+' : '-'}{formatSats(tx.amount)}
+                          </div>
                           <div className="text-xs text-white/60">
-                            {withdrawal.timestamp.toLocaleDateString()} • 
-                            <span className="ml-1 text-white/40 font-mono text-[10px]">
-                              {withdrawal.txId.substring(0, 6)}...{withdrawal.txId.substring(withdrawal.txId.length - 6)}
-                            </span>
+                            {formatBTC(tx.amount / 100000000)} BTC
                           </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-red-400">-{formatSats(withdrawal.amount)}</div>
-                        <div className="text-xs text-white/60">
-                          {formatBTC(withdrawal.amount / 100000000)} BTC
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </div>

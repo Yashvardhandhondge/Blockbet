@@ -137,14 +137,22 @@
       display: flex;
       overflow-x: auto;
       width: 100%;
-      padding-bottom: 0.5rem;
+      padding: 0 6px;
       flex-wrap: nowrap;
       justify-content: space-between;
-      padding: 0 6px;
+      gap: 2px;
     }
     
     .mobile-chip-row > div {
       flex-shrink: 0;
+      margin: 0 1px;
+      width: 38px !important;
+      height: 38px !important;
+    }
+    
+    .mobile-chip-row > div > div {
+      width: 32px !important;
+      height: 32px !important;
     }
   }
 }
