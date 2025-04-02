@@ -5,17 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { lnbitsService, walletManager } from "@/services/lnbitsService";
 import { generateK1, createCallbackUrl } from "@/utils/lnurlAuth";
-
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  generateLnurlAuth: () => Promise<string>;
-  lnurlAuth: (k1: string, sig: string, key: string) => Promise<boolean>;
-};
+import { AuthContextType, AuthChallenges } from "./authTypes";
+import { signInWithEmailPassword, signUpWithEmailPassword, signOut as authSignOut } from "./emailPasswordAuth";
+import { handleLnurlAuth } from "./lightningAuth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -24,12 +16,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   // Store active LNURL auth challenges
-  const [authChallenges, setAuthChallenges] = useState<Record<string, boolean>>({});
+  const [authChallenges, setAuthChallenges] = useState<AuthChallenges>({});
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -62,55 +54,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign in");
-      throw error;
+      await signInWithEmailPassword(email, password);
     } finally {
       setIsLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-      
-      toast.success("Registration successful! Please check your email to verify your account.");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign up");
-      throw error;
+      await signUpWithEmailPassword(email, password);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signOut = async () => {
+  const signOutUser = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign out");
+      await authSignOut();
     } finally {
       setIsLoading(false);
     }
@@ -134,92 +98,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Handle LNURL auth callback
   const lnurlAuth = async (k1: string, sig: string, key: string): Promise<boolean> => {
     try {
-      // Verify that this is a challenge we issued
-      if (!authChallenges[k1]) {
-        throw new Error('Invalid challenge');
-      }
-      
-      // Clear this challenge from the state
+      // Clear this challenge from the state regardless of outcome
       setAuthChallenges(prev => {
         const newChallenges = { ...prev };
         delete newChallenges[k1];
         return newChallenges;
       });
       
-      // Verify the LNURL auth signature
-      const isValid = await lnbitsService.verifyLnurlAuth(k1, sig, key);
-      
-      if (!isValid) {
-        throw new Error('Failed to verify Lightning authentication');
-      }
-      
-      // Find if there's a user with this lnbits_auth_key
-      const { data: existingUser, error: queryError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('lnbits_auth_key', key)
-        .maybeSingle();
-      
-      if (existingUser) {
-        // User exists, sign in with their account
-        const { error } = await supabase.auth.signInWithPassword({
-          // Use a placeholder email based on the Lightning key
-          email: `lightning_${key.substring(0, 12)}@blockbet.app`,
-          password: `lightning_${key}` // This is just a placeholder for now
-        });
-        
-        if (error) {
-          // If the user exists in profiles but no auth record, create a new auth account
-          await createLightningUser(key);
-        }
-      } else {
-        // No existing user, create a new account
-        await createLightningUser(key);
-      }
-      
-      return true;
-    } catch (error: any) {
-      console.error('LNURL auth error:', error);
-      toast.error(error.message || "Lightning authentication failed");
-      return false;
-    }
-  };
-  
-  // Helper function to create a new Lightning user
-  const createLightningUser = async (key: string): Promise<void> => {
-    try {
-      // Create a unique email based on the Lightning key
-      const email = `lightning_${key.substring(0, 12)}@blockbet.app`;
-      const password = `lightning_${key}`; // This is just a placeholder
-      
-      // Create a new user in Supabase auth
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      // Store the Lightning key in the user's profile
-      if (data.user) {
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            lnbits_auth_key: key,
-          })
-          .eq('id', data.user.id);
-
-        if (updateError) {
-          console.error('Error updating profile with Lightning key:', updateError);
-        }
-        
-        // Create a LNBits wallet for the user
-        const username = `lightning_${data.user.id.substring(0, 8)}`;
-        await walletManager.setupUserWallet(data.user.id, username);
-      }
+      return await handleLnurlAuth(k1, sig, key, authChallenges);
     } catch (error) {
-      console.error('Error creating Lightning user:', error);
-      throw error;
+      console.error("LNURL auth failed:", error);
+      return false;
     }
   };
 
@@ -230,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isLoading, 
       signIn, 
       signUp, 
-      signOut,
+      signOut: signOutUser,
       generateLnurlAuth,
       lnurlAuth
     }}>
