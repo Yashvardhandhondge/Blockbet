@@ -21,6 +21,9 @@ const QRCode: React.FC<QRCodeProps> = ({
 
   useEffect(() => {
     if (canvasRef.current && value) {
+      // Convert "transparent" to null which QRCode lib will handle correctly
+      const backgroundColor = bgColor === 'transparent' ? null : bgColor;
+      
       QRCodeLib.toCanvas(
         canvasRef.current,
         value,
@@ -29,7 +32,7 @@ const QRCode: React.FC<QRCodeProps> = ({
           margin: 0,
           color: {
             dark: fgColor,
-            light: bgColor,
+            light: backgroundColor || '#ffffff',
           },
         },
         (error) => {
