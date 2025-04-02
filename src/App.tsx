@@ -9,6 +9,8 @@ import NotFound from "./pages/NotFound";
 import HowToPlay from "./pages/HowToPlay";
 import Auth from "./pages/Auth";
 import Leaderboard from "./pages/Leaderboard";
+import Wallet from "./pages/Wallet";
+import LnurlCallback from "./pages/LnurlCallback";
 import { useState } from "react";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -28,6 +30,8 @@ function App() {
               <Route path="/how-to-play" element={<HowToPlay />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/wallet" element={<Wallet />} />
+              <Route path="/auth/lnurl-callback" element={<LnurlCallback />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

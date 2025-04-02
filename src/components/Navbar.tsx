@@ -1,4 +1,5 @@
-import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, Menu, X, User, LogOut, Award } from 'lucide-react';
+
+import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, Menu, X, User, LogOut, Award, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -79,10 +80,12 @@ const Navbar = () => {
         <div className="flex items-center space-x-3">
           {isLoggedIn ? (
             <>
-              <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5">
-                <Wallet className="h-4 w-4 text-btc-orange" />
-                <span className="text-white font-medium text-sm">{walletBalance} BTC</span>
-              </div>
+              <Link to="/wallet">
+                <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5">
+                  <Wallet className="h-4 w-4 text-btc-orange" />
+                  <span className="text-white font-medium text-sm">{walletBalance} BTC</span>
+                </div>
+              </Link>
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -105,18 +108,37 @@ const Navbar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
-                    <Wallet className="mr-1 h-4 w-4 text-btc-orange" />
+                    <Zap className="mr-1 h-4 w-4 text-btc-orange" />
                     <span>Wallet</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-btc-darker border-white/10">
-                  <DropdownMenuItem className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium">
-                    <ArrowDownToLine className="h-4 w-4" />
-                    <span>Deposit</span>
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
+                    asChild
+                  >
+                    <Link to="/wallet">
+                      <Wallet className="h-4 w-4" />
+                      <span>Manage Wallet</span>
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium">
-                    <ArrowUpFromLine className="h-4 w-4" />
-                    <span>Withdraw</span>
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
+                    asChild
+                  >
+                    <Link to="/wallet?tab=deposit">
+                      <ArrowDownToLine className="h-4 w-4" />
+                      <span>Deposit</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
+                    asChild
+                  >
+                    <Link to="/wallet?tab=withdraw">
+                      <ArrowUpFromLine className="h-4 w-4" />
+                      <span>Withdraw</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

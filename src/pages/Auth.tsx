@@ -1,18 +1,20 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bitcoin, Lock, Mail } from 'lucide-react';
+import { Bitcoin, Lock, Mail, Loader2, Zap } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+import QRCode from '@/components/QRCode';
+import { toast } from "sonner";
 
 const Auth = () => {
-  const { user, signIn, signUp, isLoading } = useAuth();
+  const { user, signIn, signUp, isLoading, generateLnurlAuth } = useAuth();
   const location = useLocation();
   
   // If user is already logged in, redirect to home
@@ -68,7 +70,7 @@ const Auth = () => {
 const AuthTabs = () => {
   return (
     <Tabs defaultValue="login" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-6">
+      <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger 
           value="login"
           className="data-[state=active]:bg-btc-orange/20 data-[state=active]:text-btc-orange"
@@ -81,14 +83,25 @@ const AuthTabs = () => {
         >
           Sign Up
         </TabsTrigger>
+        <TabsTrigger 
+          value="lightning"
+          className="data-[state=active]:bg-btc-orange/20 data-[state=active]:text-btc-orange"
+        >
+          <Zap className="h-4 w-4 mr-1" />
+          Lightning
+        </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="login">
+      <TabsContent value="login" className="mt-6">
         <LoginForm />
       </TabsContent>
       
-      <TabsContent value="signup">
+      <TabsContent value="signup" className="mt-6">
         <SignupForm />
+      </TabsContent>
+      
+      <TabsContent value="lightning" className="mt-6">
+        <LightningLoginForm />
       </TabsContent>
     </Tabs>
   );
@@ -154,7 +167,12 @@ const LoginForm = () => {
         disabled={isSubmitting}
         className="w-full bg-btc-orange hover:bg-btc-orange/80 text-btc-darker font-semibold"
       >
-        {isSubmitting ? 'Signing In...' : 'Sign In'}
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Signing In...
+          </>
+        ) : 'Sign In'}
       </Button>
     </form>
   );
@@ -225,9 +243,81 @@ const SignupForm = () => {
         disabled={isSubmitting}
         className="w-full bg-btc-orange hover:bg-btc-orange/80 text-btc-darker font-semibold"
       >
-        {isSubmitting ? 'Creating Account...' : 'Create Account'}
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating Account...
+          </>
+        ) : 'Create Account'}
       </Button>
     </form>
+  );
+};
+
+const LightningLoginForm = () => {
+  const [lnurlAuthUrl, setLnurlAuthUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { generateLnurlAuth } = useAuth();
+  
+  const handleGenerateLnurl = async () => {
+    try {
+      setIsLoading(true);
+      const url = await generateLnurlAuth();
+      setLnurlAuthUrl(url);
+    } catch (error) {
+      toast.error("Failed to generate Lightning login QR code");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    handleGenerateLnurl();
+  }, []);
+  
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-lg font-medium text-white mb-2">Login with Lightning</h2>
+        <p className="text-white/60 text-sm">
+          Scan the QR code with your Lightning wallet to login
+        </p>
+      </div>
+      
+      <div className="flex flex-col items-center justify-center">
+        {isLoading ? (
+          <div className="flex flex-col items-center py-8">
+            <Loader2 size={48} className="animate-spin text-btc-orange mb-4" />
+            <p className="text-white/60">Generating Lightning login...</p>
+          </div>
+        ) : lnurlAuthUrl ? (
+          <div className="bg-btc-darker/80 p-4 rounded-xl">
+            <QRCode 
+              value={lnurlAuthUrl} 
+              size={220}
+              bgColor="transparent"
+              fgColor="#ffffff"
+            />
+          </div>
+        ) : (
+          <div className="py-8 text-center">
+            <p className="text-red-400 mb-4">Failed to generate QR code</p>
+            <Button
+              onClick={handleGenerateLnurl}
+              variant="outline"
+              className="bg-btc-darker border-white/10 text-white hover:bg-white/5"
+            >
+              Retry
+            </Button>
+          </div>
+        )}
+      </div>
+      
+      <div className="text-xs text-white/40 text-center space-y-2">
+        <p>No account needed, your wallet IS your account</p>
+        <p>Secure, non-custodial authentication</p>
+      </div>
+    </div>
   );
 };
 
