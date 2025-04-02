@@ -48,3 +48,17 @@ export const formatError = (error: any): string => {
   
   return 'An unknown error occurred';
 };
+
+/**
+ * Check if a new block has been mined based on previous and current block data
+ * @param previousBlock Previous block data
+ * @param currentBlock Current block data
+ * @returns Boolean indicating if a new block has been mined
+ */
+export const hasNewBlock = (previousBlock: any, currentBlock: any): boolean => {
+  if (!previousBlock || !currentBlock) {
+    return false;
+  }
+  
+  return previousBlock.height !== currentBlock.height;
+};

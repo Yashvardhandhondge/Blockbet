@@ -18,6 +18,15 @@ export const formatSats = (sats: number): string => {
 };
 
 /**
+ * Format BTC amount with BTC symbol
+ * @param btc Amount in BTC
+ * @returns Formatted BTC string
+ */
+export const formatBTC = (btc: number): string => {
+  return `${btc.toFixed(8)} BTC`;
+};
+
+/**
  * Emit a player win event
  */
 export const emitPlayerWin = () => {
