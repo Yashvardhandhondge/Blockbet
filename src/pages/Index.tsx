@@ -10,6 +10,7 @@ import LiveBlockData, { BLOCK_MINED_EVENT } from '@/components/LiveBlockData';
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
 import WinConfetti from '@/components/WinConfetti';
+import MiningPoolStats from '@/components/MiningPoolStats';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +46,7 @@ const Index = () => {
   const miningPoolAnimation = useElementAppear(!isLoading, {
     delay: 675
   });
-  const liveDataAnimation = useElementAppear(!isLoading, {
+  const statsAnimation = useElementAppear(!isLoading, {
     delay: 750
   });
   const bettingGridAnimation = useElementAppear(!isLoading, {
@@ -96,7 +97,10 @@ const Index = () => {
             <LatestMiningPool />
           </div>
           
-          {/* Live Block Data has been moved to LatestMiningPool component */}
+          {/* Mining Pool Stats */}
+          <div style={statsAnimation.style} className="mb-5">
+            <MiningPoolStats />
+          </div>
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>

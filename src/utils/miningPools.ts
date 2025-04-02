@@ -217,8 +217,30 @@ export const miningPools: MiningPool[] = [
     region: 'Unknown',
     logoUrl: '/pool-logos/unknown.svg',
     gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
+  },
+  {
+    id: 'empty',
+    name: 'Empty Block',
+    hashRate: 4.2,
+    hashRatePercent: 0.7,
+    blocksLast24h: 1,
+    colorClass: 'bg-gray-800',
+    odds: 142.86,
+    region: 'N/A',
+    logoUrl: '/Mempool Bitcoin Explorer.svg',
+    gradient: 'linear-gradient(135deg, #18181B, #09090B)'
   }
 ];
+
+// Calculate odds based on hash rate percentage
+export const calculateOdds = (hashRatePercent: number): number => {
+  // Formula: 100 / hashRatePercent
+  // Minimum odds of 1.5
+  if (!hashRatePercent || hashRatePercent <= 0) {
+    return 100;
+  }
+  return Math.max(100 / hashRatePercent, 1.5);
+};
 
 export const getRandomMiningPool = (): MiningPool => {
   const rand = Math.random() * 100;
@@ -232,4 +254,36 @@ export const getRandomMiningPool = (): MiningPool => {
   }
   
   return miningPools[0];
+};
+
+// Function to update mining pool data with real-time information
+export const updateMiningPoolsData = (
+  poolStats: Array<{ 
+    poolName: string, 
+    blocksCount: number, 
+    percentage: number 
+  }>
+): MiningPool[] => {
+  const updatedPools = [...miningPools];
+  
+  // Update pools with real-time data
+  poolStats.forEach(stat => {
+    const poolIndex = updatedPools.findIndex(p => 
+      p.name.toLowerCase() === stat.poolName.toLowerCase() ||
+      stat.poolName.toLowerCase().includes(p.id.toLowerCase()) ||
+      p.id.toLowerCase().includes(stat.poolName.toLowerCase())
+    );
+    
+    if (poolIndex !== -1) {
+      updatedPools[poolIndex] = {
+        ...updatedPools[poolIndex],
+        hashRatePercent: stat.percentage,
+        blocksLast24h: stat.blocksCount,
+        // Recalculate odds based on new percentage
+        odds: calculateOdds(stat.percentage)
+      };
+    }
+  });
+  
+  return updatedPools;
 };
