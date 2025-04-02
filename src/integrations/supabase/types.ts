@@ -9,22 +9,97 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      lightning_deposits: {
+        Row: {
+          amount_sats: number
+          created_at: string
+          id: string
+          payment_hash: string
+          payment_request: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_sats: number
+          created_at?: string
+          id?: string
+          payment_hash: string
+          payment_request: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_sats?: number
+          created_at?: string
+          id?: string
+          payment_hash?: string
+          payment_request?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lightning_withdrawals: {
+        Row: {
+          amount_sats: number
+          created_at: string
+          id: string
+          payment_hash: string | null
+          payment_request: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_sats: number
+          created_at?: string
+          id?: string
+          payment_hash?: string | null
+          payment_request: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_sats?: number
+          created_at?: string
+          id?: string
+          payment_hash?: string | null
+          payment_request?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
           id: string
+          lnbits_admin_key: string | null
+          lnbits_auth_key: string | null
+          lnbits_invoice_key: string | null
+          lnbits_user_id: string | null
+          lnbits_wallet_id: string | null
           username: string | null
           wallet_balance: number | null
         }
         Insert: {
           created_at?: string | null
           id: string
+          lnbits_admin_key?: string | null
+          lnbits_auth_key?: string | null
+          lnbits_invoice_key?: string | null
+          lnbits_user_id?: string | null
+          lnbits_wallet_id?: string | null
           username?: string | null
           wallet_balance?: number | null
         }
         Update: {
           created_at?: string | null
           id?: string
+          lnbits_admin_key?: string | null
+          lnbits_auth_key?: string | null
+          lnbits_invoice_key?: string | null
+          lnbits_user_id?: string | null
+          lnbits_wallet_id?: string | null
           username?: string | null
           wallet_balance?: number | null
         }
