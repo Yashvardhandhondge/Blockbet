@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -17,7 +16,6 @@ const Auth = () => {
   const { user, signIn, signUp, isLoading, generateLnurlAuth } = useAuth();
   const location = useLocation();
   
-  // If user is already logged in, redirect to home
   if (user) {
     const from = (location.state as any)?.from?.pathname || '/';
     return <Navigate to={from} replace />;
@@ -121,7 +119,6 @@ const LoginForm = () => {
     try {
       await signIn(email, password);
     } catch (error) {
-      // Error is handled in the auth context
       console.error('Login error:', error);
     } finally {
       setIsSubmitting(false);
@@ -191,11 +188,9 @@ const SignupForm = () => {
     setIsSubmitting(true);
     try {
       await signUp(email, password);
-      // Clear form after successful submission
       setEmail('');
       setPassword('');
     } catch (error) {
-      // Error is handled in the auth context
       console.error('Signup error:', error);
     } finally {
       setIsSubmitting(false);
@@ -296,7 +291,7 @@ const LightningLoginForm = () => {
               value={lnurlAuthUrl} 
               size={220}
               bgColor="transparent"
-              fgColor="#ffffff"
+              fgColor="#F0B90B"
             />
           </div>
         ) : (
