@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { lnbitsService, walletManager } from "@/services/lnbitsService";
 import { generateK1, createCallbackUrl } from "@/utils/lnurlAuth";
+import { Profile } from "@/types/supabase";
 
 type AuthContextType = {
   user: User | null;

@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Profile, LightningDeposit, LightningWithdrawal } from '@/types/supabase';
 
 // LNBits API configuration
 const LNBITS_API_URL = 'https://c687a80746.d.voltageapp.io/api/v1';
@@ -193,7 +194,7 @@ export const lnbitsService = {
   },
 
   // Generate LNURL-auth login URL
-  async generateLnurlAuthUrl(callbackUrl: string, k1: string): string {
+  async generateLnurlAuthUrl(callbackUrl: string, k1: string): Promise<string> {
     // Construct the LNURL-auth URL for LNBits
     return `${LNBITS_API_URL}/lnurlauth?tag=login&action=login&k1=${k1}&callback=${encodeURIComponent(callbackUrl)}`;
   },
@@ -295,18 +296,13 @@ export const walletManager = {
       if (!invoice) return null;
 
       // Store invoice in our database
-      const { error } = await supabase.from('lightning_deposits').insert({
+      await supabase.from('lightning_deposits').insert({
         user_id: userId,
         payment_hash: invoice.payment_hash,
         payment_request: invoice.payment_request,
         amount_sats: amountSats,
         status: 'pending',
       });
-
-      if (error) {
-        console.error('Error storing deposit:', error);
-        return null;
-      }
 
       return {
         paymentHash: invoice.payment_hash,
@@ -347,17 +343,13 @@ export const walletManager = {
       if (!payment || !payment.success) return false;
 
       // Store withdrawal record
-      const { error } = await supabase.from('lightning_withdrawals').insert({
+      await supabase.from('lightning_withdrawals').insert({
         user_id: userId,
         payment_hash: payment.payment_hash,
         payment_request: bolt11,
         amount_sats: amountSats,
         status: 'completed',
       });
-
-      if (error) {
-        console.error('Error storing withdrawal:', error);
-      }
 
       // Update user's wallet balance
       await supabase

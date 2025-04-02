@@ -4,6 +4,11 @@ export type Profile = {
   username: string;
   wallet_balance: number;
   created_at: string;
+  lnbits_user_id?: string;
+  lnbits_wallet_id?: string;
+  lnbits_admin_key?: string;
+  lnbits_invoice_key?: string;
+  lnbits_auth_key?: string;
 };
 
 export type LeaderboardEntry = {
@@ -15,4 +20,24 @@ export type LeaderboardEntry = {
   winRate: string;
   totalWinnings: number;
   avatar?: string;
+};
+
+export type LightningDeposit = {
+  id: string;
+  user_id: string;
+  payment_hash: string;
+  payment_request: string;
+  amount_sats: number;
+  status: 'pending' | 'completed' | 'expired';
+  created_at: string;
+};
+
+export type LightningWithdrawal = {
+  id: string;
+  user_id: string;
+  payment_hash?: string;
+  payment_request: string;
+  amount_sats: number;
+  status: 'pending' | 'completed' | 'failed';
+  created_at: string;
 };
