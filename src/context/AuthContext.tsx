@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { lnbitsService, walletManager } from "@/services/lnbitsService";
 import { generateK1, createCallbackUrl } from "@/utils/lnurlAuth";
-import { Profile } from "@/types/supabase";
 
 type AuthContextType = {
   user: User | null;
@@ -129,9 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const callbackUrl = createCallbackUrl(k1);
     
     // Generate the LNURL auth URL
-    const lnurlAuthUrl = await lnbitsService.generateLnurlAuthUrl(callbackUrl, k1);
-    
-    return lnurlAuthUrl;
+    return await lnbitsService.generateLnurlAuthUrl(callbackUrl, k1);
   };
   
   // Handle LNURL auth callback
@@ -157,11 +154,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // Find if there's a user with this lnbits_auth_key
-      const { data: existingUser } = await supabase
+      const { data: existingUser, error: queryError } = await supabase
         .from('profiles')
         .select('id')
         .eq('lnbits_auth_key', key)
-        .single();
+        .maybeSingle();
       
       if (existingUser) {
         // User exists, sign in with their account
@@ -205,9 +202,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Store the Lightning key in the user's profile
       if (data.user) {
-        await supabase.from('profiles').update({
-          lnbits_auth_key: key,
-        }).eq('id', data.user.id);
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            lnbits_auth_key: key,
+          })
+          .eq('id', data.user.id);
+
+        if (updateError) {
+          console.error('Error updating profile with Lightning key:', updateError);
+        }
         
         // Create a LNBits wallet for the user
         const username = `lightning_${data.user.id.substring(0, 8)}`;

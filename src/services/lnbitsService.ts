@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Profile, LightningDeposit, LightningWithdrawal } from '@/types/supabase';
+import { Profile } from '@/types/supabase';
 
 // LNBits API configuration
 const LNBITS_API_URL = 'https://c687a80746.d.voltageapp.io/api/v1';
@@ -225,12 +225,18 @@ export const walletManager = {
   async setupUserWallet(supabaseUserId: string, username: string): Promise<boolean> {
     try {
       // Check if user already has a wallet
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('lnbits_user_id, lnbits_wallet_id')
         .eq('id', supabaseUserId)
         .single();
-
+        
+      // Early return if there's an error or the user already has wallet IDs
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return false;
+      }
+      
       if (profile?.lnbits_user_id && profile?.lnbits_wallet_id) {
         // User already has a wallet
         return true;
@@ -248,7 +254,7 @@ export const walletManager = {
       if (!wallet) return false;
 
       // Store wallet info in Supabase
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({
           lnbits_user_id: lnbitsUser.id,
@@ -259,8 +265,8 @@ export const walletManager = {
         })
         .eq('id', supabaseUserId);
 
-      if (error) {
-        console.error('Error updating profile with wallet info:', error);
+      if (updateError) {
+        console.error('Error updating profile with wallet info:', updateError);
         return false;
       }
 
@@ -279,13 +285,16 @@ export const walletManager = {
   ): Promise<{ paymentHash: string; paymentRequest: string } | null> {
     try {
       // Get user's wallet invoice key
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('lnbits_invoice_key')
         .eq('id', userId)
         .single();
 
-      if (!profile?.lnbits_invoice_key) return null;
+      if (error || !profile?.lnbits_invoice_key) {
+        console.error('Error getting profile or invoice key:', error);
+        return null;
+      }
 
       // Create invoice
       const invoice = await lnbitsService.createInvoice(
@@ -296,14 +305,16 @@ export const walletManager = {
       if (!invoice) return null;
 
       try {
-        // Store invoice in our database - use explicit typing for the table
-        await supabase.from<LightningDeposit>('lightning_deposits').insert({
-          user_id: userId,
-          payment_hash: invoice.payment_hash,
-          payment_request: invoice.payment_request,
-          amount_sats: amountSats,
-          status: 'pending',
-        } as unknown as LightningDeposit);
+        // Store invoice in the database
+        await supabase
+          .from('lightning_deposits')
+          .insert({
+            user_id: userId,
+            payment_hash: invoice.payment_hash,
+            payment_request: invoice.payment_request,
+            amount_sats: amountSats,
+            status: 'pending',
+          });
       } catch (error) {
         console.error('Error storing deposit:', error);
         // Continue even if storing fails - we can check the payment status directly
@@ -327,13 +338,16 @@ export const walletManager = {
   ): Promise<boolean> {
     try {
       // Get user's wallet admin key
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('lnbits_admin_key, wallet_balance')
         .eq('id', userId)
         .single();
 
-      if (!profile?.lnbits_admin_key) return false;
+      if (error || !profile?.lnbits_admin_key) {
+        console.error('Error getting profile or admin key:', error);
+        return false;
+      }
 
       // Check if user has enough balance
       if ((profile.wallet_balance || 0) < amountSats / 100000000) {
@@ -348,14 +362,16 @@ export const walletManager = {
       if (!payment || !payment.success) return false;
 
       try {
-        // Store withdrawal record - use explicit typing for the table
-        await supabase.from<LightningWithdrawal>('lightning_withdrawals').insert({
-          user_id: userId,
-          payment_hash: payment.payment_hash,
-          payment_request: bolt11,
-          amount_sats: amountSats,
-          status: 'completed',
-        } as unknown as LightningWithdrawal);
+        // Store withdrawal record
+        await supabase
+          .from('lightning_withdrawals')
+          .insert({
+            user_id: userId,
+            payment_hash: payment.payment_hash,
+            payment_request: bolt11,
+            amount_sats: amountSats,
+            status: 'completed',
+          });
       } catch (error) {
         console.error('Error storing withdrawal:', error);
         // Continue even if storing fails
@@ -380,13 +396,16 @@ export const walletManager = {
   async getWalletBalanceSats(userId: string): Promise<number | null> {
     try {
       // Get user's wallet invoice key
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('lnbits_invoice_key')
         .eq('id', userId)
         .single();
 
-      if (!profile?.lnbits_invoice_key) return null;
+      if (error || !profile?.lnbits_invoice_key) {
+        console.error('Error getting profile or invoice key:', error);
+        return null;
+      }
 
       // Get wallet details from LNBits
       const wallet = await lnbitsService.getWallet(profile.lnbits_invoice_key);
