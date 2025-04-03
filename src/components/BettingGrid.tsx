@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { miningPools, updateMiningPoolsData } from '@/utils/miningPools';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -747,4 +748,130 @@ const BettingGrid = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-7
+              <Button 
+                variant="outline" 
+                className="bg-btc-orange hover:bg-btc-orange/80 text-black border-btc-orange/50 hover:border-btc-orange/70 rounded-full text-xs py-1 h-7"
+                onClick={handleDeposit}
+              >
+                <ArrowDownLeft className="h-3 w-3" />
+                Deposit
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-white/10 hover:border-white/20 rounded-full text-xs py-1 h-7" 
+                onClick={handleWithdraw}
+              >
+                <ArrowUpRight className="h-3 w-3" />
+                Withdraw
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl h-[110px]">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-white text-sm">Step 2. Place Your Bets!</h3>
+            <div className="flex space-x-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-5 w-5 text-white/60 hover:text-white" 
+                onClick={handleClearBets}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-5 w-5 text-white/60 hover:text-white" 
+                onClick={handleCancelLastBet}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="bg-btc-orange/10 p-2 rounded-lg mr-3">
+                <Server className="h-5 w-5 text-btc-orange" strokeWidth={1.5} />
+              </div>
+              <div>
+                <div className="text-xs text-white/60">Total Bet</div>
+                <div className="text-xs font-bold text-white">{formatSats(totalBet)}</div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {renderChipSelection()}
+            </div>
+          </div>
+        </Card>
+      </div>
+      
+      <div className="w-full overflow-hidden mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {activePools.map((pool) => (
+            <MiningPoolCard
+              key={pool.id}
+              pool={pool}
+              onClick={() => handlePlaceBet(pool.id)}
+              bets={getBetsOnPool(pool.id)}
+              selected={selectedPool?.id === pool.id}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 mb-4">
+        <OriginTabs defaultValue="history">
+          <OriginTabsList className="w-full flex mb-4">
+            <OriginTabsTrigger value="history" className="flex-1" icon={<History className="w-4 h-4" />}>
+              Betting History
+            </OriginTabsTrigger>
+            <OriginTabsTrigger value="deposits" className="flex-1" icon={<ArrowDown className="w-4 h-4" />}>
+              Deposits
+            </OriginTabsTrigger>
+            <OriginTabsTrigger value="withdrawals" className="flex-1" icon={<CreditCard className="w-4 h-4" />}>
+              Withdrawals
+            </OriginTabsTrigger>
+          </OriginTabsList>
+          <OriginTabsContent value="history" className="mt-2">
+            <BetHistory history={betHistory} />
+          </OriginTabsContent>
+          <OriginTabsContent value="deposits" className="mt-2">
+            <div className="space-y-3">
+              {deposits.map(deposit => (
+                <div key={deposit.id} className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                  <div>
+                    <div className="text-sm font-medium text-white">{formatSats(deposit.amount)}</div>
+                    <div className="text-xs text-white/60">{deposit.timestamp.toLocaleString()}</div>
+                  </div>
+                  <div className="text-xs text-white/40 truncate max-w-[100px]">{deposit.txId.substring(0, 8)}...</div>
+                </div>
+              ))}
+            </div>
+          </OriginTabsContent>
+          <OriginTabsContent value="withdrawals" className="mt-2">
+            <div className="space-y-3">
+              {withdrawals.map(withdrawal => (
+                <div key={withdrawal.id} className="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                  <div>
+                    <div className="text-sm font-medium text-white">{formatSats(withdrawal.amount)}</div>
+                    <div className="text-xs text-white/60">{withdrawal.timestamp.toLocaleString()}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${withdrawal.status === 'completed' ? 'bg-green-500/20 text-green-400' : withdrawal.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
+                      {withdrawal.status}
+                    </span>
+                    <span className="text-xs text-white/40 truncate max-w-[60px]">{withdrawal.txId.substring(0, 6)}...</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </OriginTabsContent>
+        </OriginTabs>
+      </div>
+    </div>
+  );
+};
+
+export default BettingGrid;
