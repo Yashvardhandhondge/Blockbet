@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -818,9 +817,17 @@ const BettingGrid = () => {
         </div>
       </div>
       
+      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative mb-6">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-white text-sm">Step 2. Choose your chips.</h3>
+        </div>
+        {renderChipSelection()}
+      </Card>
+      
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
         <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden col-span-1">
           <div className="p-4">
+            <h3 className="text-white text-sm mb-4">Player Stats:</h3>
             <OriginTabs defaultValue="history">
               <OriginTabsList className="bg-black/40">
                 <OriginTabsTrigger value="history">Bet History</OriginTabsTrigger>
