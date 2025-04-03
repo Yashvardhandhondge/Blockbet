@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const BET_AMOUNTS = [100, 500, 1000, 5000, 10000, 50000, 100000];
-const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://block-bet-api.fly.dev';
+// Replace process.env with a direct string to fix the "process is not defined" error
+const API_ENDPOINT = 'https://block-bet-api.fly.dev';
 const BETTING_CLOSES_IN_SECONDS = 30;
 
 const BettingGrid = () => {
