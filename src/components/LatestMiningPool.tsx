@@ -282,7 +282,7 @@ const LatestMiningPool = () => {
                         #{block.height}
                       </p>
                       <p className="text-[8px] md:text-[10px] text-white/50 mt-0.5 md:mt-1 hidden md:block">
-                        {formatTimeAgo(block.timestamp)}
+                        {safeFormatTimeAgo(block.timestamp)}
                       </p>
                     </div>
                   </div>
@@ -297,3 +297,11 @@ const LatestMiningPool = () => {
 };
 
 export default LatestMiningPool;
+
+const safeFormatTimeAgo = (timestamp: number | Date): string => {
+  if (timestamp instanceof Date) {
+    return formatTimeAgo(timestamp);
+  } else {
+    return formatTimeAgo(new Date(timestamp));
+  }
+};

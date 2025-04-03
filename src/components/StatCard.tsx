@@ -1,39 +1,52 @@
 
 import React from 'react';
+import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface StatCardProps {
-  icon: React.ReactNode;
+export interface StatCardProps {
   title: string;
-  value: React.ReactNode;
-  subtitle?: React.ReactNode;
-  pulseColor?: string;
+  value: string;
+  change?: string;
+  changeType?: 'positive' | 'negative' | 'neutral';
+  icon?: React.ReactNode;
 }
 
-export const StatCard = ({ 
-  icon, 
-  title, 
-  value, 
-  subtitle, 
-  pulseColor = "bg-btc-orange" 
+const StatCard = ({
+  title,
+  value,
+  change,
+  changeType = 'neutral',
+  icon
 }: StatCardProps) => {
   return (
-    <div className="flex">
-      <div className="flex-shrink-0 h-10 w-10 rounded-lg overflow-hidden flex items-center justify-center bg-white/5 border border-white/10">
-        {icon}
-      </div>
-      <div className="ml-3">
-        <div className="flex items-center">
-          <span className="text-xs text-white/60">{title}</span>
-          {title.toLowerCase() === 'live' && (
-            <span className="relative flex h-2 w-2 ml-1">
-              <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-          )}
+    <div className="bg-black/20 rounded-lg p-2.5 flex justify-between">
+      <div className="flex items-center">
+        {icon && (
+          <div className="bg-btc-orange/10 p-1.5 rounded mr-2">
+            {icon}
+          </div>
+        )}
+        <div>
+          <div className="text-xs text-white/60">{title}</div>
+          <div className="text-sm font-medium text-white">{value}</div>
         </div>
-        <div className="text-lg font-bold text-white">{value}</div>
-        {subtitle && <div className="text-xs text-white/60">{subtitle}</div>}
       </div>
+      
+      {change && (
+        <div className="flex items-center">
+          <div
+            className={cn("flex items-center text-xs rounded-full px-1.5 py-0.5", {
+              "bg-green-500/10 text-green-500": changeType === 'positive',
+              "bg-red-500/10 text-red-500": changeType === 'negative',
+              "bg-white/10 text-white/70": changeType === 'neutral',
+            })}
+          >
+            {changeType === 'positive' && <ArrowUpIcon className="h-3 w-3 mr-0.5" />}
+            {changeType === 'negative' && <ArrowDownIcon className="h-3 w-3 mr-0.5" />}
+            {change}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -18,7 +18,6 @@ import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 
-// Here we're creating a mock for nextBlockEstimate since it was imported from mockData before
 const nextBlockEstimate = {
   estimatedTimeMinutes: 10,
   difficulty: 67352594066965
@@ -39,7 +38,7 @@ const BettingGrid = () => {
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   const [currentBlock, setCurrentBlock] = useState(miningPools[0]?.blocksLast24h || 0);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
-  const [walletBalance, setWalletBalance] = useState(25000000); // 0.25 BTC in satoshis
+  const [walletBalance, setWalletBalance] = useState(25000000);
   const [betHistory, setBetHistory] = useState<Array<{
     id: number;
     poolId: string;
@@ -159,15 +158,14 @@ const BettingGrid = () => {
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          return 8 * 60; // Reset to 8 minutes
+          return 8 * 60;
         }
         return prev - 1;
       });
     }, 1000);
     
-    // Reset timer when a new block is mined
     const handleBlockMined = () => {
-      setTimeRemaining(8 * 60); // Reset to 8 minutes when a new block is mined
+      setTimeRemaining(8 * 60);
     };
     
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined);
@@ -260,10 +258,9 @@ const BettingGrid = () => {
   };
 
   const handleDeposit = () => {
-    const newBalance = walletBalance + 10000000; // Add 0.1 BTC
+    const newBalance = walletBalance + 10000000;
     setWalletBalance(newBalance);
 
-    // Add deposit to history
     const newDeposit = {
       id: deposits.length + 1,
       amount: 10000000,
@@ -280,10 +277,9 @@ const BettingGrid = () => {
 
   const handleWithdraw = () => {
     if (walletBalance >= 10000000) {
-      const newBalance = walletBalance - 10000000; // Withdraw 0.1 BTC
+      const newBalance = walletBalance - 10000000;
       setWalletBalance(newBalance);
 
-      // Add withdrawal to history
       const newWithdrawal = {
         id: withdrawals.length + 1,
         amount: 10000000,
@@ -293,7 +289,6 @@ const BettingGrid = () => {
       };
       setWithdrawals([newWithdrawal, ...withdrawals]);
 
-      // Simulate withdrawal completing after 5 seconds
       setTimeout(() => {
         setWithdrawals(prev => prev.map(w => w.id === newWithdrawal.id ? {
           ...w,
@@ -329,7 +324,6 @@ const BettingGrid = () => {
     };
     setBetHistory(prev => [newBet, ...prev]);
 
-    // Update wallet balance based on bet outcome
     if (isWin) {
       const winAmount = amount * (pool?.odds || 2);
       setWalletBalance(prev => prev + winAmount);
@@ -607,10 +601,8 @@ const BettingGrid = () => {
       
     console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
     
-    // Track if the player has any winning bets
     let playerHasWon = false;
     
-    // Process each bet
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       if (bet.poolId) {
@@ -619,7 +611,6 @@ const BettingGrid = () => {
       
       if (isWin) {
         playerHasWon = true;
-        // Find pool to get odds
         const pool = miningPools.find(p => p.id === bet.poolId);
         if (pool) {
           const winAmount = Math.floor(bet.amount * pool.odds);
@@ -634,12 +625,10 @@ const BettingGrid = () => {
       }
     });
     
-    // Only emit the win event if the player actually won
     if (playerHasWon) {
       emitPlayerWin();
     }
     
-    // Clear bets after processing
     setBets([]);
   };
 
@@ -776,7 +765,6 @@ const BettingGrid = () => {
             </div>
           ))}
           
-          {/* Empty block bet option */}
           <div className="transition-all">
             <div className={cn(
               "relative rounded-xl overflow-hidden transition-all duration-300 border",
@@ -848,7 +836,7 @@ const BettingGrid = () => {
               </OriginTabsList>
               
               <OriginTabsContent value="history" className="mt-4">
-                <BetHistory history={betHistory} />
+                <BetHistory bets={betHistory} />
               </OriginTabsContent>
               
               <OriginTabsContent value="deposits" className="mt-4">
@@ -871,7 +859,6 @@ const BettingGrid = () => {
                         <div className="text-xs text-white/60 flex items-center">
                           {deposit.txId.substring(0, 8)}...
                           <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
-                            // Copy TX ID to clipboard
                             navigator.clipboard?.writeText(deposit.txId);
                             toast({
                               title: "TX ID copied",
@@ -920,7 +907,6 @@ const BettingGrid = () => {
                         <div className="text-xs text-white/60 flex items-center">
                           {withdrawal.txId.substring(0, 8)}...
                           <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
-                            // Copy TX ID to clipboard
                             navigator.clipboard?.writeText(withdrawal.txId);
                             toast({
                               title: "TX ID copied",
@@ -956,8 +942,6 @@ const BettingGrid = () => {
               <StatCard
                 title="Pending Transactions"
                 value={`${pendingTxCount.toLocaleString()}`}
-                change="+12.4%"
-                changeType="positive"
                 icon={<Clock className="h-4 w-4 text-btc-orange" />}
               />
               
