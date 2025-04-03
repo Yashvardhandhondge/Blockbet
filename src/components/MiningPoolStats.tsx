@@ -66,10 +66,6 @@ const MiningPoolStats = () => {
     if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
     if (poolName === 'Titan Pool' || poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
-    if (poolName === 'OCEAN') return '/pool-logos/Ocean.svg';
-    if (poolName === 'SpiderPool') return '/pool-logos/spiderpool.svg';
-    if (poolName === 'BitFuFuPool') return '/pool-logos/BitFuFuPool.svg';
-    if (poolName === 'Unknown') return '/pool-logos/unknown.svg';
     
     return '/pool-logos/default.svg';
   };

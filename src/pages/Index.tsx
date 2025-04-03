@@ -45,6 +45,9 @@ const Index = () => {
   const miningPoolAnimation = useElementAppear(!isLoading, {
     delay: 675
   });
+  const liveDataAnimation = useElementAppear(!isLoading, {
+    delay: 750
+  });
   const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
   });
@@ -92,6 +95,8 @@ const Index = () => {
           <div style={miningPoolAnimation.style} className="mb-5">
             <LatestMiningPool />
           </div>
+          
+          {/* Live Block Data has been moved to LatestMiningPool component */}
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>
