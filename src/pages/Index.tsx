@@ -6,7 +6,6 @@ import Footer from '@/components/Footer';
 import { useElementAppear } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
-import LiveBlockData, { BLOCK_MINED_EVENT } from '@/components/LiveBlockData';
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
 import WinConfetti from '@/components/WinConfetti';
@@ -44,9 +43,6 @@ const Index = () => {
   });
   const miningPoolAnimation = useElementAppear(!isLoading, {
     delay: 675
-  });
-  const liveDataAnimation = useElementAppear(!isLoading, {
-    delay: 750
   });
   const bettingGridAnimation = useElementAppear(!isLoading, {
     delay: 900
@@ -95,8 +91,6 @@ const Index = () => {
           <div style={miningPoolAnimation.style} className="mb-5">
             <LatestMiningPool />
           </div>
-          
-          {/* Live Block Data has been moved to LatestMiningPool component */}
           
           {/* Betting grid */}
           <div style={bettingGridAnimation.style}>

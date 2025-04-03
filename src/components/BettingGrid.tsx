@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -396,14 +397,6 @@ const BettingGrid = () => {
   const getBetsOnPool = (poolId: string | null) => {
     if (!bets || !Array.isArray(bets)) return [];
     return bets.filter(bet => bet.poolId === poolId);
-  };
-
-  const formatBTC = (satoshis: number) => {
-    return (satoshis / 100000000).toFixed(8);
-  };
-
-  const formatSats = (satoshis: number) => {
-    return satoshis.toLocaleString() + " sats";
   };
 
   const getPlaceholderImage = (poolId: string) => {
@@ -825,8 +818,8 @@ const BettingGrid = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
+        <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden col-span-1">
           <div className="p-4">
             <OriginTabs defaultValue="history">
               <OriginTabsList className="bg-black/40">
@@ -925,81 +918,6 @@ const BettingGrid = () => {
                 </div>
               </OriginTabsContent>
             </OriginTabs>
-          </div>
-        </Card>
-        
-        <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden">
-          <div className="p-4">
-            <h3 className="text-white text-lg font-medium mb-3">Stats</h3>
-            
-            <div className="space-y-4">
-              <StatCard
-                title="Current Block Height"
-                value={`${843325}`}
-                icon={<Server className="h-4 w-4 text-btc-orange" />}
-              />
-              
-              <StatCard
-                title="Pending Transactions"
-                value={`${pendingTxCount.toLocaleString()}`}
-                icon={<Clock className="h-4 w-4 text-btc-orange" />}
-              />
-              
-              <StatCard
-                title="Est. Next Block Time"
-                value={estimatedTime}
-                icon={<Zap className="h-4 w-4 text-btc-orange" />}
-              />
-              
-              <StatCard
-                title="Average Block Time"
-                value={`${avgBlockTime.toFixed(1)} minutes`}
-                icon={<History className="h-4 w-4 text-btc-orange" />}
-              />
-              
-              <div className="bg-white/5 rounded-xl p-4">
-                <h4 className="text-white text-sm font-medium mb-2">Active Bets</h4>
-                
-                {getConsolidatedBets().length > 0 ? (
-                  <div className="space-y-2">
-                    {getConsolidatedBets().map((bet, index) => (
-                      <div key={index} className="flex justify-between items-center bg-white/5 rounded-lg p-2">
-                        <div className="flex items-center">
-                          {bet.poolId ? (
-                            <>
-                              <div className="w-5 h-5 rounded-full overflow-hidden mr-1.5">
-                                {getPoolLogo(bet.poolId)}
-                              </div>
-                              <span className="text-xs text-white">
-                                {miningPools.find(p => p.id === bet.poolId)?.name || 'Unknown Pool'}
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <Server className="w-4 h-4 text-white/60 mr-1.5" />
-                              <span className="text-xs text-white">Empty Block</span>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex items-center">
-                          {renderImprovedChips(bet.amounts)}
-                          <span className="text-xs text-white font-medium ml-1">{formatSats(bet.totalAmount)}</span>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
-                      <span className="text-xs text-white">Total</span>
-                      <span className="text-sm text-white font-medium">{formatSats(totalBet)}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-2 text-white/60 text-sm">
-                    No active bets
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         </Card>
       </div>
