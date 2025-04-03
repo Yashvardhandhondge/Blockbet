@@ -217,6 +217,18 @@ export const miningPools: MiningPool[] = [
     region: 'Unknown',
     logoUrl: '/pool-logos/unknown.svg',
     gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
+  },
+  {
+    id: 'empty',
+    name: 'Empty Block',
+    hashRate: 4.2,
+    hashRatePercent: 0.7,
+    blocksLast24h: 1,
+    colorClass: 'bg-gray-500',
+    odds: 142.86, // High odds because empty blocks are rare
+    region: 'Global',
+    logoUrl: '/pool-logos/default.svg',
+    gradient: 'linear-gradient(135deg, #64748B, #334155)'
   }
 ];
 
@@ -232,4 +244,49 @@ export const getRandomMiningPool = (): MiningPool => {
   }
   
   return miningPools[0];
+};
+
+/**
+ * Updates mining pool data with real-time statistics
+ * @param poolStats Statistics from mining pool API
+ * @returns Updated mining pools array
+ */
+export const updateMiningPoolsData = (poolStats: any): MiningPool[] => {
+  if (!poolStats || !Array.isArray(poolStats.pools)) {
+    return miningPools;
+  }
+  
+  const updatedPools = [...miningPools];
+  
+  // Update pools with real data where available
+  poolStats.pools.forEach((stat: any) => {
+    const existingPool = updatedPools.find(p => {
+      // Match by name (case-insensitive contains)
+      return (
+        p.name.toLowerCase().includes(stat.name.toLowerCase()) || 
+        stat.name.toLowerCase().includes(p.name.toLowerCase())
+      );
+    });
+    
+    if (existingPool) {
+      existingPool.hashRate = stat.hashrate || existingPool.hashRate;
+      existingPool.hashRatePercent = stat.percent || existingPool.hashRatePercent;
+      existingPool.blocksLast24h = stat.blockCount24h || existingPool.blocksLast24h;
+      
+      // Recalculate odds based on new hash rate percentage
+      if (stat.percent) {
+        existingPool.odds = Math.max(2, +(100 / stat.percent).toFixed(2));
+      }
+    }
+  });
+  
+  // Calculate updated total hash rate
+  const totalHashRate = updatedPools.reduce((total, pool) => total + pool.hashRate, 0);
+  
+  // Normalize percentages to ensure they sum to 100%
+  updatedPools.forEach(pool => {
+    pool.hashRatePercent = +(pool.hashRate / totalHashRate * 100).toFixed(1);
+  });
+  
+  return updatedPools;
 };
