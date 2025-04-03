@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
+import { MiningPool } from '@/utils/types';
+import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -16,6 +17,12 @@ import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
 import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from "@/components/ui/origin-tabs";
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
+
+// Here we're creating a mock for nextBlockEstimate since it was imported from mockData before
+const nextBlockEstimate = {
+  estimatedTimeMinutes: 10,
+  difficulty: 67352594066965
+};
 
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
@@ -735,216 +742,3 @@ const BettingGrid = () => {
         </Card>
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Step 2: Select chip value in sats.</h3>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={!bets || bets.length === 0}>
-                <X className="w-2.5 h-2.5" />
-                Cancel
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={!bets || bets.length === 0}>
-                <Trash2 className="w-2.5 h-2.5" />
-                Clear
-              </Button>
-            </div>
-          </div>
-          <div className="px-0">
-            {renderChipSelection && typeof renderChipSelection === 'function' && renderChipSelection()}
-          </div>
-        </Card>
-      </div>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <div className="flex justify-between items-start mb-3 flex-col md:flex-row">
-          <h3 className="text-white text-sm mb-2 md:mb-0">Step 3: Place Your Bets On Mining Pools</h3>
-          <div className="flex items-center gap-2 w-full md:w-auto justify-between">
-            <div className="text-xs text-white/70 font-medium">
-              Sats in play: <span className="text-btc-orange">{formatSats(totalBet)}</span>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-                <X className="w-2.5 h-2.5" />
-                Cancel
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-                <Trash2 className="w-2.5 h-2.5" />
-                Clear
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {miningPools.map(pool => (
-            <MiningPoolCard 
-              key={pool.id}
-              pool={pool}
-              onSelect={handleSelectPool}
-              isSelected={selectedPool?.id === pool.id}
-              bets={getBetsOnPool(pool.id)}
-            />
-          ))}
-        </div>
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Chip Selection</h3>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-2.5 h-2.5" />
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-2.5 h-2.5" />
-              Clear
-            </Button>
-          </div>
-        </div>
-        <div className="px-0 overflow-x-auto hide-scrollbar">
-          {renderChipSelection()}
-        </div>
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <h3 className="text-white text-sm mb-3">Player Stats:</h3>
-        
-        <OriginTabs defaultValue="bets" className="w-full">
-          <div className="flex justify-between items-center mb-3 flex-col sm:flex-row">
-            <OriginTabsList className="mb-2 sm:mb-0 overflow-x-auto hide-scrollbar w-full sm:w-auto">
-              <OriginTabsTrigger value="bets" icon={<Zap className="h-4 w-4" />} className="text-[10px] sm:text-xs">
-                Active Bets
-              </OriginTabsTrigger>
-              <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />} className="text-[10px] sm:text-xs">
-                Bet History
-              </OriginTabsTrigger>
-              <OriginTabsTrigger value="transactions" icon={<Wallet className="h-4 w-4" />} className="text-[10px] sm:text-xs">
-                Transactions
-              </OriginTabsTrigger>
-            </OriginTabsList>
-            <div className="text-sm font-medium text-white/60 w-full sm:w-auto text-center sm:text-right">
-              <OriginTabsContent value="bets" className="mt-0 p-0">
-                Sats in play: <span className="text-btc-orange font-bold text-lg">{formatSats(totalBet)}</span>
-              </OriginTabsContent>
-            </div>
-          </div>
-          
-          <OriginTabsContent value="bets" className="mt-0 focus-visible:outline-none">
-            {/* Active bets content */}
-            {bets && bets.length > 0 ? (
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                {getConsolidatedBets().map((consolidatedBet, index) => {
-                  const pool = consolidatedBet.poolId ? miningPools.find(p => p.id === consolidatedBet.poolId) : null;
-                  return (
-                    <div 
-                      key={`bet-${index}-${consolidatedBet.poolId || 'empty'}`}
-                      className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                    >
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-black mr-3 flex items-center justify-center">
-                          {consolidatedBet.poolId ? (
-                            <img 
-                              src={`/pool-logos/${consolidatedBet.poolId}.svg`} 
-                              alt={pool?.name || 'Pool'}
-                              className="w-6 h-6 object-contain"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
-                              }}
-                            />
-                          ) : (
-                            <span className="text-white/70 text-xs">Empty</span>
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-white">
-                            {pool?.name || 'Empty Block'}
-                          </div>
-                          <div className="text-xs text-white/60">
-                            {consolidatedBet.amounts.length} {consolidatedBet.amounts.length === 1 ? 'bet' : 'bets'}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        {renderImprovedChips(consolidatedBet.amounts)}
-                        <div className="text-right">
-                          <div className="text-sm font-medium text-white">{formatSats(consolidatedBet.totalAmount)}</div>
-                          <div className="text-xs text-white/60">
-                            Potential win: {formatSats((pool?.odds || 2) * consolidatedBet.totalAmount)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-6 text-white/40">
-                <p>No active bets</p>
-                <p className="text-sm mt-2">Select a chip and place your bet on a mining pool</p>
-              </div>
-            )}
-          </OriginTabsContent>
-          
-          <OriginTabsContent value="history" className="mt-0 focus-visible:outline-none">
-            <BetHistory bets={betHistory} />
-          </OriginTabsContent>
-          
-          <OriginTabsContent value="transactions" className="mt-0 focus-visible:outline-none">
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-white mb-2">Transaction History</h4>
-                <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                  {[...deposits.map(d => ({...d, type: 'deposit'})), 
-                    ...withdrawals.map(w => ({...w, type: 'withdrawal'}))]
-                    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-                    .map((tx) => (
-                      <div 
-                        key={`tx-${tx.id}-${tx.type}`}
-                        className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                      >
-                        <div className="flex items-center">
-                          <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3 ${tx.type === 'deposit' ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
-                            {tx.type === 'deposit' ? (
-                              <ArrowDownLeft className="h-4 w-4 text-green-400" />
-                            ) : (
-                              <ArrowUpRight className="h-4 w-4 text-red-400" />
-                            )}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-white">
-                              {tx.type === 'deposit' ? 'Deposit' : 'Withdrawal'}
-                              {tx.type === 'withdrawal' && 'status' in tx && (
-                                <span className={`ml-2 text-xs px-1.5 py-0.5 ${tx.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'} rounded-full`}>
-                                  {tx.status === 'pending' ? 'Pending' : 'Completed'}
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs text-white/60">
-                              {tx.timestamp.toLocaleDateString()} • 
-                              <span className="ml-1 text-white/40 font-mono text-[10px]">
-                                {tx.txId.substring(0, 6)}...{tx.txId.substring(tx.txId.length - 6)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className={`text-sm font-medium ${tx.type === 'deposit' ? 'text-green-400' : 'text-red-400'}`}>
-                            {tx.type === 'deposit' ? '+' : '-'}{formatSats(tx.amount)}
-                          </div>
-                          <div className="text-xs text-white/60">
-                            {formatBTC(tx.amount / 100000000)} BTC
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </OriginTabsContent>
-        </OriginTabs>
-      </Card>
-    </div>
-  );
-};
-
-export default BettingGrid;
