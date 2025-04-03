@@ -1,27 +1,28 @@
+
 import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-hot-toast';
-import { useAccount, useBalance } from 'wagmi';
 import { formatSats } from '@/utils/formatters';
 import { miningPools, getRandomMiningPool, updateMiningPoolsData } from '@/utils/miningPools';
 import { MiningPool } from '@/utils/types';
 import MiningPoolCard from './MiningPoolCard';
 import BetHistory from './BetHistory';
-import { useLocalStorage } from '@/hooks/use-local-storage';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useConfettiStore } from '@/store/confettiStore';
 
 const BET_AMOUNTS = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://block-bet-api.fly.dev';
 const BETTING_CLOSES_IN_SECONDS = 30;
 
 const BettingGrid = () => {
-  const { address } = useAccount();
-  const { data: balanceData } = useBalance({ address });
+  // Simplified wallet connection - replaced useAccount and useBalance
+  const [address, setAddress] = useState<string | null>(null);
+  const [balanceData, setBalanceData] = useState<{formatted: string, symbol: string} | null>(null);
+  
   const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   const [activePools, setActivePools] = useState<MiningPool[]>(miningPools);
   const [betAmount, setBetAmount] = useState<number>(BET_AMOUNTS[0]);
-  const [bets, setBets] = useLocalStorage<{
+  
+  // Replace useLocalStorage with useState and localStorage read/write
+  const [bets, setBets] = useState<{
     id: number;
     poolId: string;
     poolName: string;
@@ -29,11 +30,29 @@ const BettingGrid = () => {
     timestamp: Date;
     isWin: boolean;
     blockHeight: number;
-  }[]>('block-bets', []);
+  }[]>([]);
+  
   const [isLoading, setIsLoading] = useState(false);
   const [bettingClosesIn, setBettingClosesIn] = useState(BETTING_CLOSES_IN_SECONDS);
   const isMobile = useIsMobile();
-  const { enableConfetti } = useConfettiStore();
+  
+  // Initialize bets from localStorage on component mount
+  useEffect(() => {
+    const storedBets = localStorage.getItem('block-bets');
+    if (storedBets) {
+      try {
+        const parsedBets = JSON.parse(storedBets);
+        setBets(parsedBets);
+      } catch (err) {
+        console.error('Failed to parse stored bets:', err);
+      }
+    }
+  }, []);
+  
+  // Save bets to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('block-bets', JSON.stringify(bets));
+  }, [bets]);
   
   // Fetch mining pool stats on component mount
   useEffect(() => {
@@ -48,7 +67,8 @@ const BettingGrid = () => {
         setActivePools(updatedPools);
       } catch (error: any) {
         console.error("Failed to fetch mining pool stats:", error);
-        toast.error(`Failed to fetch mining pool stats: ${error.message}`);
+        // Replace toast with alert or console error
+        console.error(`Failed to fetch mining pool stats: ${error.message}`);
       }
     };
     
@@ -83,12 +103,14 @@ const BettingGrid = () => {
   
   const handlePlaceBet = async () => {
     if (!address) {
-      toast.error('Connect your wallet to place a bet.');
+      // Replace toast with alert
+      alert('Connect your wallet to place a bet.');
       return;
     }
     
     if (!selectedPool) {
-      toast.error('Select a mining pool to bet on.');
+      // Replace toast with alert
+      alert('Select a mining pool to bet on.');
       return;
     }
     
@@ -120,8 +142,8 @@ const BettingGrid = () => {
       setBets([newBet, ...bets]);
       
       if (isWin) {
-        toast.success(`You won ${formatSats(betAmount)} on ${selectedPool.name}!`);
-        enableConfetti();
+        // Replace toast.success with alert
+        alert(`You won ${formatSats(betAmount)} on ${selectedPool.name}!`);
         
         // Dispatch custom event for confetti effect
         const event = new CustomEvent('playerWin', { 
@@ -129,11 +151,13 @@ const BettingGrid = () => {
         });
         window.dispatchEvent(event);
       } else {
-        toast(`Block #${blockData.height} mined by ${blockData.minedBy}. Better luck next time!`);
+        // Replace toast with alert
+        alert(`Block #${blockData.height} mined by ${blockData.minedBy}. Better luck next time!`);
       }
     } catch (error: any) {
       console.error("Error placing bet:", error);
-      toast.error(`Error placing bet: ${error.message}`);
+      // Replace toast.error with alert
+      alert(`Error placing bet: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
