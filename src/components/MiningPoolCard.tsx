@@ -1,10 +1,12 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
 import { BackgroundGradientAnimation } from './ui/background-gradient-animation';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Clock, BarChart, Server } from 'lucide-react';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
@@ -25,6 +27,7 @@ const MiningPoolCard = ({
   const isMobile = useIsMobile();
   
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
+  const displayedOdds = useCountUp(pool.odds, 2000, 400);
   
   const poolColor = getPoolColor(pool.id);
   
@@ -81,7 +84,7 @@ const MiningPoolCard = ({
         <div className="flex flex-col items-center mb-1">
           <div className={cn(
             "rounded-lg overflow-hidden bg-transparent mb-1",
-            isMobile ? "h-10 w-10" : "h-16 w-16"
+            isMobile ? "h-10 w-10" : "h-14 w-14"
           )}>
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
@@ -90,7 +93,7 @@ const MiningPoolCard = ({
                 className="w-full h-full object-contain" 
                 onError={(e) => {
                   console.log(`Error loading logo for ${pool.id}: ${pool.logoUrl}`);
-                  e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
+                  e.currentTarget.src = '/pool-logos/default.svg';
                 }} 
               />
             </div>
@@ -99,42 +102,46 @@ const MiningPoolCard = ({
           <div className="text-center">
             <h3 className={cn(
               "font-medium text-white truncate max-w-full",
-              isMobile ? "text-xs" : "text-lg"
+              isMobile ? "text-xs" : "text-base"
             )}>{pool.name}</h3>
             {!isMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
           </div>
         </div>
         
-        {!isMobile && (
-          <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
-            <div className="p-2">
-              <div className="text-white/60 text-xs">Hashrate</div>
-              <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
+        <div className="mt-2 grid grid-cols-2 gap-1 text-sm">
+          <div className="p-1.5 bg-white/5 rounded-lg">
+            <div className="flex items-center text-white/70 text-[10px] mb-0.5">
+              <BarChart className="w-3 h-3 mr-1 text-btc-orange" />
+              <span>Hashrate %</span>
             </div>
-            <div className="p-2">
-              <div className="text-white/60 text-xs">Blocks (24h)</div>
-              <div className="font-medium text-white">{pool.blocksLast24h}</div>
+            <div className="font-medium text-white text-xs">{pool.hashRatePercent.toFixed(1)}%</div>
+          </div>
+          <div className="p-1.5 bg-white/5 rounded-lg">
+            <div className="flex items-center text-white/70 text-[10px] mb-0.5">
+              <Clock className="w-3 h-3 mr-1 text-btc-orange" />
+              <span>24h Blocks</span>
+            </div>
+            <div className="font-medium text-white text-xs">{pool.blocksLast24h}</div>
+          </div>
+          <div className="p-1.5 bg-white/5 rounded-lg mt-1">
+            <div className="flex items-center text-white/70 text-[10px] mb-0.5">
+              <Server className="w-3 h-3 mr-1 text-btc-orange" />
+              <span>Hashpower</span>
+            </div>
+            <div className="font-medium text-white text-xs">{pool.hashRate.toFixed(1)} EH/s</div>
+          </div>
+          <div className="p-1.5 bg-white/5 rounded-lg mt-1">
+            <div className="flex items-center text-white/70 text-[10px] mb-0.5">
+              <span className="w-3 h-3 mr-1 text-btc-orange flex items-center justify-center text-[9px] font-bold">×</span>
+              <span>Payout</span>
+            </div>
+            <div className="font-medium bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent text-xs">
+              {displayedOdds.toFixed(2)}×
             </div>
           </div>
-        )}
+        </div>
         
-        <div className="mt-auto">
-          <div className={cn(
-            "flex justify-center items-center",
-            isMobile ? "mb-2" : "p-2"
-          )}>
-            <div className="text-white/80 text-center">
-              <span className={cn(
-                "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
-                isMobile ? "text-sm" : "text-lg"
-              )}>
-                {pool.odds.toFixed(2)}
-                <span className="ml-0.5">×</span>
-              </span>
-              <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
-            </div>
-          </div>
-          
+        <div className="mt-auto pt-3">
           <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
             <div 
               className="h-full transition-all duration-1000 ease-out"

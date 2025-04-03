@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MiningPool, miningPools, nextBlockEstimate } from '@/utils/mockData';
+import { miningPools, updateMiningPoolsData } from '@/utils/miningPools';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -14,8 +14,13 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
 import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from "@/components/ui/origin-tabs";
+import { fetchMiningPoolStats } from '@/api/miningPoolStatsApi';
+import { calculateMiningPoolStats } from '@/services/mempoolService';
+import { fetchWithRetry } from '@/utils/errorUtils';
+import { MiningPool } from '@/utils/types';
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
+const BASE_ESTIMATE_TIME_MINUTES = 10;
 
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
@@ -25,7 +30,7 @@ const BettingGrid = () => {
     id: number;
   }[]>([]);
   const [nextBetId, setNextBetId] = useState(1);
-  const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
+  const [timeRemaining, setTimeRemaining] = useState(BASE_ESTIMATE_TIME_MINUTES * 60);
   const [totalBet, setTotalBet] = useState(0);
   const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   const [timeVariation, setTimeVariation] = useState(0);
@@ -33,6 +38,8 @@ const BettingGrid = () => {
   const [currentBlock, setCurrentBlock] = useState(miningPools[0]?.blocksLast24h || 0);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const [walletBalance, setWalletBalance] = useState(25000000); // 0.25 BTC in satoshis
+  const [activePools, setActivePools] = useState<MiningPool[]>(miningPools);
+  const [isLoading, setIsLoading] = useState(true);
   const [betHistory, setBetHistory] = useState<Array<{
     id: number;
     poolId: string;
@@ -144,9 +151,39 @@ const BettingGrid = () => {
     txId: "q1w2e3r4t5y6u7i8o9p0a1s2d3f4g5h6",
     status: 'pending'
   }]);
+
   const isMobile = useIsMobile();
-  const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
+  const totalTime = BASE_ESTIMATE_TIME_MINUTES * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
+
+  useEffect(() => {
+    const fetchPoolData = async () => {
+      try {
+        setIsLoading(true);
+        const poolStats = await fetchWithRetry(() => fetchMiningPoolStats(), 3, 2000);
+        const updatedPools = updateMiningPoolsData(poolStats);
+        setActivePools(updatedPools);
+      } catch (err) {
+        console.error('Error fetching mining pool data:', err);
+        toast({
+          title: "Data fetch error",
+          description: "Using cached mining pool data",
+          variant: "destructive"
+        });
+        setActivePools(miningPools);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPoolData();
+
+    const intervalId = setInterval(fetchPoolData, 5 * 60 * 1000);
+    
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -158,7 +195,6 @@ const BettingGrid = () => {
       });
     }, 1000);
     
-    // Reset timer when a new block is mined
     const handleBlockMined = () => {
       setTimeRemaining(8 * 60); // Reset to 8 minutes when a new block is mined
     };
@@ -256,7 +292,6 @@ const BettingGrid = () => {
     const newBalance = walletBalance + 10000000; // Add 0.1 BTC
     setWalletBalance(newBalance);
 
-    // Add deposit to history
     const newDeposit = {
       id: deposits.length + 1,
       amount: 10000000,
@@ -276,7 +311,6 @@ const BettingGrid = () => {
       const newBalance = walletBalance - 10000000; // Withdraw 0.1 BTC
       setWalletBalance(newBalance);
 
-      // Add withdrawal to history
       const newWithdrawal = {
         id: withdrawals.length + 1,
         amount: 10000000,
@@ -286,7 +320,6 @@ const BettingGrid = () => {
       };
       setWithdrawals([newWithdrawal, ...withdrawals]);
 
-      // Simulate withdrawal completing after 5 seconds
       setTimeout(() => {
         setWithdrawals(prev => prev.map(w => w.id === newWithdrawal.id ? {
           ...w,
@@ -322,7 +355,6 @@ const BettingGrid = () => {
     };
     setBetHistory(prev => [newBet, ...prev]);
 
-    // Update wallet balance based on bet outcome
     if (isWin) {
       const winAmount = amount * (pool?.odds || 2);
       setWalletBalance(prev => prev + winAmount);
@@ -341,7 +373,7 @@ const BettingGrid = () => {
   };
 
   const estimatedTime = (() => {
-    const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
+    const totalMinutes = BASE_ESTIMATE_TIME_MINUTES + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
@@ -600,10 +632,8 @@ const BettingGrid = () => {
       
     console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
     
-    // Track if the player has any winning bets
     let playerHasWon = false;
     
-    // Process each bet
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       if (bet.poolId) {
@@ -612,7 +642,6 @@ const BettingGrid = () => {
       
       if (isWin) {
         playerHasWon = true;
-        // Find pool to get odds
         const pool = miningPools.find(p => p.id === bet.poolId);
         if (pool) {
           const winAmount = Math.floor(bet.amount * pool.odds);
@@ -627,12 +656,10 @@ const BettingGrid = () => {
       }
     });
     
-    // Only emit the win event if the player actually won
     if (playerHasWon) {
       emitPlayerWin();
     }
     
-    // Clear bets after processing
     setBets([]);
   };
 
@@ -774,36 +801,27 @@ const BettingGrid = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {miningPools.map(pool => (
-            <MiningPoolCard 
-              key={pool.id}
-              pool={pool}
-              onSelect={handleSelectPool}
-              isSelected={selectedPool?.id === pool.id}
-              bets={getBetsOnPool(pool.id)}
-            />
-          ))}
-        </div>
-      </Card>
-      
-      <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Chip Selection</h3>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleCancelLastBet} disabled={bets.length === 0}>
-              <X className="w-2.5 h-2.5" />
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1 py-0.5 h-6 text-[10px] border-btc-orange/20 bg-btc-orange/5 text-white hover:bg-btc-orange/10 hover:border-btc-orange/30" onClick={handleClearBets} disabled={bets.length === 0}>
-              <Trash2 className="w-2.5 h-2.5" />
-              Clear
-            </Button>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-40">
+            <div className="flex space-x-2">
+              <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce"></div>
+            </div>
           </div>
-        </div>
-        <div className="px-0 overflow-x-auto hide-scrollbar">
-          {renderChipSelection()}
-        </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {activePools.map(pool => (
+              <MiningPoolCard 
+                key={pool.id}
+                pool={pool}
+                onSelect={handleSelectPool}
+                isSelected={selectedPool?.id === pool.id}
+                bets={getBetsOnPool(pool.id)}
+              />
+            ))}
+          </div>
+        )}
       </Card>
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl mb-6">
@@ -830,7 +848,6 @@ const BettingGrid = () => {
           </div>
           
           <OriginTabsContent value="bets" className="mt-0 focus-visible:outline-none">
-            {/* Active bets content */}
             {bets && bets.length > 0 ? (
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
                 {getConsolidatedBets().map((consolidatedBet, index) => {
