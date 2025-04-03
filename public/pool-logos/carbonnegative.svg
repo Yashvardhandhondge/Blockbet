@@ -1,0 +1,7 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="90" fill="#15803D" />
+  <path d="M60 80 A40 40 0 0 1 140 80 L120 140 L80 140 Z" fill="#ffffff" />
+  <text x="100" y="70" text-anchor="middle" font-size="20" fill="#15803D">CN</text>
+  <text x="100" y="180" text-anchor="middle" font-size="16" fill="#ffffff">CARBON NEGATIVE</text>
+</svg>

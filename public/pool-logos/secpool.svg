@@ -1,0 +1,7 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="90" fill="#9333EA" />
+  <path d="M70 55 L130 55 L150 100 L130 145 L70 145 L50 100 Z" fill="#ffffff" />
+  <path d="M85 75 L115 75 L130 100 L115 125 L85 125 L70 100 Z" fill="#9333EA" />
+  <text x="100" y="180" text-anchor="middle" font-size="20" fill="#ffffff">SECPOOL</text>
+</svg>

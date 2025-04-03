@@ -229,6 +229,102 @@ export const miningPools: MiningPool[] = [
     region: 'N/A',
     logoUrl: '/Mempool Bitcoin Explorer.svg',
     gradient: 'linear-gradient(135deg, #18181B, #09090B)'
+  },
+  {
+    id: 'btccom',
+    name: 'BTC.com',
+    hashRate: 18.5,
+    hashRatePercent: 3.1,
+    blocksLast24h: 4,
+    colorClass: 'bg-red-400',
+    odds: 32.26,
+    region: 'Asia',
+    logoUrl: '/pool-logos/btccom.svg',
+    gradient: 'linear-gradient(135deg, #FF6B6B, #CC4444)'
+  },
+  {
+    id: 'kucoinpool',
+    name: 'KuCoin Pool',
+    hashRate: 14.8,
+    hashRatePercent: 2.5,
+    blocksLast24h: 4,
+    colorClass: 'bg-emerald-500',
+    odds: 40.0,
+    region: 'Asia',
+    logoUrl: '/pool-logos/kucoinpool.svg',
+    gradient: 'linear-gradient(135deg, #10B981, #047857)'
+  },
+  {
+    id: 'minerium',
+    name: 'Minerium',
+    hashRate: 10.1,
+    hashRatePercent: 1.7,
+    blocksLast24h: 2,
+    colorClass: 'bg-blue-400',
+    odds: 58.82,
+    region: 'Europe',
+    logoUrl: '/pool-logos/minerium.svg',
+    gradient: 'linear-gradient(135deg, #60A5FA, #2563EB)'
+  },
+  {
+    id: 'emcdpool',
+    name: 'EMCD Pool',
+    hashRate: 9.5,
+    hashRatePercent: 1.6,
+    blocksLast24h: 2,
+    colorClass: 'bg-cyan-500',
+    odds: 62.5,
+    region: 'Europe',
+    logoUrl: '/pool-logos/emcdpool.svg',
+    gradient: 'linear-gradient(135deg, #22D3EE, #0891B2)'
+  },
+  {
+    id: 'pegapool',
+    name: 'PEGA Pool',
+    hashRate: 8.9,
+    hashRatePercent: 1.5,
+    blocksLast24h: 2,
+    colorClass: 'bg-lime-500',
+    odds: 66.67,
+    region: 'Europe',
+    logoUrl: '/pool-logos/pegapool.svg',
+    gradient: 'linear-gradient(135deg, #84CC16, #4D7C0F)'
+  },
+  {
+    id: 'titan',
+    name: 'Titan Pool',
+    hashRate: 6.5,
+    hashRatePercent: 1.1,
+    blocksLast24h: 2,
+    colorClass: 'bg-violet-500',
+    odds: 90.91,
+    region: 'North America',
+    logoUrl: '/pool-logos/titan.svg',
+    gradient: 'linear-gradient(135deg, #8B5CF6, #6D28D9)'
+  },
+  {
+    id: 'bitfury',
+    name: 'Bitfury',
+    hashRate: 5.3,
+    hashRatePercent: 0.9,
+    blocksLast24h: 1,
+    colorClass: 'bg-blue-300',
+    odds: 111.11,
+    region: 'Europe',
+    logoUrl: '/pool-logos/bitfury.svg',
+    gradient: 'linear-gradient(135deg, #93C5FD, #3B82F6)'
+  },
+  {
+    id: 'arkpool',
+    name: 'ArkPool',
+    hashRate: 4.8,
+    hashRatePercent: 0.8,
+    blocksLast24h: 1,
+    colorClass: 'bg-amber-400',
+    odds: 125.0,
+    region: 'Asia',
+    logoUrl: '/pool-logos/arkpool.svg',
+    gradient: 'linear-gradient(135deg, #FBBF24, #D97706)'
   }
 ];
 

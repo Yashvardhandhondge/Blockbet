@@ -192,6 +192,22 @@ const getDarkerTechGradient = (poolId: string): string => {
       return 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)';
     case 'foundry':
       return 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)';
+    case 'btccom':
+      return 'linear-gradient(135deg, #4f1a1a 0%, #3d1515 100%)';
+    case 'kucoinpool':
+      return 'linear-gradient(135deg, #1a4d33 0%, #0d2619 100%)';
+    case 'minerium':
+      return 'linear-gradient(135deg, #1a3366 0%, #0d1933 100%)';
+    case 'emcdpool':
+      return 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)';
+    case 'pegapool':
+      return 'linear-gradient(135deg, #4a4d1a 0%, #24260d 100%)';
+    case 'titan':
+      return 'linear-gradient(135deg, #33195e 0%, #1a0d2f 100%)';
+    case 'bitfury':
+      return 'linear-gradient(135deg, #1a3366 0%, #0d1933 100%)';
+    case 'arkpool':
+      return 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)';
     default:
       return 'linear-gradient(135deg, #1a1a2e 0%, #0d0d16 100%)';
   }
@@ -233,6 +249,22 @@ const getPoolColor = (poolId: string): string => {
       return '#F1C40F';
     case 'foundry':
       return '#F97316';
+    case 'btccom':
+      return '#FF6B6B';
+    case 'kucoinpool':
+      return '#10B981';
+    case 'minerium':
+      return '#60A5FA';
+    case 'emcdpool':
+      return '#22D3EE';
+    case 'pegapool':
+      return '#84CC16';
+    case 'titan':
+      return '#8B5CF6';
+    case 'bitfury':
+      return '#93C5FD';
+    case 'arkpool':
+      return '#FBBF24';
     default:
       return '#95A5A6';
   }
