@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BettingGrid from '@/components/BettingGrid';
@@ -16,21 +15,17 @@ const Index = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const isMobile = useIsMobile();
 
-  // Simulate initial loading
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
     }, 1500);
   }, []);
 
-  // Listen for player win events from BettingGrid
   useEffect(() => {
     const handlePlayerWin = (e: CustomEvent<any>) => {
-      // This event will now only be triggered when player actually wins
       setShowConfetti(true);
     };
 
-    // Event name for player winning
     window.addEventListener('playerWin', handlePlayerWin as EventListener);
     
     return () => {
@@ -38,7 +33,6 @@ const Index = () => {
     };
   }, []);
 
-  // Animation for sections
   const headerAnimation = useElementAppear(!isLoading, {
     delay: 300
   });
@@ -54,14 +48,12 @@ const Index = () => {
 
   return <BackgroundGradientAnimation gradientBackgroundStart="rgb(0, 0, 0)" gradientBackgroundEnd="rgb(7, 7, 7)" firstColor="#FFCC66" secondColor="#D19CFF" thirdColor="#7AE5FF" fourthColor="#FFBB7A" fifthColor="#FFDF7A" pointerColor="rgba(255, 190, 60, 0.4)" blendingValue="hard-light" className="w-full h-full" containerClassName="min-h-screen">
       <div className="min-h-screen pb-20">
-        {/* Win Confetti Effect */}
         <WinConfetti 
           isActive={showConfetti} 
           duration={5000}
           onComplete={() => setShowConfetti(false)}
         />
         
-        {/* Loading screen */}
         <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
           <div className="relative h-20 w-20 mb-6">
             <div className="absolute inset-0 rounded-full border-4 border-btc-orange/20"></div>
@@ -76,11 +68,9 @@ const Index = () => {
           </p>
         </div>
         
-        {/* Main content */}
         <Navbar />
         
         <main className="container max-w-7xl mx-auto px-4 pt-24">
-          {/* Header */}
           <div style={headerAnimation.style} className="mb-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
               <span className="text-gradient">Bitcoin</span>
@@ -91,14 +81,10 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Latest mining pool display */}
           <div style={miningPoolAnimation.style} className="mb-5">
             <LatestMiningPool />
           </div>
           
-          {/* Live Block Data has been moved to LatestMiningPool component */}
-          
-          {/* Betting grid */}
           <div style={bettingGridAnimation.style}>
             <BettingGrid />
           </div>
