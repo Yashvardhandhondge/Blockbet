@@ -195,6 +195,18 @@ export const miningPools: MiningPool[] = [
     gradient: 'linear-gradient(135deg, #DB2777, #9D174D)'
   },
   {
+    id: 'nicehash',
+    name: 'NiceHash',
+    hashRate: 11.8,
+    hashRatePercent: 2.0,
+    blocksLast24h: 3,
+    colorClass: 'bg-blue-400',
+    odds: 50.0,
+    region: 'Global',
+    logoUrl: '/pool-logos/nicehash.svg',
+    gradient: 'linear-gradient(135deg, #38BDF8, #0369A1)'
+  },
+  {
     id: 'whitepool',
     name: 'WhitePool',
     hashRate: 11.2,
