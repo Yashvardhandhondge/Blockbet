@@ -1,4 +1,3 @@
-
 import { MiningPool } from './types';
 
 export const miningPools: MiningPool[] = [
@@ -205,6 +204,18 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     logoUrl: '/pool-logos/whitepool.svg',
     gradient: 'linear-gradient(135deg, #ffffff, #d4d4d8)'
+  },
+  {
+    id: 'nicehash',
+    name: 'NiceHash',
+    hashRate: 9.8,
+    hashRatePercent: 1.7,
+    blocksLast24h: 2,
+    colorClass: 'bg-blue-500',
+    odds: 58.82,
+    region: 'Europe',
+    logoUrl: '/pool-logos/nicehash.svg',
+    gradient: 'linear-gradient(135deg, #0072FF, #00C6FF)'
   },
   {
     id: 'unknown',
