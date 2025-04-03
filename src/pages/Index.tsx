@@ -78,7 +78,7 @@ const Index = () => {
         <main className="container max-w-7xl mx-auto px-4 pt-24">
           {/* Header */}
           <div style={headerAnimation.style} className="mb-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               <span className="text-gradient">Bitcoin</span>
               <span className="text-white"> Roulette</span>
             </h1>
