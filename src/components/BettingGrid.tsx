@@ -691,7 +691,9 @@ const BettingGrid = () => {
           </div>
           <div className="flex-grow mx-4 relative">
             <Progress value={progressPercentage} className="h-2 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
-            <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 progress-time-display">
+              <span className="text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -724,7 +726,7 @@ const BettingGrid = () => {
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Choose your chips</h3>
+            <h3 className="text-white text-sm">Step 2. Choose your chips</h3>
           </div>
           {renderChipSelection()}
         </Card>
@@ -761,7 +763,7 @@ const BettingGrid = () => {
             <div className={cn(
               "relative rounded-xl overflow-hidden transition-all duration-300 border h-full",
               selectedPool === null && !!selectedChip ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" : "border-white/10 hover:border-white/20",
-              "cursor-pointer"
+              "cursor-pointer mobile-equal-height"
             )} onClick={() => handlePlaceBet(null)}>
               <div className="absolute inset-0 opacity-30 transition-opacity duration-300 bg-gradient-to-br from-[#1a1a2e] to-[#0d0d16]"></div>
               <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
