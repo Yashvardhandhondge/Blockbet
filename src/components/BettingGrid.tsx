@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { miningPools, updateMiningPoolsData } from '@/utils/miningPools';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
@@ -835,7 +834,7 @@ const BettingGrid = () => {
             </OriginTabsTrigger>
           </OriginTabsList>
           <OriginTabsContent value="history" className="mt-2">
-            <BetHistory history={betHistory} />
+            <BetHistory bets={betHistory} />
           </OriginTabsContent>
           <OriginTabsContent value="deposits" className="mt-2">
             <div className="space-y-3">

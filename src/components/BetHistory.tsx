@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { formatSats, formatBTC } from '@/utils/formatters';
 
 export interface BetHistoryProps {
-  bets: Array<{
+  bets?: Array<{
     id: number;
     poolId: string;
     poolName: string;
@@ -15,7 +15,7 @@ export interface BetHistoryProps {
   }>;
 }
 
-const BetHistory: React.FC<BetHistoryProps> = ({ bets }) => {
+const BetHistory: React.FC<BetHistoryProps> = ({ bets = [] }) => {
   if (bets.length === 0) {
     return (
       <div className="text-center py-6 text-white/40">
