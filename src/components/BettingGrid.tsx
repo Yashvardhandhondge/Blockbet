@@ -724,7 +724,7 @@ const BettingGrid = () => {
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Step 2. Choose your chips.</h3>
+            <h3 className="text-white text-sm">Choose your chips</h3>
           </div>
           {renderChipSelection()}
         </Card>
@@ -757,9 +757,9 @@ const BettingGrid = () => {
             </div>
           ))}
           
-          <div className="transition-all">
+          <div className="transition-all h-full">
             <div className={cn(
-              "relative rounded-xl overflow-hidden transition-all duration-300 border",
+              "relative rounded-xl overflow-hidden transition-all duration-300 border h-full",
               selectedPool === null && !!selectedChip ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" : "border-white/10 hover:border-white/20",
               "cursor-pointer"
             )} onClick={() => handlePlaceBet(null)}>
@@ -819,7 +819,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative mb-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Step 2. Choose your chips.</h3>
+          <h3 className="text-white text-sm">Choose your chips</h3>
         </div>
         {renderChipSelection()}
       </Card>

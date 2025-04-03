@@ -132,6 +132,18 @@
       white-space: nowrap;
     }
     
+    /* Fix time display on the progress bar */
+    .progress-time-display {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      padding: 0 2px;
+      background-color: rgba(0,0,0,0.4);
+      border-radius: 2px;
+    }
+    
     /* Make sure chips fit in one row */
     .mobile-chip-row {
       display: flex;
