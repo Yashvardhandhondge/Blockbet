@@ -742,3 +742,285 @@ const BettingGrid = () => {
         </Card>
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-white text-sm">Step 2. Choose your chips.</h3>
+          </div>
+          {renderChipSelection()}
+        </Card>
+      </div>
+      
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-white text-sm">Step 3. Place your bets on mining pools.</h3>
+          <div className="flex gap-2">
+            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleCancelLastBet}>
+              <Trash2 className="h-3.5 w-3.5 text-white/60 mr-1" />
+              <span>Undo</span>
+            </Button>
+            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleClearBets}>
+              <X className="h-3.5 w-3.5 text-white/60 mr-1" />
+              <span>Clear</span>
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {miningPools.map((pool) => (
+            <div key={pool.id} className="transition-all">
+              <MiningPoolCard 
+                pool={pool} 
+                onSelect={handleSelectPool}
+                isSelected={selectedPool?.id === pool.id}
+                bets={getBetsOnPool(pool.id)}
+              />
+            </div>
+          ))}
+          
+          {/* Empty block bet option */}
+          <div className="transition-all">
+            <div className={cn(
+              "relative rounded-xl overflow-hidden transition-all duration-300 border",
+              selectedPool === null && !!selectedChip ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" : "border-white/10 hover:border-white/20",
+              "cursor-pointer"
+            )} onClick={() => handlePlaceBet(null)}>
+              <div className="absolute inset-0 opacity-30 transition-opacity duration-300 bg-gradient-to-br from-[#1a1a2e] to-[#0d0d16]"></div>
+              <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
+              
+              <div className="relative z-10 p-4 flex flex-col h-full">
+                <div className="flex flex-col items-center mb-1">
+                  <div className="rounded-lg overflow-hidden bg-transparent mb-1 h-16 w-16">
+                    <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
+                      <Server className="w-10 h-10 text-white/40" />
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <h3 className="text-lg font-medium text-white truncate max-w-full">Empty Block</h3>
+                    <div className="mt-0.5 text-xs text-white/60">No miner signature</div>
+                  </div>
+                </div>
+                
+                <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                  <div className="p-2">
+                    <div className="text-white/60 text-xs">Probability</div>
+                    <div className="font-medium text-white">~1%</div>
+                  </div>
+                  <div className="p-2">
+                    <div className="text-white/60 text-xs">Blocks (24h)</div>
+                    <div className="font-medium text-white">3</div>
+                  </div>
+                </div>
+                
+                <div className="mt-auto">
+                  <div className="flex justify-center items-center p-2">
+                    <div className="text-white/80 text-center">
+                      <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">
+                        80.00
+                        <span className="ml-0.5">×</span>
+                      </span>
+                      <span className="ml-1 text-xs text-white/60">payout</span>
+                    </div>
+                  </div>
+                  
+                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full transition-all duration-1000 ease-out"
+                      style={{ width: `1%`, background: 'linear-gradient(135deg, #1a1a2e, #0d0d16)' }}
+                    ></div>
+                  </div>
+                </div>
+
+                {renderStackedChips(getBetsOnPool(null))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden col-span-2">
+          <div className="p-4">
+            <OriginTabs defaultValue="history">
+              <OriginTabsList className="bg-black/40">
+                <OriginTabsTrigger value="history">Bet History</OriginTabsTrigger>
+                <OriginTabsTrigger value="deposits">Deposits</OriginTabsTrigger>
+                <OriginTabsTrigger value="withdrawals">Withdrawals</OriginTabsTrigger>
+              </OriginTabsList>
+              
+              <OriginTabsContent value="history" className="mt-4">
+                <BetHistory history={betHistory} />
+              </OriginTabsContent>
+              
+              <OriginTabsContent value="deposits" className="mt-4">
+                <div className="space-y-3">
+                  {deposits.map(deposit => (
+                    <div key={deposit.id} className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <div className="flex items-center">
+                        <div className="bg-green-500/10 p-1.5 rounded">
+                          <ArrowDownLeft className="h-4 w-4 text-green-500" />
+                        </div>
+                        <div className="ml-3">
+                          <div className="text-sm font-medium text-white">Deposit</div>
+                          <div className="text-xs text-white/60">
+                            {deposit.timestamp.toLocaleDateString()} {deposit.timestamp.toLocaleTimeString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-white">+{formatSatsToBTC(deposit.amount)} BTC</div>
+                        <div className="text-xs text-white/60 flex items-center">
+                          {deposit.txId.substring(0, 8)}...
+                          <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
+                            // Copy TX ID to clipboard
+                            navigator.clipboard?.writeText(deposit.txId);
+                            toast({
+                              title: "TX ID copied",
+                              description: "Transaction ID copied to clipboard",
+                              variant: "default"
+                            });
+                          }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </OriginTabsContent>
+              
+              <OriginTabsContent value="withdrawals" className="mt-4">
+                <div className="space-y-3">
+                  {withdrawals.map(withdrawal => (
+                    <div key={withdrawal.id} className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <div className="flex items-center">
+                        <div className="bg-red-500/10 p-1.5 rounded">
+                          <ArrowUpRight className="h-4 w-4 text-red-500" />
+                        </div>
+                        <div className="ml-3">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium text-white">Withdrawal</span>
+                            <span className={cn(
+                              "ml-2 text-xs px-1.5 py-0.5 rounded",
+                              withdrawal.status === 'completed' ? "bg-green-500/20 text-green-500" :
+                              withdrawal.status === 'pending' ? "bg-yellow-500/20 text-yellow-500" :
+                              "bg-red-500/20 text-red-500"
+                            )}>
+                              {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
+                            </span>
+                          </div>
+                          <div className="text-xs text-white/60">
+                            {withdrawal.timestamp.toLocaleDateString()} {withdrawal.timestamp.toLocaleTimeString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-white">-{formatSatsToBTC(withdrawal.amount)} BTC</div>
+                        <div className="text-xs text-white/60 flex items-center">
+                          {withdrawal.txId.substring(0, 8)}...
+                          <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
+                            // Copy TX ID to clipboard
+                            navigator.clipboard?.writeText(withdrawal.txId);
+                            toast({
+                              title: "TX ID copied",
+                              description: "Transaction ID copied to clipboard",
+                              variant: "default"
+                            });
+                          }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </OriginTabsContent>
+            </OriginTabs>
+          </div>
+        </Card>
+        
+        <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden">
+          <div className="p-4">
+            <h3 className="text-white text-lg font-medium mb-3">Stats</h3>
+            
+            <div className="space-y-4">
+              <StatCard
+                title="Current Block Height"
+                value={`${843325}`}
+                icon={<Server className="h-4 w-4 text-btc-orange" />}
+              />
+              
+              <StatCard
+                title="Pending Transactions"
+                value={`${pendingTxCount.toLocaleString()}`}
+                change="+12.4%"
+                changeType="positive"
+                icon={<Clock className="h-4 w-4 text-btc-orange" />}
+              />
+              
+              <StatCard
+                title="Est. Next Block Time"
+                value={estimatedTime}
+                icon={<Zap className="h-4 w-4 text-btc-orange" />}
+              />
+              
+              <StatCard
+                title="Average Block Time"
+                value={`${avgBlockTime.toFixed(1)} minutes`}
+                icon={<History className="h-4 w-4 text-btc-orange" />}
+              />
+              
+              <div className="bg-white/5 rounded-xl p-4">
+                <h4 className="text-white text-sm font-medium mb-2">Active Bets</h4>
+                
+                {getConsolidatedBets().length > 0 ? (
+                  <div className="space-y-2">
+                    {getConsolidatedBets().map((bet, index) => (
+                      <div key={index} className="flex justify-between items-center bg-white/5 rounded-lg p-2">
+                        <div className="flex items-center">
+                          {bet.poolId ? (
+                            <>
+                              <div className="w-5 h-5 rounded-full overflow-hidden mr-1.5">
+                                {getPoolLogo(bet.poolId)}
+                              </div>
+                              <span className="text-xs text-white">
+                                {miningPools.find(p => p.id === bet.poolId)?.name || 'Unknown Pool'}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Server className="w-4 h-4 text-white/60 mr-1.5" />
+                              <span className="text-xs text-white">Empty Block</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center">
+                          {renderImprovedChips(bet.amounts)}
+                          <span className="text-xs text-white font-medium ml-1">{formatSats(bet.totalAmount)}</span>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
+                      <span className="text-xs text-white">Total</span>
+                      <span className="text-sm text-white font-medium">{formatSats(totalBet)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-2 text-white/60 text-sm">
+                    No active bets
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default BettingGrid;
