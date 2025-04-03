@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { formatSats, formatBTC } from '@/utils/formatters';
+import { formatSats, formatSatsToBTC } from '@/utils/formatters';
 
 export interface BetHistoryProps {
   bets: Array<{
@@ -70,7 +70,7 @@ const BetHistory: React.FC<BetHistoryProps> = ({ bets }) => {
               {formatSats(bet.amount)}
             </div>
             <div className="text-xs text-white/60">
-              {formatBTC(bet.amount / 100000000)}
+              {formatSatsToBTC(bet.amount)}
             </div>
           </div>
         </div>
