@@ -43,6 +43,7 @@ const getPoolLogo = (poolName: string): string => {
     'spiderpool': '/pool-logos/spiderpool.svg',
     'rawpool': '/pool-logos/rawpool.svg',
     'sigmapool': '/pool-logos/sigmapoolcom.svg',
+    'secpool': '/pool-logos/secpool.svg', // Adding explicit mapping for SECPOOL
   };
   
   // Check if we have a logo for this pool

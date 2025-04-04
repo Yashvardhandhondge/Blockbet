@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
@@ -107,8 +108,10 @@ const LatestMiningPool = () => {
       'whitepool': '/pool-logos/whitepool.svg',
       'spiderpool': '/pool-logos/spiderpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
+      'secpool': '/pool-logos/secpool.svg', // Adding explicit mapping for SECPOOL
     };
     
+    // Check if we have a logo for this pool
     for (const [key, value] of Object.entries(poolLogoMap)) {
       if (normalizedName.includes(key)) {
         return value;
