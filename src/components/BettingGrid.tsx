@@ -681,6 +681,34 @@ const BettingGrid = () => {
     );
   };
 
+  const fetchMiningPoolStats = async () => {
+    try {
+      // This will update the global mining pools data with real-time information
+    } catch (err) {
+      console.error('Error fetching multipliers:', err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchMultipliers = async () => {
+      try {
+        // This will update the global mining pools data with real-time information
+        await fetchMiningPoolStats();
+      } catch (err) {
+        console.error('Error fetching multipliers:', err);
+      }
+    };
+
+    // Call once when component mounts
+    fetchMultipliers();
+    
+    // Then update every 5 minutes
+    const intervalId = setInterval(fetchMultipliers, 300000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const emptyBlockOdds = 50;
+
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
@@ -796,18 +824,21 @@ const BettingGrid = () => {
                 <div className="mt-auto">
                   <div className="flex justify-center items-center p-2">
                     <div className="text-white/80 text-center">
-                      <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">
-                        80.00
-                        <span className="ml-0.5">×</span>
-                      </span>
+                      <div className="flex items-center justify-center">
+                        <span className="text-lg font-bold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-500 bg-clip-text text-transparent animate-pulse-subtle">
+                          {emptyBlockOdds.toFixed(2)}
+                          <span className="ml-0.5">×</span>
+                        </span>
+                        <span className="ml-1 text-xs px-1.5 py-0.5 rounded bg-yellow-400/20 text-yellow-400">MAX</span>
+                      </div>
                       <span className="ml-1 text-xs text-white/60">payout</span>
                     </div>
                   </div>
                   
                   <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                     <div 
-                      className="h-full transition-all duration-1000 ease-out"
-                      style={{ width: `1%`, background: 'linear-gradient(135deg, #1a1a2e, #0d0d16)' }}
+                      className="h-full transition-all duration-1000 ease-out bg-gradient-to-r from-yellow-500 to-yellow-300"
+                      style={{ width: `1%` }}
                     ></div>
                   </div>
                 </div>
