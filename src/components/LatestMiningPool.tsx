@@ -111,8 +111,10 @@ const LatestMiningPool = () => {
       'mara pool': '/pool-logos/marapool.svg',
       'whitepool': '/pool-logos/whitepool.svg',
       'spiderpool': '/pool-logos/spiderpool.svg',
+      'rawpool': '/pool-logos/rawpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
       'secpool': '/pool-logos/secpool.svg',
+      'ocean': '/pool-logos/Ocean.svg',
     };
     
     for (const [key, value] of Object.entries(poolLogoMap)) {

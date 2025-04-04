@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -49,6 +48,7 @@ const getPoolLogo = (poolName: string): string => {
     'rawpool': '/pool-logos/rawpool.svg',
     'sigmapool': '/pool-logos/sigmapoolcom.svg',
     'secpool': '/pool-logos/secpool.svg',
+    'ocean': '/pool-logos/Ocean.svg',
   };
   
   // Check if we have a logo for this pool

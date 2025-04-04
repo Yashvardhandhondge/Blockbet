@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { fetchMiningPoolStats } from '@/api/miningPoolStatsApi';
 import { MiningPoolStats as PoolStats } from '@/services/mempoolService';
@@ -67,6 +68,7 @@ const MiningPoolStats = () => {
     if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
     if (poolName === 'Titan Pool' || poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
+    if (poolName === 'Ocean' || poolName === 'OCEAN') return '/pool-logos/Ocean.svg';
     
     return '/pool-logos/unknown.svg';
   };
