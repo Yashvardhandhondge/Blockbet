@@ -61,8 +61,6 @@ export interface MiningPoolStats {
   poolName: string;
   blocksCount: number;
   percentage: number;
-  multiplier: number; // Added multiplier to the interface
-  isSpecial?: boolean; // Flag to indicate special blocks with capped multiplier
 }
 
 /**
@@ -85,25 +83,6 @@ export const fetchRecentBlocks = async (): Promise<MempoolBlock[]> => {
     console.error('Error fetching recent blocks:', error);
     throw error;
   }
-};
-
-/**
- * Checks if a block is an empty block (only contains coinbase transaction)
- * @param block Block data from mempool.space API
- * @returns boolean indicating if block is empty
- */
-export const isEmptyBlock = (block: MempoolBlock): boolean => {
-  // A block with only 1 transaction contains just the coinbase transaction
-  return block.tx_count === 1;
-};
-
-/**
- * Checks if a block is from an unknown/unidentified miner
- * @param block Block data from mempool.space API
- * @returns boolean indicating if miner is unknown
- */
-export const isUnknownMiner = (block: MempoolBlock): boolean => {
-  return !block.extras?.pool || !block.extras.pool.name;
 };
 
 /**
@@ -191,55 +170,20 @@ export const calculateMiningPoolStats = (blocks: MempoolBlock[]): MiningPoolStat
   
   // Count blocks by mining pool
   const poolCounts = new Map<string, number>();
-  const emptyBlocks = new Map<string, number>();
-  
   last24HoursBlocks.forEach(block => {
-    const poolName = block.extras?.pool?.name || "Unknown";
-    poolCounts.set(poolName, (poolCounts.get(poolName) || 0) + 1);
-    
-    // Track empty blocks separately
-    if (isEmptyBlock(block)) {
-      emptyBlocks.set(poolName, (emptyBlocks.get(poolName) || 0) + 1);
+    if (block.extras?.pool?.name) {
+      const poolName = block.extras.pool.name;
+      poolCounts.set(poolName, (poolCounts.get(poolName) || 0) + 1);
     }
   });
   
   // Calculate percentages and create stats objects
   const totalBlocks = last24HoursBlocks.length;
-  const stats: MiningPoolStats[] = Array.from(poolCounts.entries()).map(([poolName, blocksCount]) => {
-    const percentage = (blocksCount / totalBlocks) * 100;
-    let multiplier = 0;
-    let isSpecial = false;
-    
-    // Special case: Unknown miners and Empty blocks get fixed 50x multiplier
-    if (poolName === "Unknown" || emptyBlocks.get(poolName)) {
-      multiplier = 50;
-      isSpecial = true;
-    } else {
-      // Apply the multiplier formula with 50x cap
-      multiplier = Math.min(100 / percentage, 50);
-    }
-    
-    return {
-      poolName,
-      blocksCount,
-      percentage,
-      multiplier: parseFloat(multiplier.toFixed(2)),
-      isSpecial
-    };
-  });
-  
-  // Add a special entry for empty blocks if any exist
-  const totalEmptyBlocks = Array.from(emptyBlocks.values()).reduce((sum, count) => sum + count, 0);
-  if (totalEmptyBlocks > 0) {
-    const emptyBlockPercentage = (totalEmptyBlocks / totalBlocks) * 100;
-    stats.push({
-      poolName: "Empty Blocks",
-      blocksCount: totalEmptyBlocks,
-      percentage: emptyBlockPercentage,
-      multiplier: 50,
-      isSpecial: true
-    });
-  }
+  const stats: MiningPoolStats[] = Array.from(poolCounts.entries()).map(([poolName, blocksCount]) => ({
+    poolName,
+    blocksCount,
+    percentage: (blocksCount / totalBlocks) * 100
+  }));
   
   // Sort by block count descending
   return stats.sort((a, b) => b.blocksCount - a.blocksCount);

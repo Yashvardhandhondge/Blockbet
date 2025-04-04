@@ -66,8 +66,6 @@ const MiningPoolStats = () => {
     if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
     if (poolName === 'Titan Pool' || poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
-    if (poolName === 'SECPOOL') return '/pool-logos/secpool.svg';
-    if (poolName === 'Empty Blocks') return '/pool-logos/unknown.svg';
     
     return '/pool-logos/default.svg';
   };
@@ -148,28 +146,12 @@ const MiningPoolStats = () => {
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between mb-1">
-                    <div className="flex items-center">
-                      <span className="text-sm text-white">{pool.poolName}</span>
-                      {pool.isSpecial && (
-                        <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-yellow-400/20 text-yellow-400">MAX</span>
-                      )}
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-sm text-white/80">{pool.blocksCount} blocks ({pool.percentage.toFixed(1)}%)</span>
-                      <span className={cn(
-                        "ml-2 text-sm font-medium",
-                        pool.isSpecial ? "text-yellow-400" : "text-btc-orange"
-                      )}>
-                        {pool.multiplier.toFixed(2)}×
-                      </span>
-                    </div>
+                    <span className="text-sm text-white">{pool.poolName}</span>
+                    <span className="text-sm text-white/80">{pool.blocksCount} blocks ({pool.percentage.toFixed(1)}%)</span>
                   </div>
                   <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                     <div 
-                      className={cn(
-                        "h-full",
-                        pool.isSpecial ? "bg-gradient-to-r from-yellow-500 to-yellow-400" : "bg-gradient-to-r from-orange-500 to-yellow-400"
-                      )}
+                      className="h-full bg-gradient-to-r from-orange-500 to-yellow-400"
                       style={{ width: `${pool.percentage}%` }}
                     ></div>
                   </div>
