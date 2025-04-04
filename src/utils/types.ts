@@ -7,7 +7,7 @@ export interface MiningPool {
   blocksLast24h: number;
   colorClass: string;
   odds: number;
-  region: string; // Changed from union type to string to match mockData.ts
+  region: string;
   logoUrl: string;
   gradient: string;
 }
@@ -28,4 +28,12 @@ export interface Block {
 export interface UserBalance {
   availableBalance: number;
   inPlay: number;
+}
+
+export interface MiningPoolLiveStats {
+  poolName: string;
+  poolId: string;
+  hashRatePercent: number;
+  blocksLast24h: number;
+  odds: number;
 }

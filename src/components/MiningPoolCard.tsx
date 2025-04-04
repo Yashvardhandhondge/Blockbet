@@ -1,10 +1,12 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
 import { BackgroundGradientAnimation } from './ui/background-gradient-animation';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useMiningPoolStats } from '@/hooks/use-mining-pool-stats';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
@@ -23,10 +25,25 @@ const MiningPoolCard = ({
 }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useIsMobile();
+  const { liveStats } = useMiningPoolStats();
   
-  const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
+  // Find live stats for this pool
+  const livePoolStats = liveStats.find(stat => stat.poolId === pool.id);
+  
+  // Use live data if available, otherwise use static data
+  const displayHashratePercent = livePoolStats?.hashRatePercent ?? pool.hashRatePercent;
+  const displayBlocksLast24h = livePoolStats?.blocksLast24h ?? pool.blocksLast24h;
+  const displayOdds = livePoolStats?.odds ?? pool.odds;
+  
+  const displayedHashrate = useCountUp(displayHashratePercent, 1500, 300);
   
   const poolColor = getPoolColor(pool.id);
+  
+  // Update the pool data display when live stats change
+  useEffect(() => {
+    // This effect will run whenever liveStats changes
+    // No need to do anything here as we're now using the derived values directly in render
+  }, [liveStats, pool.id]);
   
   return (
     <div 
@@ -111,9 +128,17 @@ const MiningPoolCard = ({
               <div className="text-white/60 text-xs">Hashrate</div>
               <div className="font-medium text-white">{pool.hashRate.toFixed(1)} EH/s</div>
             </div>
-            <div className="p-2">
+            <div className="p-2 relative">
               <div className="text-white/60 text-xs">Blocks (24h)</div>
-              <div className="font-medium text-white">{pool.blocksLast24h}</div>
+              <div className="font-medium text-white">
+                {displayBlocksLast24h}
+                {livePoolStats && displayBlocksLast24h !== pool.blocksLast24h && (
+                  <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -128,7 +153,7 @@ const MiningPoolCard = ({
                 "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
                 isMobile ? "text-sm" : "text-lg"
               )}>
-                {pool.odds.toFixed(2)}
+                {displayOdds.toFixed(2)}
                 <span className="ml-0.5">×</span>
               </span>
               <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
@@ -380,4 +405,136 @@ const renderStackedChips = (bets: Array<{
   );
 };
 
+const getDarkerTechGradient = (poolId: string): string => {
+  switch(poolId) {
+    case 'braiinspool':
+      return 'linear-gradient(135deg, #0a2e4f 0%, #041424 100%)';
+    case 'f2pool':
+      return 'linear-gradient(135deg, #0a3a4f 0%, #051b24 100%)';
+    case 'antpool':
+      return 'linear-gradient(135deg, #4a0e0e 0%, #2a0606 100%)';
+    case 'viabtc':
+      return 'linear-gradient(135deg, #4a2e0e 0%, #221605 100%)';
+    case 'bitcoincom':
+      return 'linear-gradient(135deg, #2a1f5e 0%, #16102d 100%)';
+    case 'poolin':
+      return 'linear-gradient(135deg, #0a4a30 0%, #052218 100%)';
+    case 'sbicrypto':
+      return 'linear-gradient(135deg, #1a3366 0%, #0d1b33 100%)';
+    case 'spiderpool':
+      return 'linear-gradient(135deg, #664d1a 0%, #33260d 100%)';
+    case 'luxor':
+      return 'linear-gradient(135deg, #664d1a 0%, #33270d 100%)';
+    case 'ultimuspool':
+      return 'linear-gradient(135deg, #1a1a66 0%, #0d0d33 100%)';
+    case 'ocean':
+      return 'linear-gradient(135deg, #1a3366 0%, #0d1933 100%)';
+    case 'secpool':
+      return 'linear-gradient(135deg, #33195e 0%, #1a0d2f 100%)';
+    case 'carbonnegative':
+      return 'linear-gradient(135deg, #1a4d33 0%, #0d2619 100%)';
+    case 'bitfufupool':
+      return 'linear-gradient(135deg, #4d1a33 0%, #260d19 100%)';
+    case 'whitepool':
+      return 'linear-gradient(135deg, #474747 0%, #242424 100%)';
+    case 'binance':
+      return 'linear-gradient(135deg, #4a3f0e 0%, #241f05 100%)';
+    case 'foundry':
+      return 'linear-gradient(135deg, #4f1a00 0%, #3d1500 100%)';
+    default:
+      return 'linear-gradient(135deg, #1a1a2e 0%, #0d0d16 100%)';
+  }
+};
+
+const getPoolColor = (poolId: string): string => {
+  switch(poolId) {
+    case 'braiinspool':
+      return '#1ABC9C';
+    case 'f2pool':
+      return '#3498DB';
+    case 'antpool':
+      return '#E74C3C';
+    case 'viabtc':
+      return '#E67E22';
+    case 'bitcoincom':
+      return '#9B59B6';
+    case 'poolin':
+      return '#2ECC71';
+    case 'sbicrypto':
+      return '#0065F5';
+    case 'spiderpool':
+      return '#FFBE1E';
+    case 'luxor':
+      return '#F0BB31';
+    case 'ultimuspool':
+      return '#1652EE';
+    case 'ocean':
+      return '#72BBFF';
+    case 'secpool':
+      return '#9333EA';
+    case 'carbonnegative':
+      return '#15803D';
+    case 'bitfufupool':
+      return '#DB2777';
+    case 'whitepool':
+      return '#FFFFFF';
+    case 'binance':
+      return '#F1C40F';
+    case 'foundry':
+      return '#F97316';
+    default:
+      return '#95A5A6';
+  }
+};
+
+const getChipColor = (value: number) => {
+  switch(value) {
+    case 100:
+      return "bg-blue-600";
+    case 500:
+      return "bg-green-600";
+    case 1000:
+      return "bg-purple-600";
+    case 5000:
+      return "bg-pink-600";
+    case 10000:
+      return "bg-orange-600";
+    case 50000:
+      return "bg-red-600";
+    case 100000:
+      return "bg-yellow-600";
+    default:
+      return "bg-gray-600";
+  }
+};
+
+const getChipSecondaryColor = (value: number) => {
+  switch(value) {
+    case 100:
+      return "bg-blue-500";
+    case 500:
+      return "bg-green-500";
+    case 1000:
+      return "bg-purple-500";
+    case 5000:
+      return "bg-pink-500";
+    case 10000:
+      return "bg-orange-500";
+    case 50000:
+      return "bg-red-500";
+    case 100000:
+      return "bg-yellow-500";
+    default:
+      return "bg-gray-500";
+  }
+};
+
+const formatChipValue = (value: number): string => {
+  if (value >= 1000) {
+    return `${value / 1000}K`;
+  }
+  return value.toString();
+};
+
 export default MiningPoolCard;
+

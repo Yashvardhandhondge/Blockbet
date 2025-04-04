@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { fetchMiningPoolStats } from '@/api/miningPoolStatsApi';
+import { fetchMiningPoolStats, fetchLiveMiningPoolStats } from '@/api/miningPoolStatsApi';
 import { MiningPoolStats as PoolStats } from '@/services/mempoolService';
+import { MiningPoolLiveStats } from '@/utils/types';
 import { AuroraContainer } from '@/components/ui/aurora-container';
 import { Pickaxe, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,15 +11,23 @@ import { toast } from './ui/use-toast';
 
 const MiningPoolStats = () => {
   const [poolStats, setPoolStats] = useState<PoolStats[]>([]);
+  const [livePoolStats, setLivePoolStats] = useState<MiningPoolLiveStats[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
+  
   const fetchData = async () => {
     try {
       setIsLoading(true);
+      
+      // Fetch enhanced live stats that combine hashrate and block data
+      const liveStats = await fetchWithRetry(() => fetchLiveMiningPoolStats(), 3, 2000);
+      setLivePoolStats(liveStats);
+      
+      // Fetch standard pool stats for backward compatibility
       const stats = await fetchWithRetry(() => fetchMiningPoolStats(), 3, 2000);
       setPoolStats(stats);
+      
       setLastUpdated(new Date());
       setError(null);
     } catch (err) {
@@ -37,8 +46,8 @@ const MiningPoolStats = () => {
   useEffect(() => {
     fetchData();
     
-    // Refresh every 5 minutes (300000ms)
-    const intervalId = setInterval(fetchData, 300000);
+    // Refresh every 1 minute (60000ms) for more real-time data
+    const intervalId = setInterval(fetchData, 60000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -66,6 +75,7 @@ const MiningPoolStats = () => {
     if (poolName === 'Minerium') return '/pool-logos/minerium.svg';
     if (poolName === 'Titan Pool' || poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
+    if (poolName === 'SECPOOL') return '/pool-logos/secpool.svg';
     
     return '/pool-logos/default.svg';
   };
@@ -86,6 +96,17 @@ const MiningPoolStats = () => {
     if (diffHours === 1) return '1 hour ago';
     return `${diffHours} hours ago`;
   };
+
+  // Decide which stats to display, preferring live stats but falling back to poolStats
+  const displayStats = livePoolStats.length > 0 
+    ? livePoolStats.map(stat => ({
+        poolName: stat.poolName,
+        blocksCount: stat.blocksLast24h,
+        percentage: stat.hashRatePercent,
+        poolId: stat.poolId,
+        odds: stat.odds
+      }))
+    : poolStats;
 
   return (
     <AuroraContainer className="w-full rounded-xl overflow-hidden">
@@ -112,7 +133,7 @@ const MiningPoolStats = () => {
       </div>
       
       <div className="p-4 bg-gradient-to-b from-[#0a0a0a] to-[#070707]">
-        {isLoading && poolStats.length === 0 ? (
+        {isLoading && displayStats.length === 0 ? (
           <div className="flex justify-center items-center h-40">
             <div className="flex space-x-2">
               <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:-0.3s]"></div>
@@ -132,7 +153,7 @@ const MiningPoolStats = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {poolStats.map((pool) => (
+            {displayStats.map((pool) => (
               <div key={pool.poolName} className="flex items-center">
                 <div className="w-6 h-6 rounded-full overflow-hidden bg-black flex items-center justify-center mr-3">
                   <img
@@ -147,7 +168,16 @@ const MiningPoolStats = () => {
                 <div className="flex-grow">
                   <div className="flex justify-between mb-1">
                     <span className="text-sm text-white">{pool.poolName}</span>
-                    <span className="text-sm text-white/80">{pool.blocksCount} blocks ({pool.percentage.toFixed(1)}%)</span>
+                    <div className="flex items-center">
+                      <span className="text-sm text-white/80">
+                        {pool.blocksCount} blocks ({pool.percentage.toFixed(1)}%)
+                      </span>
+                      {'odds' in pool && (
+                        <span className="ml-2 text-xs bg-btc-orange/10 text-btc-orange px-1.5 py-0.5 rounded-full">
+                          {pool.odds.toFixed(2)}×
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                     <div 
@@ -159,7 +189,7 @@ const MiningPoolStats = () => {
               </div>
             ))}
             
-            {poolStats.length === 0 && !isLoading && !error && (
+            {displayStats.length === 0 && !isLoading && !error && (
               <p className="text-center text-white/60 py-8">No mining pool data available for the last 24 hours</p>
             )}
           </div>

@@ -3,6 +3,8 @@
  * Service for interacting with the Mempool.space API
  */
 
+import { MiningPoolLiveStats } from '../utils/types';
+
 // Base URL for the Mempool.space API
 const BASE_URL = 'https://mempool.space/api';
 
@@ -63,6 +65,14 @@ export interface MiningPoolStats {
   percentage: number;
 }
 
+export interface MiningHashrateStats {
+  timestamp: number;
+  avgHashrate: number;
+  poolsShare: {
+    [key: string]: number; // poolId -> share percentage
+  }
+}
+
 /**
  * Fetches recent blocks from the Mempool.space API
  * @returns Promise with an array of block data
@@ -100,6 +110,26 @@ export const fetchPendingTransactions = async (): Promise<MempoolTransaction[]> 
     return await response.json();
   } catch (error) {
     console.error('Error fetching pending transactions:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches mining hashrate statistics
+ * @returns Promise with mining hashrate data
+ */
+export const fetchMiningHashrateStats = async (): Promise<MiningHashrateStats> => {
+  try {
+    const response = await fetch(`${BASE_URL}/v1/mining/hashrate/pools/1m`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch mining hashrate stats: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return data[0]; // Get the most recent entry
+  } catch (error) {
+    console.error('Error fetching mining hashrate stats:', error);
     throw error;
   }
 };
@@ -159,6 +189,58 @@ export const estimateNextBlockTime = (blocks: MempoolBlock[]): string => {
 };
 
 /**
+ * Maps pool IDs from mempool.space API to our internal pool IDs
+ * @param mempoolPoolId Pool ID from mempool.space API
+ * @returns Our internal pool ID
+ */
+export const mapMempoolPoolIdToInternal = (mempoolPoolId: string, poolName: string): string => {
+  const poolIdMap: Record<string, string> = {
+    'foundryusa': 'foundry',
+    'antpool': 'antpool',
+    'f2pool': 'f2pool',
+    'binancepool': 'binance',
+    'viabtc': 'viabtc',
+    'braiinspool': 'braiinspool',
+    'poolin': 'poolin',
+    'sbicrypto': 'sbicrypto',
+    'btccom': 'bitcoincom',
+    'luxor': 'luxor',
+    'marapool': 'spiderpool', // Assuming some mappings
+    'ultimuspool': 'ultimuspool',
+    'slushpool': 'braiinspool', // SlushPool is now Braiins Pool
+    'okex': 'ocean',
+    'huobipool': 'bitfufupool',
+    'unknown': 'unknown'
+  };
+  
+  // First try direct match
+  if (poolIdMap[mempoolPoolId.toLowerCase()]) {
+    return poolIdMap[mempoolPoolId.toLowerCase()];
+  }
+  
+  // Try matching by name parts
+  const normalizedName = poolName.toLowerCase();
+  if (normalizedName.includes('foundry')) return 'foundry';
+  if (normalizedName.includes('antpool')) return 'antpool';
+  if (normalizedName.includes('f2pool')) return 'f2pool';
+  if (normalizedName.includes('binance')) return 'binance';
+  if (normalizedName.includes('viabtc')) return 'viabtc';
+  if (normalizedName.includes('braiins') || normalizedName.includes('slush')) return 'braiinspool';
+  if (normalizedName.includes('poolin')) return 'poolin';
+  if (normalizedName.includes('sbi')) return 'sbicrypto';
+  if (normalizedName.includes('bitcoin.com') || normalizedName.includes('btc.com')) return 'bitcoincom';
+  if (normalizedName.includes('luxor')) return 'luxor';
+  if (normalizedName.includes('spider')) return 'spiderpool';
+  if (normalizedName.includes('ultimus')) return 'ultimuspool';
+  if (normalizedName.includes('ocean')) return 'ocean';
+  if (normalizedName.includes('carbon')) return 'carbonnegative';
+  if (normalizedName.includes('secpool')) return 'secpool';
+  
+  // Default to unknown if no match found
+  return 'unknown';
+};
+
+/**
  * Calculates mining pool statistics for the last 24 hours
  * @param blocks Array of recent blocks
  * @returns Array of mining pool stats
@@ -187,4 +269,85 @@ export const calculateMiningPoolStats = (blocks: MempoolBlock[]): MiningPoolStat
   
   // Sort by block count descending
   return stats.sort((a, b) => b.blocksCount - a.blocksCount);
+};
+
+/**
+ * Calculate live mining pool statistics combining 24h blocks and hashrate data
+ * @returns Promise with live mining pool statistics
+ */
+export const calculateLiveMiningPoolStats = async (): Promise<MiningPoolLiveStats[]> => {
+  try {
+    // Fetch recent blocks and hashrate stats
+    const blocks = await fetchRecentBlocks();
+    const blockStats = calculateMiningPoolStats(blocks);
+    
+    // Create stats map indexed by pool name
+    const statsMap = new Map<string, MiningPoolLiveStats>();
+    
+    // Process block statistics
+    blockStats.forEach(stat => {
+      const internalPoolId = mapMempoolPoolIdToInternal(
+        stat.poolName.toLowerCase().replace(/\s/g, ''),
+        stat.poolName
+      );
+      
+      statsMap.set(stat.poolName, {
+        poolName: stat.poolName,
+        poolId: internalPoolId,
+        hashRatePercent: stat.percentage,
+        blocksLast24h: stat.blocksCount,
+        odds: calculateMultiplier(stat.percentage)
+      });
+    });
+    
+    // Try to get more accurate hashrate data if available
+    try {
+      const hashrateStats = await fetchMiningHashrateStats();
+      
+      if (hashrateStats && hashrateStats.poolsShare) {
+        // Update stats with real hashrate data when available
+        Object.entries(hashrateStats.poolsShare).forEach(([poolName, percentage]) => {
+          if (statsMap.has(poolName)) {
+            const stats = statsMap.get(poolName)!;
+            stats.hashRatePercent = percentage * 100; // Convert from decimal to percentage
+            stats.odds = calculateMultiplier(stats.hashRatePercent);
+          } else {
+            // Add new pool that wasn't seen in blocks
+            const internalPoolId = mapMempoolPoolIdToInternal(
+              poolName.toLowerCase().replace(/\s/g, ''),
+              poolName
+            );
+            
+            statsMap.set(poolName, {
+              poolName,
+              poolId: internalPoolId,
+              hashRatePercent: percentage * 100, // Convert from decimal to percentage
+              blocksLast24h: 0, // No blocks in the last 24h
+              odds: calculateMultiplier(percentage * 100)
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Could not fetch hashrate stats, using block count percentages instead:', error);
+    }
+    
+    // Convert map to array and sort by hashrate percentage descending
+    return Array.from(statsMap.values())
+      .sort((a, b) => b.hashRatePercent - a.hashRatePercent);
+  } catch (error) {
+    console.error('Error calculating live mining pool stats:', error);
+    throw error;
+  }
+};
+
+/**
+ * Calculate multiplier based on hashrate percentage
+ * @param percentage Hashrate percentage
+ * @returns Multiplier capped at 50x
+ */
+const calculateMultiplier = (percentage: number): number => {
+  if (percentage <= 0) return 50; // Avoid division by zero
+  const multiplier = 100 / percentage;
+  return Math.min(multiplier, 50); // Cap at 50x
 };

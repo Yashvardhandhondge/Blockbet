@@ -9,6 +9,7 @@ import { BackgroundGradientAnimation } from '@/components/ui/background-gradient
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
 import WinConfetti from '@/components/WinConfetti';
+import { MiningPoolStatsProvider } from '@/hooks/use-mining-pool-stats';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
