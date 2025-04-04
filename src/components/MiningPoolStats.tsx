@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { fetchMiningPoolStats, fetchLiveMiningPoolStats } from '@/api/miningPoolStatsApi';
 import { MiningPoolStats as PoolStats } from '@/services/mempoolService';
@@ -108,6 +107,14 @@ const MiningPoolStats = () => {
       }))
     : poolStats;
 
+  // Ensure the multiplier is properly typed before calling toFixed
+  const getMultiplierDisplay = (multiplier: number | unknown): string => {
+    if (typeof multiplier === 'number') {
+      return multiplier.toFixed(2);
+    }
+    return '0.00';
+  };
+
   return (
     <AuroraContainer className="w-full rounded-xl overflow-hidden">
       <div className="p-3 border-b border-white/10 flex justify-between items-center">
@@ -174,7 +181,7 @@ const MiningPoolStats = () => {
                       </span>
                       {'odds' in pool && (
                         <span className="ml-2 text-xs bg-btc-orange/10 text-btc-orange px-1.5 py-0.5 rounded-full">
-                          {pool.odds.toFixed(2)}×
+                          {getMultiplierDisplay(pool.odds)}×
                         </span>
                       )}
                     </div>
