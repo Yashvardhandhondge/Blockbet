@@ -740,3 +740,139 @@ const BettingGrid = () => {
               <Trash2 className="h-3.5 w-3.5 text-white/60 mr-1" />
               <span>Undo</span>
             </Button>
+            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleClearBets}>
+              <X className="h-3.5 w-3.5 text-white/60 mr-1" />
+              <span>Clear</span>
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {miningPools.map(pool => (
+            <MiningPoolCard 
+              key={pool.id}
+              pool={pool}
+              isSelected={selectedPool?.id === pool.id}
+              onSelect={() => handleSelectPool(pool)}
+              className="h-[150px]"
+            />
+          ))}
+        </div>
+        
+        <div className="mt-12 space-y-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-white text-sm">Your Bets</h3>
+            <div className="text-xs text-white/60">
+              Total: {formatSats(totalBet)}
+            </div>
+          </div>
+          
+          <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl">
+            {bets && bets.length > 0 ? (
+              <div className="space-y-3">
+                {getConsolidatedBets().map(bet => (
+                  <div key={bet.poolId || 'empty'} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+                    <div className="flex items-center">
+                      {bet.poolId ? (
+                        <div className="w-8 h-8 rounded-full overflow-hidden mr-3">
+                          {getPoolLogo(bet.poolId)}
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                          <span className="text-white text-xs">?</span>
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-sm font-medium text-white">
+                          {bet.poolId ? miningPools.find(p => p.id === bet.poolId)?.name || 'Unknown' : 'Empty Block'}
+                        </div>
+                        <div className="text-xs text-white/60">
+                          {bet.poolId ? (
+                            <span>{miningPools.find(p => p.id === bet.poolId)?.odds.toFixed(2)}x odds</span>
+                          ) : (
+                            <span>Unknown odds</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      {renderImprovedChips(bet.amounts)}
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-white">{formatSats(bet.totalAmount)}</div>
+                        <div className="text-xs text-white/60">{formatSatsToBTC(bet.totalAmount)}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-white/40">
+                No active bets. Select a chip and place your bet on a mining pool.
+              </div>
+            )}
+          </Card>
+          
+          <div className="mt-12">
+            <OriginTabs defaultValue="history">
+              <OriginTabsList className="w-full mb-4">
+                <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />} className="flex-1">
+                  Bet History
+                </OriginTabsTrigger>
+                <OriginTabsTrigger value="deposits" icon={<ArrowDownLeft className="h-4 w-4" />} className="flex-1">
+                  Deposits
+                </OriginTabsTrigger>
+                <OriginTabsTrigger value="withdrawals" icon={<ArrowUpRight className="h-4 w-4" />} className="flex-1">
+                  Withdrawals
+                </OriginTabsTrigger>
+              </OriginTabsList>
+              <OriginTabsContent value="history">
+                <BetHistory bets={betHistory} />
+              </OriginTabsContent>
+              <OriginTabsContent value="deposits">
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  {deposits.map(deposit => (
+                    <div key={deposit.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                      <div>
+                        <div className="text-sm font-medium text-white">Deposit</div>
+                        <div className="text-xs text-white/60">{deposit.timestamp.toLocaleDateString()} • #{deposit.id}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-green-400">+{formatSats(deposit.amount)}</div>
+                        <div className="text-xs text-white/60">{formatSatsToBTC(deposit.amount)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </OriginTabsContent>
+              <OriginTabsContent value="withdrawals">
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  {withdrawals.map(withdrawal => (
+                    <div key={withdrawal.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                      <div>
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-white">Withdrawal</div>
+                          {withdrawal.status === 'pending' && (
+                            <div className="ml-2 px-1.5 py-0.5 bg-yellow-500/10 text-yellow-500 rounded-full text-xs">
+                              Pending
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-xs text-white/60">{withdrawal.timestamp.toLocaleDateString()} • #{withdrawal.id}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-red-400">-{formatSats(withdrawal.amount)}</div>
+                        <div className="text-xs text-white/60">{formatSatsToBTC(withdrawal.amount)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </OriginTabsContent>
+            </OriginTabs>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BettingGrid;
