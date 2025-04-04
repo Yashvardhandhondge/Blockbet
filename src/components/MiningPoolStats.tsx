@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { fetchMiningPoolStats } from '@/api/miningPoolStatsApi';
 import { MiningPoolStats as PoolStats } from '@/services/mempoolService';
@@ -37,13 +36,15 @@ const MiningPoolStats = () => {
   useEffect(() => {
     fetchData();
     
-    // Refresh every 5 minutes (300000ms)
     const intervalId = setInterval(fetchData, 300000);
     return () => clearInterval(intervalId);
   }, []);
 
-  // Helper function to get mining pool logo
   const getPoolLogo = (poolName: string): string => {
+    if (poolName.toLowerCase().includes('mining squared')) {
+      return '/pool-logos/unknown.svg';
+    }
+    
     const normalizedName = poolName.toLowerCase()
       .replace(/\s+/g, '')
       .replace(/\./g, '')
@@ -67,10 +68,9 @@ const MiningPoolStats = () => {
     if (poolName === 'Titan Pool' || poolName === 'Titan') return '/pool-logos/titan.svg';
     if (poolName === 'Bitfury') return '/pool-logos/bitfury.svg';
     
-    return '/pool-logos/default.svg';
+    return '/pool-logos/unknown.svg';
   };
 
-  // Format relative time for last updated
   const getLastUpdatedText = () => {
     if (!lastUpdated) return '';
     
@@ -137,16 +137,18 @@ const MiningPoolStats = () => {
                 <div className="w-6 h-6 rounded-full overflow-hidden bg-black flex items-center justify-center mr-3">
                   <img
                     src={getPoolLogo(pool.poolName)}
-                    alt={pool.poolName}
+                    alt={pool.poolName === 'Mining Squared' ? 'Unknown' : pool.poolName}
                     className="w-5 h-5 object-contain"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
+                      (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
                     }}
                   />
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-white">{pool.poolName}</span>
+                    <span className="text-sm text-white">
+                      {pool.poolName === 'Mining Squared' ? 'Unknown' : pool.poolName}
+                    </span>
                     <span className="text-sm text-white/80">{pool.blocksCount} blocks ({pool.percentage.toFixed(1)}%)</span>
                   </div>
                   <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">

@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
@@ -83,6 +82,11 @@ const LatestMiningPool = () => {
 
   const getPoolLogo = (poolName: string): string => {
     const normalizedName = poolName.toLowerCase().trim();
+    
+    if (normalizedName === 'mining squared' || normalizedName.includes('mining squared')) {
+      return '/pool-logos/unknown.svg';
+    }
+    
     const poolLogoMap: { [key: string]: string } = {
       'foundry usa': '/pool-logos/foundryusa.svg',
       'antpool': '/pool-logos/antpool.svg',
@@ -108,17 +112,16 @@ const LatestMiningPool = () => {
       'whitepool': '/pool-logos/whitepool.svg',
       'spiderpool': '/pool-logos/spiderpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
-      'secpool': '/pool-logos/secpool.svg', // Adding explicit mapping for SECPOOL
+      'secpool': '/pool-logos/secpool.svg',
     };
     
-    // Check if we have a logo for this pool
     for (const [key, value] of Object.entries(poolLogoMap)) {
       if (normalizedName.includes(key)) {
         return value;
       }
     }
     
-    return '/pool-logos/default.svg';
+    return '/pool-logos/unknown.svg';
   };
 
   const handleManualRefresh = async () => {
@@ -262,7 +265,7 @@ const LatestMiningPool = () => {
                           className="w-full h-full object-contain"
                           onError={(e) => {
                             console.error(`Error loading logo for ${block.minedBy}`);
-                            (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
+                            (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
                           }}
                         />
                       </div>
@@ -276,7 +279,7 @@ const LatestMiningPool = () => {
                         "font-medium text-xs md:text-sm truncate w-full max-w-full md:max-w-[112px] title-gradient",
                         isLatestBlock ? "text-yellow-400" : ""
                       )}>
-                        {block.minedBy}
+                        {block.minedBy === 'Mining Squared' ? 'Unknown' : block.minedBy}
                       </p>
                       <p className={cn(
                         "text-[10px] md:text-xs mt-0.5 md:mt-1",

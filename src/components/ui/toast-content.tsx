@@ -16,6 +16,11 @@ const getPoolLogo = (poolName: string): string => {
   // Convert pool name to lowercase for case-insensitive matching
   const normalizedName = poolName.toLowerCase().trim();
   
+  // Special case for Mining Squared - always map to unknown
+  if (normalizedName === 'mining squared' || normalizedName.includes('mining squared')) {
+    return '/pool-logos/unknown.svg';
+  }
+  
   // Map of known pool names to their logo paths
   const poolLogoMap: { [key: string]: string } = {
     'foundry usa': '/pool-logos/foundryusa.svg',
@@ -43,7 +48,7 @@ const getPoolLogo = (poolName: string): string => {
     'spiderpool': '/pool-logos/spiderpool.svg',
     'rawpool': '/pool-logos/rawpool.svg',
     'sigmapool': '/pool-logos/sigmapoolcom.svg',
-    'secpool': '/pool-logos/secpool.svg', // Adding explicit mapping for SECPOOL
+    'secpool': '/pool-logos/secpool.svg',
   };
   
   // Check if we have a logo for this pool
@@ -53,8 +58,8 @@ const getPoolLogo = (poolName: string): string => {
     }
   }
   
-  // Return default logo if no match found
-  return '/pool-logos/default.svg';
+  // Return unknown logo for any unrecognized pool
+  return '/pool-logos/unknown.svg';
 };
 
 export function ToastContent({ title, description, poolName, variant = "default" }: ToastContentProps) {
@@ -65,15 +70,19 @@ export function ToastContent({ title, description, poolName, variant = "default"
     )}>
       {poolName && (
         <Avatar className="h-8 w-8 border-2 border-btc-orange/20 bg-[#0a0a0a]">
-          <AvatarImage src={getPoolLogo(poolName)} alt={poolName} />
+          <AvatarImage src={getPoolLogo(poolName)} alt={poolName === 'Mining Squared' ? 'Unknown' : poolName} />
           <AvatarFallback className="bg-btc-dark text-white text-xs">
-            {poolName.substring(0, 2).toUpperCase()}
+            {poolName === 'Mining Squared' ? 'UN' : poolName.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       )}
       <div>
         <div className="font-medium text-base text-btc-orange">{title}</div>
-        {description && <div className="text-sm text-white/90">{description}</div>}
+        {description && <div className="text-sm text-white/90">
+          {description.includes('Mining Squared') 
+            ? description.replace('Mining Squared', 'Unknown') 
+            : description}
+        </div>}
       </div>
     </div>
   );
