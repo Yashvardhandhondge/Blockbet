@@ -690,7 +690,9 @@ const BettingGrid = () => {
             <span className="text-xs font-medium text-white">Betting closes in:</span>
           </div>
           <div className="flex-grow mx-4 relative">
-            <Progress value={progressPercentage} className="h-2 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
+            <div className="relative pr-14">
+              <Progress value={progressPercentage} className="h-2 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
+            </div>
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2 progress-time-display">
               <span className="text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
             </div>
@@ -710,7 +712,7 @@ const BettingGrid = () => {
               </div>
               <div>
                 <div className="text-xs text-white/60">Balance</div>
-                <div className="text-xs font-bold text-white">{formatSats(walletBalance)}</div>
+                <div className="text-xs md:text-sm lg:text-base font-bold text-white">{formatSats(walletBalance)}</div>
               </div>
             </div>
             <div className="flex gap-2">
@@ -726,7 +728,7 @@ const BettingGrid = () => {
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Step 2. Choose your chips</h3>
+            <h3 className="text-white text-sm">Step 2. Select chip value in Sats.</h3>
           </div>
           {renderChipSelection()}
         </Card>
@@ -821,7 +823,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative mb-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Choose your chips</h3>
+          <h3 className="text-white text-sm">Select chip value in Sats.</h3>
         </div>
         {renderChipSelection()}
       </Card>
