@@ -147,25 +147,25 @@
     /* Make sure chips fit in one row */
     .mobile-chip-row {
       display: flex;
-      overflow-x: auto;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
       width: 100%;
       padding: 0 6px;
-      flex-wrap: nowrap;
-      justify-content: space-between;
-      gap: 2px;
+      flex-wrap: wrap;
     }
     
     .mobile-chip-row > div {
       flex-shrink: 0;
-      margin: 0 1px;
-      width: 38px !important;
-      height: 38px !important;
+      margin: 0 2px;
+      width: 42px !important;
+      height: 42px !important;
       position: relative; /* Ensure position relative for absolute positioning */
     }
     
     .mobile-chip-row > div > div {
-      width: 32px !important;
-      height: 32px !important;
+      width: 36px !important;
+      height: 36px !important;
     }
     
     /* Fix selected chip highlight placement on mobile */
