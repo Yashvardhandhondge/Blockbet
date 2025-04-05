@@ -97,6 +97,15 @@
     border-spacing: 2px;
   }
   
+  /* Box titles - larger on desktop */
+  @media (min-width: 768px) {
+    .box-title {
+      font-size: 1.25rem; /* text-xl */
+      line-height: 1.75rem;
+      font-weight: 500;
+    }
+  }
+  
   /* Mobile miner grid and chip display improvements */
   @media (max-width: 767px) {
     .miners-grid-mobile {
