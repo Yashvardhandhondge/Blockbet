@@ -491,7 +491,7 @@ const BettingGrid = () => {
         zIndex: 5 - index,
         transform: `translateX(${index * 4}px)`
       }}>
-            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
+            <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex items-center">
               {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
@@ -521,7 +521,7 @@ const BettingGrid = () => {
           zIndex: index,
           transform: `rotate(${index * 5 - 10}deg)`
         }}>
-              <div className="absolute inset-1.5 rounded-full border-2 border-white/30"></div>
+              <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
               <div className="flex items-center">
                 {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
               </div>
@@ -563,13 +563,14 @@ const BettingGrid = () => {
               )}
             >
               <div 
-                className="absolute inset-0 rounded-full border-2 border-dashed" 
+                className="absolute inset-0 rounded-full border-[2.5px] border-white border-dashed"
                 style={{
-                  borderColor: `${getChipSecondaryColor(value)}`
+                  borderRadius: '50%',
+                  borderStyle: 'dashed'
                 }}
               ></div>
               
-              <div className="absolute rounded-full border border-white/30 inset-1"></div>
+              <div className="absolute rounded-full border border-white/30 inset-2"></div>
               
               <span className="relative z-10 text-white font-bold drop-shadow-md text-xs">
                 {formatChipValue(value)}
@@ -654,7 +655,7 @@ const BettingGrid = () => {
               transform: `translateX(${index * 4}px)`
             }}
           >
-            <div className="absolute inset-0 rounded-full border border-white/30 border-dashed"></div>
+            <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex flex-col items-center justify-center">
               <span className="leading-none">
                 {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}

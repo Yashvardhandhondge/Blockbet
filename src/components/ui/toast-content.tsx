@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -69,7 +70,7 @@ export function ToastContent({ title, description, poolName, variant = "default"
       variant === "destructive" ? "text-red-400" : "text-white"
     )}>
       {poolName && (
-        <Avatar className="h-8 w-8 border-2 border-btc-orange/20 bg-[#0a0a0a]">
+        <Avatar className="h-8 w-8 border-2 border-white border-dashed bg-[#0a0a0a] p-0.5">
           <AvatarImage src={getPoolLogo(poolName)} alt={poolName === 'Mining Squared' ? 'Unknown' : poolName} />
           <AvatarFallback className="bg-btc-dark text-white text-xs">
             {poolName === 'Mining Squared' ? 'UN' : poolName.substring(0, 2).toUpperCase()}

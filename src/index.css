@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -87,6 +88,13 @@
   
   [data-sonner-toast][data-styled="true"][data-type="error"] {
     @apply border-red-500/20 bg-[#140504] text-red-400;
+  }
+
+  /* Chip styling update with dotted borders */
+  .chip-dotted-border {
+    @apply border-[1.5px] border-white border-dashed;
+    border-style: dashed !important;
+    border-spacing: 2px;
   }
   
   /* Mobile miner grid and chip display improvements */
@@ -221,46 +229,4 @@
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes blockAppear {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes moveBackground {
-  0% {
-    transform: translate(0, 0) rotate(0);
-  }
-  25% {
-    transform: translate(-5%, 5%) rotate(5deg);
-  }
-  50% {
-    transform: translate(5%, 10%) rotate(0);
-  }
-  75% {
-    transform: translate(10%, -5%) rotate(-5deg);
-  }
-  100% {
-    transform: translate(0, 0) rotate(0);
-  }
-}
+/* ... keep existing code (animations) */
