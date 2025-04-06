@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
@@ -10,22 +9,20 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface MiningPoolCardProps {
   pool: MiningPool;
   onSelect: (pool: MiningPool) => void;
-  isSelected?: boolean;
+  isSelected: boolean;
   bets?: Array<{id: number; amount: number}>;
   disabled?: boolean;
-  isMobile?: boolean;
 }
 
 const MiningPoolCard = ({ 
   pool, 
   onSelect, 
-  isSelected = false, 
+  isSelected, 
   bets = [], 
-  disabled = false,
-  isMobile
+  disabled = false 
 }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const localIsMobile = isMobile !== undefined ? isMobile : useIsMobile();
+  const isMobile = useIsMobile();
   
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
@@ -84,7 +81,7 @@ const MiningPoolCard = ({
         <div className="flex flex-col items-center mb-1">
           <div className={cn(
             "rounded-lg overflow-hidden bg-transparent mb-1",
-            localIsMobile ? "h-10 w-10" : "h-16 w-16"
+            isMobile ? "h-10 w-10" : "h-16 w-16"
           )}>
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
@@ -102,13 +99,13 @@ const MiningPoolCard = ({
           <div className="text-center">
             <h3 className={cn(
               "font-medium text-white truncate max-w-full",
-              localIsMobile ? "text-xs" : "text-lg"
+              isMobile ? "text-xs" : "text-lg"
             )}>{pool.name}</h3>
-            {!localIsMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
+            {!isMobile && <div className="mt-0.5 text-xs text-white/60">{pool.region}</div>}
           </div>
         </div>
         
-        {!localIsMobile && (
+        {!isMobile && (
           <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
             <div className="p-2">
               <div className="text-white/60 text-xs">Hashrate</div>
@@ -124,17 +121,17 @@ const MiningPoolCard = ({
         <div className="mt-auto">
           <div className={cn(
             "flex justify-center items-center",
-            localIsMobile ? "mb-2" : "p-2"
+            isMobile ? "mb-2" : "p-2"
           )}>
             <div className="text-white/80 text-center">
               <span className={cn(
                 "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
-                localIsMobile ? "text-sm" : "text-lg"
+                isMobile ? "text-sm" : "text-lg"
               )}>
                 {pool.odds.toFixed(2)}
                 <span className="ml-0.5">×</span>
               </span>
-              <span className={cn("ml-1 text-white/60", localIsMobile ? "text-[9px]" : "text-xs")}>payout</span>
+              <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
             </div>
           </div>
           
