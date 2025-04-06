@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -111,8 +112,8 @@
       display: flex;
       justify-content: center;
       overflow-x: auto;
-      padding: 2px 8px;  /* Increased horizontal padding */
-      gap: 4px;  /* Reduced gap between chips */
+      padding: 2px 12px;  /* Increased horizontal padding */
+      gap: 2px;  /* Reduced gap between chips */
       width: 100%;
       flex-wrap: nowrap;
       -ms-overflow-style: none;
@@ -125,8 +126,17 @@
     
     .mobile-chip-selection > div {
       flex-shrink: 0;
-      margin: 0 1px;  /* Reduced margin */
+      margin: 0 0px;  /* Reduced margin */
       transform: scale(0.9);
+    }
+    
+    /* Make mobile-equal-height for empty block match the size of regular pool cards */
+    .mobile-equal-height {
+      height: auto !important;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 1/1;
     }
   }
   
@@ -219,13 +229,6 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-    }
-    
-    /* Fix empty block card size on mobile */
-    .mobile-equal-height {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
     }
   }
 }
