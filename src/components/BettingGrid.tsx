@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
-import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -689,6 +688,77 @@ const BettingGrid = () => {
     );
   };
 
+  const renderBetsInPlay = () => {
+    const consolidatedBets = getConsolidatedBets();
+    
+    if (consolidatedBets.length === 0) {
+      return (
+        <div className="py-8 text-center">
+          <div className="inline-flex items-center justify-center bg-btc-orange/10 rounded-full p-3 mb-3">
+            <Info className="h-5 w-5 text-btc-orange" />
+          </div>
+          <p className="text-white/60 text-sm">No active bets placed yet</p>
+          <p className="text-white/40 text-xs mt-1">Place bets on mining pools above</p>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-3">
+        <div className="flex justify-between text-white/60 text-xs border-b border-white/10 pb-2 px-1">
+          <span>Mining Pool</span>
+          <span>Total Bet</span>
+        </div>
+        
+        {consolidatedBets.map((bet, index) => {
+          const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
+          const poolName = pool ? pool.name : 'Empty Block';
+          const potentialWin = pool ? Math.floor(bet.totalAmount * pool.odds) : Math.floor(bet.totalAmount * 80);
+          
+          return (
+            <div key={`bet-${bet.poolId}-${index}`} className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center">
+                <div className="w-8 h-8 rounded-full overflow-hidden mr-3">
+                  {bet.poolId ? (
+                    <img 
+                      src={`/pool-logos/${bet.poolId}.svg`} 
+                      alt={poolName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/pool-logos/default.svg';
+                      }} 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-white/5">
+                      <Server className="w-4 h-4 text-white/60" />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-white">{poolName}</div>
+                  <div className="flex items-center mt-1">
+                    {renderImprovedChips(bet.amounts)}
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-medium text-white">{formatSats(bet.totalAmount)}</div>
+                <div className="text-xs text-btc-orange">
+                  Potential win: {formatSats(potentialWin)}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        
+        <div className="mt-4 pt-2 border-t border-white/10 flex justify-between">
+          <div className="text-sm text-white/60">Total bets:</div>
+          <div className="text-sm font-medium text-white">{formatSats(totalBet)}</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
@@ -792,16 +862,18 @@ const BettingGrid = () => {
                   </div>
                 </div>
                 
-                <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
-                  <div className="p-2">
-                    <div className="text-white/60 text-xs">Probability</div>
-                    <div className="font-medium text-white">~1%</div>
+                {!isMobile && (
+                  <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                    <div className="p-2">
+                      <div className="text-white/60 text-xs">Probability</div>
+                      <div className="font-medium text-white">~1%</div>
+                    </div>
+                    <div className="p-2">
+                      <div className="text-white/60 text-xs">Blocks (24h)</div>
+                      <div className="font-medium text-white">3</div>
+                    </div>
                   </div>
-                  <div className="p-2">
-                    <div className="text-white/60 text-xs">Blocks (24h)</div>
-                    <div className="font-medium text-white">3</div>
-                  </div>
-                </div>
+                )}
                 
                 <div className="mt-auto">
                   <div className="flex justify-center items-center p-2">
@@ -840,12 +912,17 @@ const BettingGrid = () => {
         <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden col-span-1">
           <div className="p-4">
             <h3 className="text-white text-sm mb-4">Player Stats:</h3>
-            <OriginTabs defaultValue="history">
+            <OriginTabs defaultValue="bets">
               <OriginTabsList className="bg-black/40">
+                <OriginTabsTrigger value="bets">Bets in Play</OriginTabsTrigger>
                 <OriginTabsTrigger value="history">Bet History</OriginTabsTrigger>
                 <OriginTabsTrigger value="deposits">Deposits</OriginTabsTrigger>
                 <OriginTabsTrigger value="withdrawals">Withdrawals</OriginTabsTrigger>
               </OriginTabsList>
+              
+              <OriginTabsContent value="bets" className="mt-4">
+                {renderBetsInPlay()}
+              </OriginTabsContent>
               
               <OriginTabsContent value="history" className="mt-4">
                 <BetHistory bets={betHistory} />
