@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -711,7 +710,7 @@ const BettingGrid = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl h-[110px]">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Step 1. Found your Wallet.</h3>
+            <h3 className="text-white text-sm md:box-title">Step 1. Found your Wallet.</h3>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -736,7 +735,7 @@ const BettingGrid = () => {
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Step 2. Select chip value in Sats.</h3>
+            <h3 className="text-white text-sm md:box-title">Step 2. Select chip value in Sats.</h3>
           </div>
           {renderChipSelection()}
         </Card>
@@ -744,7 +743,7 @@ const BettingGrid = () => {
       
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white text-sm">Step 3. Place your bets on mining pools.</h3>
+          <h3 className="text-white text-sm md:box-title">Step 3. Place your bets on mining pools.</h3>
           <div className="flex gap-2">
             <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleCancelLastBet}>
               <Trash2 className="h-3.5 w-3.5 text-white/60 mr-1" />
@@ -780,33 +779,33 @@ const BettingGrid = () => {
               
               <div className="relative z-10 p-4 flex flex-col h-full">
                 <div className="flex flex-col items-center mb-1">
-                  <div className="rounded-lg overflow-hidden bg-transparent mb-1 h-16 w-16">
+                  <div className="rounded-lg overflow-hidden bg-transparent mb-1 h-12 w-12 sm:h-16 sm:w-16">
                     <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
-                      <Server className="w-10 h-10 text-white/40" />
+                      <Server className="w-8 h-8 sm:w-10 sm:h-10 text-white/40" />
                     </div>
                   </div>
                   
                   <div className="text-center">
-                    <h3 className="text-lg font-medium text-white truncate max-w-full">Empty Block</h3>
+                    <h3 className="text-base sm:text-lg font-medium text-white truncate max-w-full">Empty Block</h3>
                     <div className="mt-0.5 text-xs text-white/60">No miner signature</div>
                   </div>
                 </div>
                 
-                <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
-                  <div className="p-2">
+                <div className="mt-2 grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+                  <div className="p-1 sm:p-2">
                     <div className="text-white/60 text-xs">Probability</div>
                     <div className="font-medium text-white">~1%</div>
                   </div>
-                  <div className="p-2">
+                  <div className="p-1 sm:p-2">
                     <div className="text-white/60 text-xs">Blocks (24h)</div>
                     <div className="font-medium text-white">3</div>
                   </div>
                 </div>
                 
                 <div className="mt-auto">
-                  <div className="flex justify-center items-center p-2">
+                  <div className="flex justify-center items-center p-1 sm:p-2">
                     <div className="text-white/80 text-center">
-                      <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">
+                      <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">
                         80.00
                         <span className="ml-0.5">×</span>
                       </span>
@@ -831,7 +830,7 @@ const BettingGrid = () => {
       
       <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative mb-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-white text-sm">Select chip value in Sats.</h3>
+          <h3 className="text-white text-sm md:box-title">Select chip value in Sats.</h3>
         </div>
         {renderChipSelection()}
       </Card>
@@ -839,7 +838,7 @@ const BettingGrid = () => {
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
         <Card className="bg-[#0a0a0a] border-white/10 rounded-xl overflow-hidden col-span-1">
           <div className="p-4">
-            <h3 className="text-white text-sm mb-4">Player Stats:</h3>
+            <h3 className="text-white text-sm md:box-title mb-4">Player Stats:</h3>
             <OriginTabs defaultValue="history">
               <OriginTabsList className="bg-black/40">
                 <OriginTabsTrigger value="history">Bet History</OriginTabsTrigger>
