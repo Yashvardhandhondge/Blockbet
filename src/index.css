@@ -106,6 +106,31 @@
     }
   }
   
+  /* Mobile chip selection specific styles */
+  @media (max-width: 767px) {
+    .mobile-chip-selection {
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 2px 0;
+      gap: 6px;
+      width: 100%;
+      flex-wrap: nowrap;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .mobile-chip-selection::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .mobile-chip-selection > div {
+      flex-shrink: 0;
+      margin: 0 2px;
+      transform: scale(0.9);
+    }
+  }
+  
   /* Mobile miner grid and chip display improvements */
   @media (max-width: 767px) {
     .miners-grid-mobile {

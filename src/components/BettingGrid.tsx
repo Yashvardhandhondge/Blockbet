@@ -536,14 +536,17 @@ const BettingGrid = () => {
 
   const renderChipSelection = () => {
     return (
-      <div className="flex flex-wrap justify-center items-center gap-3 px-3 my-1">
+      <div className={cn(
+        "flex justify-center items-center gap-3 px-3 my-1",
+        isMobile ? "mobile-chip-selection" : ""
+      )}>
         {CHIP_VALUES.map(value => (
           <div 
             key={value} 
             className={cn(
               "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110 flex-shrink-0", 
               selectedChip === value ? "transform scale-110" : "transform scale-100",
-              isMobile ? "w-12 h-12" : "w-14 h-14"
+              isMobile ? "w-10 h-10" : "w-14 h-14"
             )} 
             onClick={() => handleSelectChip(value)}
           >
@@ -559,7 +562,7 @@ const BettingGrid = () => {
               className={cn(
                 "relative rounded-full flex items-center justify-center font-bold text-white shadow-xl",
                 getChipColor(value),
-                isMobile ? "w-10 h-10" : "w-12 h-12"
+                isMobile ? "w-8 h-8" : "w-12 h-12"
               )}
             >
               <div 
@@ -572,7 +575,10 @@ const BettingGrid = () => {
               
               <div className="absolute rounded-full border border-white/30 inset-2"></div>
               
-              <span className="relative z-10 text-white font-bold drop-shadow-md text-xs">
+              <span className={cn(
+                "relative z-10 text-white font-bold drop-shadow-md",
+                isMobile ? "text-[10px]" : "text-xs"
+              )}>
                 {formatChipValue(value)}
               </span>
             </div>
