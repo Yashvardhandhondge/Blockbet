@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -537,8 +538,8 @@ const BettingGrid = () => {
   const renderChipSelection = () => {
     return (
       <div className={cn(
-        "flex justify-center items-center gap-3 px-3 my-1",
-        isMobile ? "mobile-chip-selection" : ""
+        "flex justify-center items-center px-3 my-1",
+        isMobile ? "mobile-chip-selection" : "gap-3"
       )}>
         {CHIP_VALUES.map(value => (
           <div 
