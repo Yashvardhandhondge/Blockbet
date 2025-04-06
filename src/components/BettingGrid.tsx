@@ -941,7 +941,7 @@ const BettingGrid = () => {
                 pool={pool}
                 onSelect={() => handleSelectPool(pool)}
                 bets={getBetsOnPool(pool.id)}
-                isMobile={isMobile}
+                isSelected={selectedPool?.id === pool.id}
               />
             ))}
             <div
@@ -986,19 +986,16 @@ const BettingGrid = () => {
           title="Pending Transactions"
           value={pendingTxCount.toLocaleString()}
           icon={<Zap className="h-4 w-4 text-btc-orange" />}
-          tooltip="Number of transactions waiting to be confirmed"
         />
         <StatCard
           title="Average Block Time"
           value={`${avgBlockTime.toFixed(1)} minutes`}
           icon={<Clock className="h-4 w-4 text-btc-orange" />}
-          tooltip="Average time between blocks in the last 24 hours"
         />
         <StatCard
           title="Current Block"
           value={currentBlock.toString()}
           icon={<Server className="h-4 w-4 text-btc-orange" />}
-          tooltip="The latest block mined on the Bitcoin network"
         />
       </div>
     </div>

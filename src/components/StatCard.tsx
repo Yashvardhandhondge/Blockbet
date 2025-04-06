@@ -9,6 +9,7 @@ export interface StatCardProps {
   change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
   icon?: React.ReactNode;
+  tooltip?: string;
 }
 
 const StatCard = ({
@@ -16,10 +17,11 @@ const StatCard = ({
   value,
   change,
   changeType = 'neutral',
-  icon
+  icon,
+  tooltip
 }: StatCardProps) => {
   return (
-    <div className="bg-black/20 rounded-lg p-2.5 flex justify-between">
+    <div className="bg-black/20 rounded-lg p-2.5 flex justify-between" title={tooltip}>
       <div className="flex items-center">
         {icon && (
           <div className="bg-btc-orange/10 p-1.5 rounded mr-2">
