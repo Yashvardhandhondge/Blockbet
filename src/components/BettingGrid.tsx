@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
-import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft, Info } from 'lucide-react';
+import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft, Info, Coins, Receipt, Banknote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -832,7 +833,7 @@ const BettingGrid = () => {
             <div key={pool.id} className="transition-all">
               <MiningPoolCard 
                 pool={pool} 
-                onSelect={handleSelectPool}
+                onSelect={() => handleSelectPool(pool)}
                 isSelected={selectedPool?.id === pool.id}
                 bets={getBetsOnPool(pool.id)}
               />
@@ -914,10 +915,10 @@ const BettingGrid = () => {
             <h3 className="text-white text-sm mb-4">Player Stats:</h3>
             <OriginTabs defaultValue="bets">
               <OriginTabsList className="bg-black/40">
-                <OriginTabsTrigger value="bets">Bets in Play</OriginTabsTrigger>
-                <OriginTabsTrigger value="history">Bet History</OriginTabsTrigger>
-                <OriginTabsTrigger value="deposits">Deposits</OriginTabsTrigger>
-                <OriginTabsTrigger value="withdrawals">Withdrawals</OriginTabsTrigger>
+                <OriginTabsTrigger value="bets" icon={<Coins className="h-4 w-4" />}>Bets in Play</OriginTabsTrigger>
+                <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />}>Bet History</OriginTabsTrigger>
+                <OriginTabsTrigger value="deposits" icon={<ArrowDownLeft className="h-4 w-4" />}>Deposits</OriginTabsTrigger>
+                <OriginTabsTrigger value="withdrawals" icon={<ArrowUpRight className="h-4 w-4" />}>Withdrawals</OriginTabsTrigger>
               </OriginTabsList>
               
               <OriginTabsContent value="bets" className="mt-4">
@@ -944,7 +945,7 @@ const BettingGrid = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-medium text-white">+{formatSatsToBTC(deposit.amount)} BTC</div>
+                        <div className="text-sm font-medium text-white">+{formatSats(deposit.amount)}</div>
                         <div className="text-xs text-white/60 flex items-center">
                           {deposit.txId.substring(0, 8)}...
                           <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
@@ -992,7 +993,7 @@ const BettingGrid = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-medium text-white">-{formatSatsToBTC(withdrawal.amount)} BTC</div>
+                        <div className="text-sm font-medium text-white">-{formatSats(withdrawal.amount)}</div>
                         <div className="text-xs text-white/60 flex items-center">
                           {withdrawal.txId.substring(0, 8)}...
                           <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
