@@ -765,4 +765,244 @@ const BettingGrid = () => {
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
-            <Clock className="h-4 w-4 text-btc-orange mr-1.5"
+            <Clock className="h-4 w-4 text-btc-orange mr-1.5" />
+            <div className="text-sm font-semibold">
+              <span className={cn("font-semibold", getUrgencyClass())}>Next block:</span>
+              <span className="text-white/70 ml-1">{formatTimeRemaining()}</span>
+            </div>
+          </div>
+          <div className="text-xs text-white/60">
+            Est. time: {estimatedTime}
+          </div>
+        </div>
+        <Progress 
+          value={progressPercentage} 
+          className="h-1 rounded-none bg-btc-darker"
+          indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500"
+        />
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card className="bg-btc-dark border-white/5">
+          <div className="p-4">
+            <h2 className="box-title text-white mb-3">Step 1. Fund your Wallet</h2>
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <div className="text-sm text-white/60">Balance:</div>
+                <div className="text-2xl font-semibold text-white">{formatSats(walletBalance)}</div>
+                <div className="text-xs text-white/60 mt-1">≈ {formatSatsToBTC(walletBalance)} BTC</div>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-btc-orange/30 text-btc-orange hover:bg-btc-orange/10"
+                  onClick={handleDeposit}
+                >
+                  <ArrowDownLeft className="h-4 w-4 mr-1" /> 
+                  Deposit
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-white/20 text-white hover:bg-white/5"
+                  onClick={handleWithdraw}
+                >
+                  <ArrowUpRight className="h-4 w-4 mr-1" /> 
+                  Withdraw
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="bg-btc-dark border-white/5">
+          <div className="p-4">
+            <h2 className="box-title text-white mb-3">Step 2. Select chip value in Sats</h2>
+            {renderChipSelection()}
+          </div>
+        </Card>
+        
+        <Card className="bg-btc-dark border-white/5">
+          <div className="p-4">
+            <h2 className="box-title text-white mb-2">Player stats</h2>
+            <OriginTabs defaultValue="bets-in-play" className="w-full">
+              <OriginTabsList className="w-full origin-tabs-list mb-4">
+                <OriginTabsTrigger value="bets-in-play" className="origin-tabs-trigger">
+                  Bets in play
+                </OriginTabsTrigger>
+                <OriginTabsTrigger value="history" className="origin-tabs-trigger">
+                  History
+                </OriginTabsTrigger>
+                <OriginTabsTrigger value="deposit" className="origin-tabs-trigger">
+                  Deposits
+                </OriginTabsTrigger>
+                <OriginTabsTrigger value="withdraw" className="origin-tabs-trigger">
+                  Withdrawals
+                </OriginTabsTrigger>
+              </OriginTabsList>
+              
+              <OriginTabsContent value="bets-in-play" className="mt-2">
+                {renderBetsInPlay()}
+              </OriginTabsContent>
+              
+              <OriginTabsContent value="history" className="mt-2">
+                <BetHistory bets={betHistory} />
+              </OriginTabsContent>
+              
+              <OriginTabsContent value="deposit" className="mt-2">
+                {deposits.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <p className="text-white/60 text-sm">No deposit history</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {deposits.map((deposit) => (
+                      <div key={deposit.id} className="flex justify-between items-center border-b border-white/10 pb-3">
+                        <div>
+                          <div className="text-sm text-white font-medium">{formatSats(deposit.amount)}</div>
+                          <div className="text-xs text-white/60">{deposit.timestamp.toLocaleDateString()} {deposit.timestamp.toLocaleTimeString()}</div>
+                        </div>
+                        <div className="text-xs text-white/40 truncate max-w-[140px]">
+                          {deposit.txId.substring(0, 8)}...
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </OriginTabsContent>
+              
+              <OriginTabsContent value="withdraw" className="mt-2">
+                {withdrawals.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <p className="text-white/60 text-sm">No withdrawal history</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {withdrawals.map((withdrawal) => (
+                      <div key={withdrawal.id} className="flex justify-between items-center border-b border-white/10 pb-3">
+                        <div>
+                          <div className="text-sm text-white font-medium">{formatSats(withdrawal.amount)}</div>
+                          <div className="text-xs text-white/60">{withdrawal.timestamp.toLocaleDateString()} {withdrawal.timestamp.toLocaleTimeString()}</div>
+                        </div>
+                        <div className="flex items-center">
+                          <div className={cn(
+                            "text-xs px-2 py-0.5 rounded-full mr-2",
+                            withdrawal.status === 'completed' ? "bg-green-950 text-green-400" :
+                            withdrawal.status === 'pending' ? "bg-yellow-950 text-yellow-400" :
+                            "bg-red-950 text-red-400"
+                          )}>
+                            {withdrawal.status}
+                          </div>
+                          <div className="text-xs text-white/40 truncate max-w-[80px]">
+                            {withdrawal.txId.substring(0, 6)}...
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </OriginTabsContent>
+            </OriginTabs>
+          </div>
+        </Card>
+      </div>
+      
+      <Card className="bg-btc-dark border-white/5 mb-6">
+        <div className="p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="box-title text-white">Step 3. Place your bets on mining pools</h2>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/5"
+                onClick={handleCancelLastBet}
+              >
+                <X className="h-3.5 w-3.5 mr-1" />
+                Undo
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/5"
+                onClick={handleClearBets}
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-1" />
+                Clear
+              </Button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 miners-grid-mobile">
+            {miningPools.slice(0, 18).map((pool) => (
+              <MiningPoolCard
+                key={pool.id}
+                pool={pool}
+                onSelect={() => handleSelectPool(pool)}
+                bets={getBetsOnPool(pool.id)}
+                isMobile={isMobile}
+              />
+            ))}
+            <div
+              className={cn(
+                "relative rounded-lg bg-btc-darker border border-white/5 p-3 cursor-pointer hover:bg-btc-darker/80 transition-colors",
+                isMobile ? "mobile-equal-height" : "h-full"
+              )}
+              onClick={() => handlePlaceBet(null)}
+            >
+              <div className="flex items-center mb-2">
+                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                  <Server className="h-4 w-4 text-white/60" />
+                </div>
+                <div className="ml-2">
+                  <div className="text-sm font-medium text-white">Empty Block</div>
+                  <div className="text-xs text-white/60">No known pool</div>
+                </div>
+              </div>
+              
+              {!isMobile && (
+                <div className="mt-3 text-center pt-1 border-t border-white/5">
+                  <div className="text-xs text-white/60 mb-1">Probability:</div>
+                  <div className="text-sm font-medium text-white">1.2%</div>
+                </div>
+              )}
+              
+              {!isMobile && (
+                <div className="mt-3 text-center pt-1 border-t border-white/5">
+                  <div className="text-xs text-white/60 mb-1">Blocks (24h):</div>
+                  <div className="text-sm font-medium text-white">2</div>
+                </div>
+              )}
+              
+              {renderStackedChips(getBetsOnPool(null))}
+            </div>
+          </div>
+        </div>
+      </Card>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard
+          title="Pending Transactions"
+          value={pendingTxCount.toLocaleString()}
+          icon={<Zap className="h-4 w-4 text-btc-orange" />}
+          tooltip="Number of transactions waiting to be confirmed"
+        />
+        <StatCard
+          title="Average Block Time"
+          value={`${avgBlockTime.toFixed(1)} minutes`}
+          icon={<Clock className="h-4 w-4 text-btc-orange" />}
+          tooltip="Average time between blocks in the last 24 hours"
+        />
+        <StatCard
+          title="Current Block"
+          value={currentBlock.toString()}
+          icon={<Server className="h-4 w-4 text-btc-orange" />}
+          tooltip="The latest block mined on the Bitcoin network"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default BettingGrid;
