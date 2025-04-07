@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -495,7 +494,7 @@ const BettingGrid = () => {
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex items-center">
               {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
+              {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">��{chipGroup.count}</span>}
             </div>
           </div>)}
         {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
@@ -851,15 +850,21 @@ const BettingGrid = () => {
               
               <div className="relative z-10 p-4 flex flex-col h-full">
                 <div className="flex flex-col items-center mb-1">
-                  <div className="rounded-lg overflow-hidden bg-transparent mb-1 h-16 w-16">
+                  <div className={cn(
+                    "rounded-lg overflow-hidden bg-transparent mb-1",
+                    isMobile ? "h-10 w-10" : "h-16 w-16"
+                  )}>
                     <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
-                      <Server className="w-10 h-10 text-white/40" />
+                      <Server className={cn("text-white/40", isMobile ? "w-6 h-6" : "w-10 h-10")} />
                     </div>
                   </div>
                   
                   <div className="text-center">
-                    <h3 className="text-lg font-medium text-white truncate max-w-full">Empty Block</h3>
-                    <div className="mt-0.5 text-xs text-white/60">No miner signature</div>
+                    <h3 className={cn(
+                      "font-medium text-white truncate max-w-full",
+                      isMobile ? "text-xs" : "text-lg"
+                    )}>Empty Block</h3>
+                    {!isMobile && <div className="mt-0.5 text-xs text-white/60">No miner signature</div>}
                   </div>
                 </div>
                 
@@ -877,13 +882,19 @@ const BettingGrid = () => {
                 )}
                 
                 <div className="mt-auto">
-                  <div className="flex justify-center items-center p-2">
+                  <div className={cn(
+                    "flex justify-center items-center",
+                    isMobile ? "mb-2" : "p-2"
+                  )}>
                     <div className="text-white/80 text-center">
-                      <span className="text-lg font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent">
+                      <span className={cn(
+                        "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
+                        isMobile ? "text-sm" : "text-lg"
+                      )}>
                         80.00
                         <span className="ml-0.5">×</span>
                       </span>
-                      <span className="ml-1 text-xs text-white/60">payout</span>
+                      <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
                     </div>
                   </div>
                   
