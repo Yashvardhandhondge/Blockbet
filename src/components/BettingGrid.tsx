@@ -864,6 +864,33 @@ const BettingGrid = () => {
     );
   };
 
+  const renderChipSelection = () => {
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-1.5 md:gap-3">
+        {CHIP_VALUES.map(value => (
+          <button
+            key={`chip-${value}`}
+            className={cn(
+              "relative rounded-full w-9 h-9 md:w-12 md:h-12 flex items-center justify-center text-white font-bold text-xs md:text-sm transition-all",
+              selectedChip === value ? "ring-2 ring-white shadow-lg scale-110 z-10" : "hover:scale-105",
+              getChipColor(value)
+            )}
+            onClick={() => handleSelectChip(value)}
+          >
+            <div className="absolute rounded-full border border-white/30 inset-1"></div>
+            <div 
+              className="absolute rounded-full border-dashed inset-0.5 border-2"
+              style={{
+                borderColor: `${getChipSecondaryColor(value)}`
+              }}
+            ></div>
+            <span className="drop-shadow-md">{formatChipValue(value)}</span>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
