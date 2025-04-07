@@ -511,79 +511,98 @@ const BettingGrid = () => {
     amount: number;
   }>) => {
     if (bets.length === 0) return null;
-    const displayBets = bets.slice(-5);
-    const remainingCount = bets.length > 5 ? bets.length - 5 : 0;
-    return <div className="absolute bottom-1 right-1 flex flex-col items-end">
-        <div className="relative h-12 w-8">
-          {displayBets.map((bet, index) => <div key={bet.id} className={cn("absolute w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-xl", getChipColor(bet.amount))} style={{
-          bottom: `${index * 4}px`,
-          right: `${index % 2 === 0 ? 0 : 2}px`,
-          zIndex: index,
-          transform: `rotate(${index * 5 - 10}deg)`
-        }}>
-              <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
-              <div className="flex items-center">
-                {bet.amount >= 10000 ? `${bet.amount / 1000}k` : bet.amount}
-              </div>
-            </div>)}
-        </div>
-        
-        {remainingCount > 0 && <div className="text-xs text-white/80 font-medium mt-1 bg-black/50 px-1 rounded">
-            +{remainingCount} more
-          </div>}
-      </div>;
-  };
-
-  const renderChipSelection = () => {
+    
+    // Group bets by amount
+    const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
+    
+    bets.forEach(bet => {
+      if (!groupedBets[bet.amount]) {
+        groupedBets[bet.amount] = [];
+      }
+      groupedBets[bet.amount].push(bet);
+    });
+    
+    const denominations = Object.keys(groupedBets).map(Number).sort((a, b) => b - a);
+    
+    const displayDenominations = denominations.slice(0, 5);
+    const remainingDenominations = denominations.length > 5 ? denominations.length - 5 : 0;
+    
     return (
-      <div className={cn(
-        "flex justify-center items-center px-3 my-1",
-        isMobile ? "mobile-chip-selection" : "gap-3"
-      )}>
-        {CHIP_VALUES.map(value => (
-          <div 
-            key={value} 
-            className={cn(
-              "relative rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-110 flex-shrink-0", 
-              selectedChip === value ? "transform scale-110" : "transform scale-100",
-              isMobile ? "w-10 h-10" : "w-14 h-14"
-            )} 
-            onClick={() => handleSelectChip(value)}
-          >
-            {selectedChip === value && (
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-btc-orange/60 to-yellow-500 animate-pulse blur-md -z-10 scale-110"></div>
-            )}
+      <div className="absolute bottom-3 right-0 left-0 px-4 flex justify-end">
+        <div className="flex flex-row-reverse items-end gap-4 h-12">
+          {displayDenominations.map((amount, index) => {
+            const betCount = groupedBets[amount].length;
+            const stackSize = Math.min(betCount, 4);
             
-            {selectedChip === value && (
-              <div className="absolute inset-0 rounded-full border-2 border-btc-orange animate-pulse-subtle"></div>
-            )}
-            
-            <div 
-              className={cn(
-                "relative rounded-full flex items-center justify-center font-bold text-white shadow-xl",
-                getChipColor(value),
-                isMobile ? "w-8 h-8" : "w-12 h-12"
-              )}
-            >
+            return (
               <div 
-                className="absolute inset-0 rounded-full border-[2.5px] border-white border-dashed"
-                style={{
-                  borderRadius: '50%',
-                  borderStyle: 'dashed'
-                }}
-              ></div>
-              
-              <div className="absolute rounded-full border border-white/30 inset-2"></div>
-              
-              <span className={cn(
-                "relative z-10 text-white font-bold drop-shadow-md",
-                isMobile ? "text-[10px]" : "text-xs"
-              )}>
-                {formatChipValue(value)}
-              </span>
+                key={`stack-${amount}`} 
+                className="relative"
+                style={{ zIndex: 10 - index }}
+              >
+                {Array.from({ length: stackSize - 1 }).map((_, stackIndex) => (
+                  <div 
+                    key={`chip-${amount}-${stackIndex}`}
+                    className={cn(
+                      "rounded-full flex items-center justify-center font-bold text-white shadow-xl w-7 h-7 text-[10px]",
+                      getChipColor(amount)
+                    )}
+                    style={{
+                      position: 'absolute',
+                      bottom: stackIndex * 4,
+                      right: 0,
+                      transform: `rotate(${(stackIndex * 5) - 7}deg)`,
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    <div className="absolute rounded-full border border-white/30 inset-1"></div>
+                    <div 
+                      className="absolute rounded-full border-dashed inset-0.5 border-2"
+                      style={{
+                        borderColor: `${getChipSecondaryColor(amount)}`
+                      }}
+                    ></div>
+                  </div>
+                ))}
+                
+                <div 
+                  className={cn(
+                    "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+                    getChipColor(amount)
+                  )}
+                  style={{
+                    boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
+                    position: stackSize > 1 ? 'relative' : 'relative',
+                    bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
+                    right: 0,
+                  }}
+                >
+                  <div className="absolute rounded-full border border-white/30 inset-1"></div>
+                  <div 
+                    className="absolute rounded-full border-dashed inset-0.5 border-2"
+                    style={{
+                      borderColor: `${getChipSecondaryColor(amount)}`
+                    }}
+                  ></div>
+                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
+                    {formatChipValue(amount)}
+                  </span>
+                  {betCount > 1 && 
+                    <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
+                      ×{betCount}
+                    </span>
+                  }
+                </div>
+              </div>
+            );
+          })}
+          
+          {remainingDenominations > 0 && (
+            <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1.5 py-0.5 rounded-full shadow-md">
+              +{remainingDenominations}
             </div>
-          </div>
-        ))}
+          )}
+        </div>
       </div>
     );
   };
@@ -759,6 +778,92 @@ const BettingGrid = () => {
     );
   };
 
+  const renderTransactionHistory = () => {
+    // Combine deposits and withdrawals into one array
+    const allTransactions = [
+      ...deposits.map(d => ({
+        ...d,
+        type: 'deposit' as const,
+        status: 'completed' as const
+      })),
+      ...withdrawals.map(w => ({
+        ...w,
+        type: 'withdrawal' as const
+      }))
+    ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    
+    return (
+      <div className="space-y-3">
+        {allTransactions.map((transaction) => (
+          <div key={`${transaction.type}-${transaction.id}`} className="flex items-center justify-between border-b border-white/10 pb-2">
+            <div className="flex items-center">
+              <div className={cn(
+                "p-1.5 rounded",
+                transaction.type === 'deposit' ? "bg-green-500/10" : "bg-red-500/10"
+              )}>
+                {transaction.type === 'deposit' ? (
+                  <ArrowDownLeft className="h-4 w-4 text-green-500" />
+                ) : (
+                  <ArrowUpRight className="h-4 w-4 text-red-500" />
+                )}
+              </div>
+              <div className="ml-3">
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-white">
+                    {transaction.type === 'deposit' ? 'Deposit' : 'Withdrawal'}
+                  </span>
+                  {transaction.type === 'withdrawal' && (
+                    <span className={cn(
+                      "ml-2 text-xs px-1.5 py-0.5 rounded",
+                      transaction.status === 'completed' ? "bg-green-500/20 text-green-500" :
+                      transaction.status === 'pending' ? "bg-yellow-500/20 text-yellow-500" :
+                      "bg-red-500/20 text-red-500"
+                    )}>
+                      {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-white/60">
+                  {transaction.timestamp.toLocaleDateString()} {transaction.timestamp.toLocaleTimeString()}
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-medium text-white">
+                {transaction.type === 'deposit' ? '+' : '-'}{formatSats(transaction.amount)}
+              </div>
+              <div className="text-xs text-white/60 flex items-center">
+                {transaction.txId.substring(0, 8)}...
+                <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
+                  navigator.clipboard?.writeText(transaction.txId);
+                  toast({
+                    title: "TX ID copied",
+                    description: "Transaction ID copied to clipboard",
+                    variant: "default"
+                  });
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {allTransactions.length === 0 && (
+          <div className="py-8 text-center">
+            <div className="inline-flex items-center justify-center bg-btc-orange/10 rounded-full p-3 mb-3">
+              <Wallet className="h-5 w-5 text-btc-orange" />
+            </div>
+            <p className="text-white/60 text-sm">No transaction history yet</p>
+            <p className="text-white/40 text-xs mt-1">Deposit or withdraw BTC to see your transactions</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
@@ -928,8 +1033,7 @@ const BettingGrid = () => {
               <OriginTabsList className="bg-black/40">
                 <OriginTabsTrigger value="bets" icon={<Coins className="h-4 w-4" />}>Bets in Play</OriginTabsTrigger>
                 <OriginTabsTrigger value="history" icon={<History className="h-4 w-4" />}>Bet History</OriginTabsTrigger>
-                <OriginTabsTrigger value="deposits" icon={<ArrowDownLeft className="h-4 w-4" />}>Deposits</OriginTabsTrigger>
-                <OriginTabsTrigger value="withdrawals" icon={<ArrowUpRight className="h-4 w-4" />}>Withdrawals</OriginTabsTrigger>
+                <OriginTabsTrigger value="transactions" icon={<Wallet className="h-4 w-4" />}>Transactions</OriginTabsTrigger>
               </OriginTabsList>
               
               <OriginTabsContent value="bets" className="mt-4">
@@ -940,90 +1044,8 @@ const BettingGrid = () => {
                 <BetHistory bets={betHistory} />
               </OriginTabsContent>
               
-              <OriginTabsContent value="deposits" className="mt-4">
-                <div className="space-y-3">
-                  {deposits.map(deposit => (
-                    <div key={deposit.id} className="flex items-center justify-between border-b border-white/10 pb-2">
-                      <div className="flex items-center">
-                        <div className="bg-green-500/10 p-1.5 rounded">
-                          <ArrowDownLeft className="h-4 w-4 text-green-500" />
-                        </div>
-                        <div className="ml-3">
-                          <div className="text-sm font-medium text-white">Deposit</div>
-                          <div className="text-xs text-white/60">
-                            {deposit.timestamp.toLocaleDateString()} {deposit.timestamp.toLocaleTimeString()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-white">+{formatSats(deposit.amount)}</div>
-                        <div className="text-xs text-white/60 flex items-center">
-                          {deposit.txId.substring(0, 8)}...
-                          <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
-                            navigator.clipboard?.writeText(deposit.txId);
-                            toast({
-                              title: "TX ID copied",
-                              description: "Transaction ID copied to clipboard",
-                              variant: "default"
-                            });
-                          }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </OriginTabsContent>
-              
-              <OriginTabsContent value="withdrawals" className="mt-4">
-                <div className="space-y-3">
-                  {withdrawals.map(withdrawal => (
-                    <div key={withdrawal.id} className="flex items-center justify-between border-b border-white/10 pb-2">
-                      <div className="flex items-center">
-                        <div className="bg-red-500/10 p-1.5 rounded">
-                          <ArrowUpRight className="h-4 w-4 text-red-500" />
-                        </div>
-                        <div className="ml-3">
-                          <div className="flex items-center">
-                            <span className="text-sm font-medium text-white">Withdrawal</span>
-                            <span className={cn(
-                              "ml-2 text-xs px-1.5 py-0.5 rounded",
-                              withdrawal.status === 'completed' ? "bg-green-500/20 text-green-500" :
-                              withdrawal.status === 'pending' ? "bg-yellow-500/20 text-yellow-500" :
-                              "bg-red-500/20 text-red-500"
-                            )}>
-                              {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
-                            </span>
-                          </div>
-                          <div className="text-xs text-white/60">
-                            {withdrawal.timestamp.toLocaleDateString()} {withdrawal.timestamp.toLocaleTimeString()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-white">-{formatSats(withdrawal.amount)}</div>
-                        <div className="text-xs text-white/60 flex items-center">
-                          {withdrawal.txId.substring(0, 8)}...
-                          <button className="ml-1 text-btc-orange hover:text-btc-orange/80" onClick={() => {
-                            navigator.clipboard?.writeText(withdrawal.txId);
-                            toast({
-                              title: "TX ID copied",
-                              description: "Transaction ID copied to clipboard",
-                              variant: "default"
-                            });
-                          }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <OriginTabsContent value="transactions" className="mt-4">
+                {renderTransactionHistory()}
               </OriginTabsContent>
             </OriginTabs>
           </div>

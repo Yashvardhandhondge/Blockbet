@@ -154,9 +154,12 @@ const Navbar = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide rounded-full"
+                  className={cn(
+                    "bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide rounded-full",
+                    isMobile ? "text-xs px-2.5 py-1 h-8" : ""
+                  )}
                 >
-                  <LogIn className="mr-1 h-4 w-4" />
+                  <LogIn className={cn("mr-1", isMobile ? "h-3 w-3" : "h-4 w-4")} />
                   <span>Sign / Login</span>
                 </Button>
               </Link>

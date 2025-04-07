@@ -5,6 +5,7 @@ import { useCountUp } from '@/lib/animations';
 import { GlowEffect } from './ui/glow-effect';
 import { BackgroundGradientAnimation } from './ui/background-gradient-animation';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Server } from 'lucide-react';
 
 interface MiningPoolCardProps {
   pool: MiningPool;
@@ -281,9 +282,9 @@ const formatChipValue = (value: number): string => {
 };
 
 const renderStackedChips = (bets: Array<{
-    id: number;
-    amount: number;
-  }>) => {
+  id: number;
+  amount: number;
+}>) => {
   if (bets.length === 0) return null;
   
   const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
