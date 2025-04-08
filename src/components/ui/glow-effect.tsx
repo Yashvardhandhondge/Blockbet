@@ -58,8 +58,8 @@ export function GlowEffect({
         (color) =>
           `radial-gradient(circle at 50% 50%, ${color} 0%, transparent 100%)`
       ),
-      scale: [1 * scale, 1.1 * scale, 1 * scale],
-      opacity: [0.5, 0.8, 0.5],
+      scale: [1 * scale, 1.2 * scale, 1 * scale],
+      opacity: [0.6, 0.8, 0.6],
       transition: {
         ...(transition ?? {
           ...BASE_TRANSITION,

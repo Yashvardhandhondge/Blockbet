@@ -21,6 +21,18 @@ const LiveBlockData = ({
 }: LiveBlockDataProps) => {
   // We're removing the display of average block time as requested
   
+  // Helper function to dispatch a custom event when a block is mined
+  const dispatchBlockMinedEvent = (blockData: any) => {
+    // Create a custom event with the block data
+    const event = new CustomEvent(BLOCK_MINED_EVENT, { detail: blockData });
+    window.dispatchEvent(event);
+    
+    // If processBets callback is provided, call it with the block data
+    if (processBets) {
+      processBets(blockData);
+    }
+  };
+  
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {/* Average block time display has been removed */}

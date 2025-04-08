@@ -153,6 +153,7 @@ const BettingGrid = () => {
   const isMobile = useIsMobile();
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
+  const [winningPool, setWinningPool] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -619,6 +620,12 @@ const BettingGrid = () => {
       
     console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
     
+    setWinningPool(winningPoolId);
+    
+    setTimeout(() => {
+      setWinningPool(null);
+    }, 10000);
+    
     let playerHasWon = false;
     
     bets.forEach(bet => {
@@ -970,6 +977,7 @@ const BettingGrid = () => {
                 onSelect={() => handleSelectPool(pool)}
                 isSelected={selectedPool?.id === pool.id}
                 bets={getBetsOnPool(pool.id)}
+                isWinningPool={winningPool === pool.id}
               />
             </div>
           ))}

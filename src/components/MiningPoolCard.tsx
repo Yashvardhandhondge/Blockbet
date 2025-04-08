@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
@@ -13,6 +13,7 @@ interface MiningPoolCardProps {
   isSelected: boolean;
   bets?: Array<{id: number; amount: number}>;
   disabled?: boolean;
+  isWinningPool?: boolean;
 }
 
 const MiningPoolCard = ({ 
@@ -20,14 +21,28 @@ const MiningPoolCard = ({
   onSelect, 
   isSelected, 
   bets = [], 
-  disabled = false 
+  disabled = false,
+  isWinningPool = false
 }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [showWinningEffect, setShowWinningEffect] = useState(false);
   const isMobile = useIsMobile();
   
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   
   const poolColor = getPoolColor(pool.id);
+
+  useEffect(() => {
+    if (isWinningPool) {
+      setShowWinningEffect(true);
+      
+      const timer = setTimeout(() => {
+        setShowWinningEffect(false);
+      }, 10000); // 10 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isWinningPool]);
   
   return (
     <div 
@@ -67,6 +82,17 @@ const MiningPoolCard = ({
           scale={1.2}
           duration={3}
           className="opacity-30"
+        />
+      )}
+
+      {showWinningEffect && (
+        <GlowEffect 
+          colors={['#f7931a', '#f7931a', '#fbb034']} 
+          mode="pulse" 
+          blur="strong"
+          scale={1.3}
+          duration={2}
+          className="opacity-60"
         />
       )}
       
