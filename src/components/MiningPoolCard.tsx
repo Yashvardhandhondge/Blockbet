@@ -34,6 +34,7 @@ const MiningPoolCard = ({
 
   useEffect(() => {
     if (isWinningPool) {
+      console.log('Showing winning effect on pool:', pool.id);
       setShowWinningEffect(true);
       
       const timer = setTimeout(() => {
@@ -42,7 +43,7 @@ const MiningPoolCard = ({
       
       return () => clearTimeout(timer);
     }
-  }, [isWinningPool]);
+  }, [isWinningPool, pool.id]);
   
   return (
     <div 

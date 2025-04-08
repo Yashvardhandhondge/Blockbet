@@ -159,21 +159,26 @@ const BettingGrid = () => {
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          return 8 * 60;
+          return 0;
         }
         return prev - 1;
       });
     }, 1000);
     
-    const handleBlockMined = () => {
+    const handleBlockMined = (e: CustomEvent<any>) => {
+      console.log('Block mined event received in BettingGrid', e.detail);
       setTimeRemaining(8 * 60);
+      
+      if (e.detail) {
+        processBetsForBlock(e.detail);
+      }
     };
     
-    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined);
+    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     
     return () => {
       clearInterval(timer);
-      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined);
+      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     };
   }, []);
 
@@ -611,6 +616,8 @@ const BettingGrid = () => {
   const processBetsForBlock = (blockData: any) => {
     if (!bets || bets.length === 0) return;
     
+    console.log('Processing bets for block data:', blockData);
+    
     const winningPoolId = blockData.minedBy ? 
       miningPools.find(p => 
         blockData.minedBy.toLowerCase().includes(p.id.toLowerCase()) || 
@@ -653,6 +660,8 @@ const BettingGrid = () => {
     if (playerHasWon) {
       emitPlayerWin();
     }
+    
+    setCurrentBlock(prev => prev + 1);
     
     setBets([]);
   };
@@ -884,7 +893,7 @@ const BettingGrid = () => {
             )}
             onClick={() => handleSelectChip(value)}
           >
-            <div className="absolute rounded-full border border-white/30 inset-1"></div>
+            <div className="absolute inset-0 rounded-full border border-white/30 inset-1"></div>
             <div 
               className="absolute rounded-full border-dashed inset-0.5 border-2"
               style={{
@@ -908,10 +917,16 @@ const BettingGrid = () => {
           </div>
           <div className="flex-grow mx-4 relative">
             <div className="relative pr-14">
-              <Progress value={progressPercentage} className="h-2 bg-white/10 rounded-full w-full" indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" />
+              <Progress 
+                value={Math.min(progressPercentage, 100)} 
+                className="h-2 bg-white/10 rounded-full w-full" 
+                indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" 
+              />
             </div>
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2 progress-time-display">
-              <span className="text-xs font-mono font-bold text-btc-orange">{formatTimeRemaining()}</span>
+              <span className="text-xs font-mono font-bold text-btc-orange">
+                {timeRemaining > 0 ? formatTimeRemaining() : "0:00"}
+              </span>
             </div>
           </div>
         </div>
