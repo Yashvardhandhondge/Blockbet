@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -177,6 +176,10 @@ const BettingGrid = () => {
       
       // Re-enable betting
       setIsBettingClosed(false);
+      
+      // Reset selected chip and pool
+      setSelectedChip(null);
+      setSelectedPool(null);
       
       if (e.detail) {
         processBetsForBlock(e.detail);
@@ -693,31 +696,50 @@ const BettingGrid = () => {
     }, 10000);
     
     let playerHasWon = false;
+    let totalWinAmount = 0;
+    let unprocessedBets = [...bets]; // Create a copy to process
     
-    bets.forEach(bet => {
+    unprocessedBets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
+      
       if (bet.poolId) {
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
-      }
-      
-      if (isWin) {
-        playerHasWon = true;
-        const pool = miningPools.find(p => p.id === bet.poolId);
-        if (pool) {
-          const winAmount = Math.floor(bet.amount * pool.odds);
-          setWalletBalance(prev => prev + winAmount);
-          
-          toast({
-            title: "You won!",
-            description: `Received ${formatSats(winAmount)} from your bet on ${pool.name}!`,
-            variant: "default"
-          });
+        
+        // Calculate losses - deduct all bet amounts from wallet balance
+        if (!isWin) {
+          // Loss is already accounted for when bet was placed
+        } else {
+          // For wins, add the winnings (payout - original bet)
+          const pool = miningPools.find(p => p.id === bet.poolId);
+          if (pool) {
+            const winAmount = Math.floor(bet.amount * pool.odds);
+            totalWinAmount += winAmount;
+            playerHasWon = true;
+          }
         }
       }
     });
     
-    if (playerHasWon) {
-      emitPlayerWin();
+    // Update wallet with winnings
+    if (totalWinAmount > 0) {
+      setWalletBalance(prev => prev + totalWinAmount);
+      
+      toast({
+        title: "You won!",
+        description: `Total winnings: ${formatSats(totalWinAmount)}`,
+        variant: "default"
+      });
+      
+      // Trigger win animation
+      if (playerHasWon) {
+        emitPlayerWin();
+      }
+    } else if (unprocessedBets.length > 0) {
+      toast({
+        title: "Better luck next time!",
+        description: "Your bets didn't win this round.",
+        variant: "destructive"
+      });
     }
     
     setCurrentBlock(prev => prev + 1);

@@ -42,6 +42,8 @@ const MiningPoolCard = ({
       }, 10000); // 10 seconds
       
       return () => clearTimeout(timer);
+    } else {
+      setShowWinningEffect(false);
     }
   }, [isWinningPool, pool.id]);
   

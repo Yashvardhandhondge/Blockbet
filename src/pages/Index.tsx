@@ -9,6 +9,7 @@ import { BackgroundGradientAnimation } from '@/components/ui/background-gradient
 import LatestMiningPool from '@/components/LatestMiningPool';
 import { useIsMobile } from '@/hooks/use-mobile';
 import WinConfetti from '@/components/WinConfetti';
+import LiveBlockData from '@/components/LiveBlockData';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -90,6 +91,10 @@ const Index = () => {
           {/* Latest mining pool display */}
           <div style={miningPoolAnimation.style} className="mb-5">
             <LatestMiningPool />
+            {/* Add LiveBlockData component to trigger block mining events */}
+            <div className="hidden">
+              <LiveBlockData />
+            </div>
           </div>
           
           {/* Betting grid */}
