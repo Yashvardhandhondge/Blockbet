@@ -672,7 +672,7 @@ const BettingGrid = () => {
           <div 
             key={`chip-${chipGroup.amount}-${index}`} 
             className={cn(
-              "relative w-6 h-6 rounded-full flex flex-col items-center justify-center text-[9px] font-bold text-white border border-white/40",
+              "relative w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40",
               getChipColor(chipGroup.amount)
             )}
             style={{
@@ -681,12 +681,12 @@ const BettingGrid = () => {
             }}
           >
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
-            <div className="flex flex-col items-center justify-center">
-              <span className="leading-none">
+            <div className="flex flex-col items-center justify-center leading-none">
+              <div className="truncate max-w-[18px] text-center">
                 {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              </span>
+              </div>
               {chipGroup.count > 1 && (
-                <span className="text-[7px] leading-none mt-0.5">×{chipGroup.count}</span>
+                <div className="text-[6px] mt-0.5">×{chipGroup.count}</div>
               )}
             </div>
           </div>
