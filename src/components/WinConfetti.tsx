@@ -38,8 +38,10 @@ const WinConfetti: React.FC<WinConfettiProps> = ({
 
   // Control confetti visibility
   useEffect(() => {
+    console.log('WinConfetti component isActive:', isActive);
     if (isActive) {
       setShowConfetti(true);
+      console.log('Showing confetti for', duration, 'ms');
       
       // Hide confetti after duration
       const timer = setTimeout(() => {

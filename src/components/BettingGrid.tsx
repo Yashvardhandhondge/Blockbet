@@ -160,7 +160,6 @@ const BettingGrid = () => {
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
-          // When timer hits zero, close betting
           setIsBettingClosed(true);
           return 0;
         }
@@ -171,13 +170,10 @@ const BettingGrid = () => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received in BettingGrid', e.detail);
       
-      // Reset timer
       setTimeRemaining(8 * 60);
       
-      // Re-enable betting
       setIsBettingClosed(false);
       
-      // Reset selected chip and pool
       setSelectedChip(null);
       setSelectedPool(null);
       
@@ -215,7 +211,6 @@ const BettingGrid = () => {
   }, [bets]);
 
   const handlePlaceBet = (poolId: string | null) => {
-    // Prevent placing bets if betting is closed
     if (isBettingClosed) {
       toast({
         title: "Betting is closed",
@@ -257,7 +252,6 @@ const BettingGrid = () => {
   };
 
   const handleClearBets = () => {
-    // Prevent clearing bets if betting is closed
     if (isBettingClosed) {
       toast({
         title: "Betting is closed",
@@ -276,7 +270,6 @@ const BettingGrid = () => {
   };
 
   const handleCancelLastBet = () => {
-    // Prevent canceling bets if betting is closed
     if (isBettingClosed) {
       toast({
         title: "Betting is closed",
@@ -404,7 +397,6 @@ const BettingGrid = () => {
   };
 
   const handleSelectChip = (value: number) => {
-    // Prevent selecting chips if betting is closed
     if (isBettingClosed) {
       toast({
         title: "Betting is closed",
@@ -418,7 +410,6 @@ const BettingGrid = () => {
   };
 
   const handleSelectPool = (pool: MiningPool) => {
-    // Prevent selecting pool if betting is closed
     if (isBettingClosed) {
       toast({
         title: "Betting is closed",
@@ -580,7 +571,6 @@ const BettingGrid = () => {
   }>) => {
     if (bets.length === 0) return null;
     
-    // Group bets by amount
     const groupedBets: Record<number, Array<{id: number; amount: number}>> = {};
     
     bets.forEach(bet => {
@@ -676,9 +666,12 @@ const BettingGrid = () => {
   };
 
   const processBetsForBlock = (blockData: any) => {
-    if (!bets || bets.length === 0) return;
+    console.log('Processing bets with block data:', blockData, 'Current bets:', bets);
     
-    console.log('Processing bets for block data:', blockData);
+    if (!bets || bets.length === 0) {
+      console.log('No bets to process');
+      return;
+    }
     
     const winningPoolId = blockData.minedBy ? 
       miningPools.find(p => 
@@ -705,11 +698,7 @@ const BettingGrid = () => {
       if (bet.poolId) {
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
         
-        // Calculate losses - deduct all bet amounts from wallet balance
-        if (!isWin) {
-          // Loss is already accounted for when bet was placed
-        } else {
-          // For wins, add the winnings (payout - original bet)
+        if (isWin) {
           const pool = miningPools.find(p => p.id === bet.poolId);
           if (pool) {
             const winAmount = Math.floor(bet.amount * pool.odds);
@@ -720,7 +709,6 @@ const BettingGrid = () => {
       }
     });
     
-    // Update wallet with winnings
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
       
@@ -730,9 +718,9 @@ const BettingGrid = () => {
         variant: "default"
       });
       
-      // Trigger win animation
       if (playerHasWon) {
         emitPlayerWin();
+        console.log('Emitting player win event');
       }
     } else if (unprocessedBets.length > 0) {
       toast({
@@ -744,8 +732,8 @@ const BettingGrid = () => {
     
     setCurrentBlock(prev => prev + 1);
     
-    // Clear all bets after processing
     setBets([]);
+    console.log('Bets cleared after processing');
   };
 
   const renderImprovedChips = (amounts: number[]) => {
@@ -877,7 +865,6 @@ const BettingGrid = () => {
   };
 
   const renderTransactionHistory = () => {
-    // Combine deposits and withdrawals into one array
     const allTransactions = [
       ...deposits.map(d => ({
         ...d,

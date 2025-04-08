@@ -19,8 +19,6 @@ const LiveBlockData = ({
   pendingTransactions,
   averageBlockTime = "10.0"
 }: LiveBlockDataProps) => {
-  // We're removing the display of average block time as requested
-  
   // Helper function to dispatch a custom event when a block is mined
   const dispatchBlockMinedEvent = (blockData: any) => {
     console.log('Dispatching block mined event with data:', blockData);
@@ -41,7 +39,7 @@ const LiveBlockData = ({
     const fetchLatestBlock = async () => {
       try {
         // In a real app, this would fetch from an API
-        const mockMinedBy = ['foundry', 'antpool', 'f2pool', 'binance', 'viabtc', 'slushpool'];
+        const mockMinedBy = ['foundry', 'antpool', 'f2pool', 'binance', 'viabtc', 'slushpool', 'braiinspool'];
         const randomPool = mockMinedBy[Math.floor(Math.random() * mockMinedBy.length)];
         
         // Mock block data
@@ -64,15 +62,15 @@ const LiveBlockData = ({
     // Fetch immediately on mount
     fetchLatestBlock();
     
-    // Then set up interval (for development only)
-    const interval = setInterval(fetchLatestBlock, 60000); // Every minute for testing
+    // Then set up interval (for development only) - setting to 30 seconds for testing
+    const interval = setInterval(fetchLatestBlock, 30000);
     
     return () => clearInterval(interval);
   }, []);
   
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Average block time display has been removed */}
+      {/* Component doesn't render anything visible */}
     </div>
   );
 };
