@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
@@ -154,11 +155,14 @@ const BettingGrid = () => {
   const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
   const progressPercentage = 100 - timeRemaining / totalTime * 100;
   const [winningPool, setWinningPool] = useState<string | null>(null);
+  const [isBettingClosed, setIsBettingClosed] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
+          // When timer hits zero, close betting
+          setIsBettingClosed(true);
           return 0;
         }
         return prev - 1;
@@ -167,7 +171,12 @@ const BettingGrid = () => {
     
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received in BettingGrid', e.detail);
+      
+      // Reset timer
       setTimeRemaining(8 * 60);
+      
+      // Re-enable betting
+      setIsBettingClosed(false);
       
       if (e.detail) {
         processBetsForBlock(e.detail);
@@ -203,6 +212,16 @@ const BettingGrid = () => {
   }, [bets]);
 
   const handlePlaceBet = (poolId: string | null) => {
+    // Prevent placing bets if betting is closed
+    if (isBettingClosed) {
+      toast({
+        title: "Betting is closed",
+        description: "Please wait for the next block to be mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!selectedChip) {
       toast({
         title: "Select a chip first",
@@ -235,6 +254,16 @@ const BettingGrid = () => {
   };
 
   const handleClearBets = () => {
+    // Prevent clearing bets if betting is closed
+    if (isBettingClosed) {
+      toast({
+        title: "Betting is closed",
+        description: "Please wait for the next block to be mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setBets([]);
     toast({
       title: "Bets cleared",
@@ -244,6 +273,16 @@ const BettingGrid = () => {
   };
 
   const handleCancelLastBet = () => {
+    // Prevent canceling bets if betting is closed
+    if (isBettingClosed) {
+      toast({
+        title: "Betting is closed",
+        description: "Please wait for the next block to be mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!bets || bets.length === 0) {
       toast({
         title: "No bets to cancel",
@@ -362,10 +401,30 @@ const BettingGrid = () => {
   };
 
   const handleSelectChip = (value: number) => {
+    // Prevent selecting chips if betting is closed
+    if (isBettingClosed) {
+      toast({
+        title: "Betting is closed",
+        description: "Please wait for the next block to be mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setSelectedChip(value);
   };
 
   const handleSelectPool = (pool: MiningPool) => {
+    // Prevent selecting pool if betting is closed
+    if (isBettingClosed) {
+      toast({
+        title: "Betting is closed",
+        description: "Please wait for the next block to be mined",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setSelectedPool(pool);
     handlePlaceBet(pool.id);
   };
@@ -663,6 +722,7 @@ const BettingGrid = () => {
     
     setCurrentBlock(prev => prev + 1);
     
+    // Clear all bets after processing
     setBets([]);
   };
 
@@ -993,6 +1053,7 @@ const BettingGrid = () => {
                 isSelected={selectedPool?.id === pool.id}
                 bets={getBetsOnPool(pool.id)}
                 isWinningPool={winningPool === pool.id}
+                disabled={isBettingClosed}
               />
             </div>
           ))}
@@ -1001,8 +1062,9 @@ const BettingGrid = () => {
             <div className={cn(
               "relative rounded-xl overflow-hidden transition-all duration-300 border h-full",
               selectedPool === null && !!selectedChip ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" : "border-white/10 hover:border-white/20",
-              "cursor-pointer mobile-equal-height"
-            )} onClick={() => handlePlaceBet(null)}>
+              isBettingClosed ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+              "mobile-equal-height"
+            )} onClick={() => !isBettingClosed && handlePlaceBet(null)}>
               <div className="absolute inset-0 opacity-30 transition-opacity duration-300 bg-gradient-to-br from-[#1a1a2e] to-[#0d0d16]"></div>
               <div className="absolute inset-0 backdrop-blur-sm bg-btc-dark/80"></div>
               
