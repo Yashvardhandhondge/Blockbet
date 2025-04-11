@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 import { Bitcoin, ChevronUp, ChevronDown, Wallet, Info, Trophy } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { formatSats } from '@/utils/formatters';
 
 interface PlaceBetFormProps {
   selectedPool: MiningPool;
@@ -61,7 +62,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
     setTimeout(() => {
       toast({
         title: "Bet placed successfully!",
-        description: `You placed ${formatBTC(betAmount)} on ${selectedPool.name}.`,
+        description: `You placed ${formatSats(betAmount)} on ${selectedPool.name}.`,
       });
       setIsPending(false);
     }, 1500);
@@ -119,7 +120,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
                 max={maxBet}
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <Bitcoin className="h-4 w-4 text-btc-orange" />
+                <span className="text-xs text-btc-orange">sats</span>
               </div>
             </div>
           </div>
@@ -192,7 +193,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
             
             <div className="flex items-center text-xs text-white/60">
               <Wallet className="h-3.5 w-3.5 mr-1 text-white/40" />
-              <span>Available: {formatBTC(maxBet)}</span>
+              <span>Available: {formatSats(maxBet)}</span>
             </div>
           </div>
           
@@ -216,8 +217,8 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
           <div className="mb-4">
             <div className="text-sm text-white/70 mb-1">Potential Win</div>
             <div className="flex items-end">
-              <span className="text-2xl font-bold text-white">{potentialWin.toFixed(8)}</span>
-              <span className="text-sm text-white/70 ml-1">BTC</span>
+              <span className="text-2xl font-bold text-white">{Math.floor(potentialWin).toLocaleString()}</span>
+              <span className="text-sm text-white/70 ml-1">sats</span>
             </div>
           </div>
           
@@ -269,7 +270,7 @@ const PlaceBetForm = ({ selectedPool }: PlaceBetFormProps) => {
                 but higher probability of winning.
               </p>
               <p>
-                If you win, you will receive <strong className="text-white">{potentialWin.toFixed(8)} BTC</strong> to
+                If you win, you will receive <strong className="text-white">{Math.floor(potentialWin).toLocaleString()} sats</strong> to
                 your balance.
               </p>
             </div>

@@ -6,12 +6,8 @@ export const formatSatsToBTC = (sats: number): string => {
 };
 
 export const formatSats = (sats: number): string => {
-  if (sats >= 1000000) {
-    return `${(sats / 100000000).toFixed(4)} BTC`;
-  } else if (sats >= 100000) {
-    return `${(sats / 100000).toFixed(5)} BTC`;
-  }
-  return `${sats} sats`;
+  // Always display in sats now, no conversion to BTC
+  return `${sats.toLocaleString()} sats`;
 };
 
 // Function to emit a player win event
