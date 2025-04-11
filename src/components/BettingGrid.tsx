@@ -19,6 +19,9 @@ import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
 
+// Log the actual duration when component is loaded
+console.log('BETTING_ROUND_DURATION:', BETTING_ROUND_DURATION, 'seconds');
+
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -159,24 +162,37 @@ const BettingGrid = () => {
       clearInterval(timerIntervalRef.current);
     }
 
+    // Log timer initialization
+    console.log('Timer initialized with duration:', BETTING_ROUND_DURATION, 'seconds');
+    console.log('Initial timeRemaining:', timeRemaining, 'seconds');
+    
     // Reset progress when starting new round
     setProgress(0);
 
     timerIntervalRef.current = setInterval(() => {
       setTimeRemaining(prev => {
+        const newTime = prev <= 0 ? 0 : prev - 1;
+        
+        // Log every 30 seconds to avoid console spam
+        if (newTime % 30 === 0 || newTime <= 10) {
+          console.log(`Timer update: ${newTime} seconds remaining (${Math.floor(newTime / 60)}:${(newTime % 60).toString().padStart(2, '0')})`);
+        }
+        
         if (prev <= 0) {
           setIsBettingClosed(true);
           return 0;
         }
         // Update progress based on remaining time
-        const progressValue = ((BETTING_ROUND_DURATION - prev + 1) / BETTING_ROUND_DURATION) * 100;
+        const progressValue = ((BETTING_ROUND_DURATION - newTime) / BETTING_ROUND_DURATION) * 100;
         setProgress(progressValue);
-        return prev - 1;
+        return newTime;
       });
     }, 1000);
     
     const handleBlockMined = (e: CustomEvent<any>) => {
-      console.log('Block mined event received in BettingGrid', e.detail);
+      const timestamp = new Date().getTime();
+      console.log(`[${timestamp}] Block mined event received:`, e.detail);
+      console.log('Current time remaining before reset:', timeRemaining, 'seconds');
       
       if (e.detail) {
         processBetsForBlock(e.detail);
@@ -234,15 +250,21 @@ const BettingGrid = () => {
   }, [bets]);
 
   const startNewBettingRound = () => {
-    console.log('Starting new betting round with duration:', BETTING_ROUND_DURATION, 'seconds');
+    const now = new Date();
+    console.log(`[${now.toISOString()}] Starting new betting round with duration:`, BETTING_ROUND_DURATION, 'seconds');
     
     setTimeRemaining(BETTING_ROUND_DURATION);
+    setProgress(0);
     
     setIsBettingClosed(false);
     setSelectedChip(null);
     setSelectedPool(null);
     setBets([]);
     setWinningPool(null);
+    
+    // Log expected end time
+    const endTime = new Date(now.getTime() + BETTING_ROUND_DURATION * 1000);
+    console.log(`Round should end at: ${endTime.toISOString()} (in ${BETTING_ROUND_DURATION} seconds)`);
     
     if (hasStartedInitialRound.current) {
       toast({
@@ -1026,6 +1048,18 @@ const BettingGrid = () => {
       </div>
     );
   };
+
+  useEffect(() => {
+    console.log('Environment check:');
+    console.log('- NODE_ENV:', process.env.NODE_ENV);
+    console.log('- Window location:', window.location.href);
+    
+    // Log if we're in production mode
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('Running in production mode - timer should be set to 8 minutes');
+      console.log('Explicitly verifying BETTING_ROUND_DURATION:', BETTING_ROUND_DURATION);
+    }
+  }, []);
 
   return (
     <div className="w-full">
