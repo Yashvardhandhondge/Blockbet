@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Waves, Clock } from 'lucide-react';
@@ -59,11 +58,12 @@ const LiveBlockData = ({
       }
     };
     
-    // Fetch immediately on mount
+    // Fetch immediately on mount to start the first round
     fetchLatestBlock();
     
-    // Then set up interval (for development only) - setting to 30 seconds for testing
-    const interval = setInterval(fetchLatestBlock, 30000);
+    // Then set up interval (for development only) - setting to 10 minutes (600000ms) to better simulate Bitcoin blocks
+    // We've increased this from 30 seconds to prevent chips being cleared too frequently
+    const interval = setInterval(fetchLatestBlock, 600000);
     
     return () => clearInterval(interval);
   }, []);

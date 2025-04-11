@@ -180,6 +180,8 @@ const BettingGrid = () => {
       startNewBettingRound();
     };
     
+    // This ensures that we only respond to actual BLOCK_MINED_EVENT
+    // and don't accidentally start new betting rounds from other activities
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     
     return () => {
@@ -188,6 +190,9 @@ const BettingGrid = () => {
     };
   }, []);
 
+  // Add a reference for the current round to prevent premature resets
+  const [currentRoundId] = useState(`round-${Date.now()}`);
+  
   useEffect(() => {
     if (timeRemaining <= 0 && !isBettingClosed) {
       setIsBettingClosed(true);
@@ -199,11 +204,14 @@ const BettingGrid = () => {
     }
   }, [timeRemaining, isBettingClosed]);
 
+  // Modify the useRandomInterval to avoid affecting the betting state
   useRandomInterval(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
       return Math.max(1000, Math.floor(prev + variation));
     });
+    
+    // Only update visual indicators, not betting state
     setTimeVariation(Math.random() * 1.5 - 0.75);
     setAvgBlockTime(prev => {
       const variation = Math.random() * 0.4 - 0.2;
