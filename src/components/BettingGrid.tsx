@@ -17,6 +17,7 @@ import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
 import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from "@/components/ui/origin-tabs";
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
+const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
 
 const nextBlockEstimate = {
   estimatedTimeMinutes: 10,
@@ -170,16 +171,13 @@ const BettingGrid = () => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received in BettingGrid', e.detail);
       
-      setTimeRemaining(8 * 60);
-      
-      setIsBettingClosed(false);
-      
-      setSelectedChip(null);
-      setSelectedPool(null);
-      
+      // Process existing bets before starting new round
       if (e.detail) {
         processBetsForBlock(e.detail);
       }
+
+      // Start new betting round
+      startNewBettingRound();
     };
     
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
@@ -189,6 +187,17 @@ const BettingGrid = () => {
       window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     };
   }, []);
+
+  useEffect(() => {
+    if (timeRemaining <= 0 && !isBettingClosed) {
+      setIsBettingClosed(true);
+      toast({
+        title: "Betting round closed",
+        description: "Waiting for next block to be mined",
+        variant: "destructive"
+      });
+    }
+  }, [timeRemaining, isBettingClosed]);
 
   useRandomInterval(() => {
     setPendingTxCount(prev => {
@@ -210,8 +219,26 @@ const BettingGrid = () => {
     }
   }, [bets]);
 
+  const startNewBettingRound = () => {
+    // Reset timer to 8 minutes
+    setTimeRemaining(BETTING_ROUND_DURATION);
+    
+    // Reset betting state
+    setIsBettingClosed(false);
+    setSelectedChip(null);
+    setSelectedPool(null);
+    setBets([]);
+    setWinningPool(null);
+    
+    toast({
+      title: "New betting round started",
+      description: "You have 8 minutes to place your bets",
+      variant: "default"
+    });
+  };
+
   const handlePlaceBet = (poolId: string | null) => {
-    if (isBettingClosed) {
+    if (timeRemaining <= 0 || isBettingClosed) {
       toast({
         title: "Betting is closed",
         description: "Please wait for the next block to be mined",
@@ -228,6 +255,20 @@ const BettingGrid = () => {
       });
       return;
     }
+
+    // Check if user has enough balance
+    if (selectedChip > walletBalance) {
+      toast({
+        title: "Insufficient funds",
+        description: "You don't have enough balance to place this bet",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Deduct bet amount from wallet immediately
+    setWalletBalance(prev => prev - selectedChip);
+    
     setBets(prevBets => {
       if (!prevBets) return [{
         poolId,
@@ -246,7 +287,7 @@ const BettingGrid = () => {
     const poolName = poolId ? miningPools.find(p => p.id === poolId)?.name || 'Unknown' : 'Empty Block';
     toast({
       title: "Bet placed!",
-      description: `${(selectedChip / 100000).toFixed(5)} BTC on ${poolName}`,
+      description: `${formatSats(selectedChip)} on ${poolName}`,
       variant: "default"
     });
   };
@@ -673,6 +714,7 @@ const BettingGrid = () => {
       return;
     }
     
+    // Identify winning pool from block data
     const winningPoolId = blockData.minedBy ? 
       miningPools.find(p => 
         blockData.minedBy.toLowerCase().includes(p.id.toLowerCase()) || 
@@ -683,19 +725,18 @@ const BettingGrid = () => {
     console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
     
     setWinningPool(winningPoolId);
-    
-    setTimeout(() => {
-      setWinningPool(null);
-    }, 10000);
+    setTimeout(() => setWinningPool(null), 10000);
     
     let playerHasWon = false;
     let totalWinAmount = 0;
-    let unprocessedBets = [...bets]; // Create a copy to process
+    let unprocessedBets = [...bets];
     
+    // Process each bet
     unprocessedBets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       
       if (bet.poolId) {
+        // Add bet to history
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
         
         if (isWin) {
@@ -709,6 +750,7 @@ const BettingGrid = () => {
       }
     });
     
+    // Update wallet balance with winnings (losses were already deducted when placing bets)
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
       
@@ -718,9 +760,9 @@ const BettingGrid = () => {
         variant: "default"
       });
       
+      // Trigger win animation if player won
       if (playerHasWon) {
         emitPlayerWin();
-        console.log('Emitting player win event');
       }
     } else if (unprocessedBets.length > 0) {
       toast({
@@ -730,10 +772,9 @@ const BettingGrid = () => {
       });
     }
     
+    // Update block number and clear bets for next round
     setCurrentBlock(prev => prev + 1);
-    
     setBets([]);
-    console.log('Bets cleared after processing');
   };
 
   const renderImprovedChips = (amounts: number[]) => {
@@ -962,9 +1003,9 @@ const BettingGrid = () => {
             )}
             onClick={() => handleSelectChip(value)}
           >
-            <div className="absolute inset-0 rounded-full border border-white/30 inset-1"></div>
+            <div className="absolute inset-1 rounded-full border border-white/30"></div>
             <div 
-              className="absolute rounded-full border-dashed inset-0.5 border-2"
+              className="absolute inset-0.5 rounded-full border-dashed border-2"
               style={{
                 borderColor: `${getChipSecondaryColor(value)}`
               }}
