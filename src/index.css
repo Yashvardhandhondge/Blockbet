@@ -6,17 +6,11 @@
   --btc-orange: #f7931a;
   --btc-darker: #040404;
   --btc-dark: #121212;
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-btc-darker text-white font-sans;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply bg-btc-darker text-white;
   }
 }
 
@@ -88,7 +82,7 @@
   
   /* Toast customizations */
   [data-sonner-toast][data-styled="true"] {
-    @apply bg-btc-darker border border-btc-orange/20 text-white shadow-[0_4px_16px_rgba(247,147,26,0.15)] font-sans;
+    @apply bg-btc-darker border border-btc-orange/20 text-white shadow-[0_4px_16px_rgba(247,147,26,0.15)];
   }
   
   [data-sonner-toast][data-styled="true"][data-type="error"] {
@@ -257,14 +251,6 @@
     background-color: var(--btc-dark);
   }
   
-  .font-sans {
-    font-family: var(--font-sans);
-  }
-  
-  .font-display {
-    font-family: var(--font-display);
-  }
-  
   /* Allow buttons to position absolutely in chip selection container */
   .chip-buttons-container {
     @apply absolute top-2 right-2 flex gap-1;
@@ -276,31 +262,4 @@
   }
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes blockAppear {
-  0% {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+/* ... keep existing code (animations) */

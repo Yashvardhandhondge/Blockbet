@@ -39,14 +39,14 @@ const HowToPlay = () => {
     blendingValue="hard-light" 
     className="w-full h-full" 
     containerClassName="min-h-screen">
-      <div className="min-h-screen pb-20 font-sans">
+      <div className="min-h-screen pb-20">
         {/* Loading screen */}
         <div className={cn("fixed inset-0 bg-btc-darker z-50 flex flex-col items-center justify-center transition-opacity duration-500", isLoading ? "opacity-100" : "opacity-0 pointer-events-none")}>
           <div className="relative h-20 w-20 mb-6">
             <div className="absolute inset-0 rounded-full border-4 border-btc-orange/20"></div>
             <div className="absolute inset-0 rounded-full border-4 border-btc-orange border-r-transparent animate-spin-slow"></div>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-center px-4 font-display">
+          <h1 className="text-2xl font-bold tracking-tight text-center px-4">
             <span className="text-gradient">Block</span>
             <span className="text-white">Bet</span>
           </h1>
@@ -61,7 +61,7 @@ const HowToPlay = () => {
         <main className="container max-w-7xl mx-auto px-4 pt-24 pb-12">
           {/* Header */}
           <div style={headerAnimation.style} className="mb-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2 font-display">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
               <span className="text-white">How To </span>
               <span className="text-gradient">Play</span>
             </h1>
@@ -74,7 +74,7 @@ const HowToPlay = () => {
           {/* Tabs */}
           <div style={tabsAnimation.style} className="mb-12">
             <Tabs defaultValue="basics" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 bg-btc-darker border border-btc-orange/20 rounded-lg p-1 font-display">
+              <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 bg-btc-darker border border-btc-orange/20 rounded-lg p-1">
                 <TabsTrigger value="basics" className="data-[state=active]:bg-btc-orange/20">
                   <HelpCircle className="mr-1 md:mr-2 h-4 w-4" />
                   <span>Basics</span>
