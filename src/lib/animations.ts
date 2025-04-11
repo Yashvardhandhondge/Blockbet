@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 interface AnimationOptions {
   duration?: number;
@@ -81,30 +80,41 @@ export const useCountUp = (
   return displayValue;
 };
 
+// Updated useRandomInterval to prevent unexpected re-renders and side effects
 export const useRandomInterval = (
   callback: () => void,
   minDelay: number,
   maxDelay: number
 ) => {
+  // Use useRef to store the callback function to avoid re-creating the interval on every render
+  const savedCallback = useRef(callback);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Update the ref whenever the callback changes
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
-    
+    savedCallback.current = callback;
+  }, [callback]);
+  
+  // Setup the interval
+  useEffect(() => {
     const runInterval = () => {
       const randomDelay = 
         Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
       
-      timeoutId = setTimeout(() => {
-        callback();
+      timeoutRef.current = setTimeout(() => {
+        savedCallback.current();
         runInterval();
       }, randomDelay);
     };
     
     runInterval();
     
+    // Cleanup function
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
-  }, [callback, minDelay, maxDelay]);
+  }, [minDelay, maxDelay]); // Only re-run if delay ranges change
 };

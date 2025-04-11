@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { MiningPool } from '@/utils/types';
 import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft, Info, Coins, Receipt, Banknote } from 'lucide-react';
@@ -19,11 +19,6 @@ import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
 
-const nextBlockEstimate = {
-  estimatedTimeMinutes: 10,
-  difficulty: 67352594066965
-};
-
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -32,7 +27,7 @@ const BettingGrid = () => {
     id: number;
   }[]>([]);
   const [nextBetId, setNextBetId] = useState(1);
-  const [timeRemaining, setTimeRemaining] = useState(nextBlockEstimate.estimatedTimeMinutes * 60);
+  const [timeRemaining, setTimeRemaining] = useState(BETTING_ROUND_DURATION);
   const [totalBet, setTotalBet] = useState(0);
   const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   const [timeVariation, setTimeVariation] = useState(0);
@@ -152,18 +147,30 @@ const BettingGrid = () => {
     status: 'pending'
   }]);
   const isMobile = useIsMobile();
-  const totalTime = nextBlockEstimate.estimatedTimeMinutes * 60;
-  const progressPercentage = 100 - timeRemaining / totalTime * 100;
+  const totalTime = BETTING_ROUND_DURATION;
+  const [progress, setProgress] = useState(0);
   const [winningPool, setWinningPool] = useState<string | null>(null);
   const [isBettingClosed, setIsBettingClosed] = useState(false);
 
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    const timer = setInterval(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
+
+    // Reset progress when starting new round
+    setProgress(0);
+
+    timerIntervalRef.current = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 0) {
           setIsBettingClosed(true);
           return 0;
         }
+        // Update progress based on remaining time
+        const progressValue = ((BETTING_ROUND_DURATION - prev + 1) / BETTING_ROUND_DURATION) * 100;
+        setProgress(progressValue);
         return prev - 1;
       });
     }, 1000);
@@ -171,27 +178,26 @@ const BettingGrid = () => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received in BettingGrid', e.detail);
       
-      // Process existing bets before starting new round
       if (e.detail) {
         processBetsForBlock(e.detail);
       }
 
-      // Start new betting round
       startNewBettingRound();
     };
     
-    // This ensures that we only respond to actual BLOCK_MINED_EVENT
-    // and don't accidentally start new betting rounds from other activities
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     
     return () => {
-      clearInterval(timer);
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
       window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     };
   }, []);
 
-  // Add a reference for the current round to prevent premature resets
   const [currentRoundId] = useState(`round-${Date.now()}`);
+  
+  const hasStartedInitialRound = useRef(false);
   
   useEffect(() => {
     if (timeRemaining <= 0 && !isBettingClosed) {
@@ -204,20 +210,20 @@ const BettingGrid = () => {
     }
   }, [timeRemaining, isBettingClosed]);
 
-  // Modify the useRandomInterval to avoid affecting the betting state
-  useRandomInterval(() => {
+  const updateVisualIndicators = useCallback(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
       return Math.max(1000, Math.floor(prev + variation));
     });
     
-    // Only update visual indicators, not betting state
     setTimeVariation(Math.random() * 1.5 - 0.75);
     setAvgBlockTime(prev => {
       const variation = Math.random() * 0.4 - 0.2;
       return Math.max(9.2, Math.min(10.5, prev + variation));
     });
-  }, 3000, 8000);
+  }, []);
+
+  useRandomInterval(updateVisualIndicators, 3000, 8000);
 
   useEffect(() => {
     if (bets && Array.isArray(bets)) {
@@ -228,21 +234,25 @@ const BettingGrid = () => {
   }, [bets]);
 
   const startNewBettingRound = () => {
-    // Reset timer to 8 minutes
+    console.log('Starting new betting round with duration:', BETTING_ROUND_DURATION, 'seconds');
+    
     setTimeRemaining(BETTING_ROUND_DURATION);
     
-    // Reset betting state
     setIsBettingClosed(false);
     setSelectedChip(null);
     setSelectedPool(null);
     setBets([]);
     setWinningPool(null);
     
-    toast({
-      title: "New betting round started",
-      description: "You have 8 minutes to place your bets",
-      variant: "default"
-    });
+    if (hasStartedInitialRound.current) {
+      toast({
+        title: "New betting round started",
+        description: `You have ${Math.floor(BETTING_ROUND_DURATION / 60)} minutes to place your bets`,
+        variant: "default"
+      });
+    } else {
+      hasStartedInitialRound.current = true;
+    }
   };
 
   const handlePlaceBet = (poolId: string | null) => {
@@ -264,7 +274,6 @@ const BettingGrid = () => {
       return;
     }
 
-    // Check if user has enough balance
     if (selectedChip > walletBalance) {
       toast({
         title: "Insufficient funds",
@@ -274,7 +283,6 @@ const BettingGrid = () => {
       return;
     }
 
-    // Deduct bet amount from wallet immediately
     setWalletBalance(prev => prev - selectedChip);
     
     setBets(prevBets => {
@@ -432,7 +440,7 @@ const BettingGrid = () => {
   };
 
   const estimatedTime = (() => {
-    const totalMinutes = nextBlockEstimate.estimatedTimeMinutes + timeVariation;
+    const totalMinutes = (BETTING_ROUND_DURATION / 60) + timeVariation;
     const minutes = Math.floor(totalMinutes);
     const seconds = Math.floor((totalMinutes - minutes) * 60);
     return `${minutes}m ${seconds}s`;
@@ -722,7 +730,6 @@ const BettingGrid = () => {
       return;
     }
     
-    // Identify winning pool from block data
     const winningPoolId = blockData.minedBy ? 
       miningPools.find(p => 
         blockData.minedBy.toLowerCase().includes(p.id.toLowerCase()) || 
@@ -739,12 +746,10 @@ const BettingGrid = () => {
     let totalWinAmount = 0;
     let unprocessedBets = [...bets];
     
-    // Process each bet
     unprocessedBets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       
       if (bet.poolId) {
-        // Add bet to history
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
         
         if (isWin) {
@@ -758,7 +763,6 @@ const BettingGrid = () => {
       }
     });
     
-    // Update wallet balance with winnings (losses were already deducted when placing bets)
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
       
@@ -768,7 +772,6 @@ const BettingGrid = () => {
         variant: "default"
       });
       
-      // Trigger win animation if player won
       if (playerHasWon) {
         emitPlayerWin();
       }
@@ -780,7 +783,6 @@ const BettingGrid = () => {
       });
     }
     
-    // Update block number and clear bets for next round
     setCurrentBlock(prev => prev + 1);
     setBets([]);
   };
@@ -1036,9 +1038,9 @@ const BettingGrid = () => {
           <div className="flex-grow mx-4 relative">
             <div className="relative pr-14">
               <Progress 
-                value={Math.min(progressPercentage, 100)} 
-                className="h-2 bg-white/10 rounded-full w-full" 
-                indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500" 
+                value={progress} 
+                className="h-2 bg-white/10 rounded-full w-full transition-all duration-1000 ease-linear" 
+                indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-all duration-1000 ease-linear" 
               />
             </div>
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2 progress-time-display">
