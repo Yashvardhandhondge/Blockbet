@@ -37,6 +37,37 @@ const LiveBlockData = ({
     }
   };
   
+  // Establish WebSocket connection for real-time updates
+  useEffect(() => {
+    const ws = new WebSocket('wss://mempool.space/api/v1/ws');
+    
+    ws.onopen = () => {
+      console.log('WebSocket connected');
+      ws.send(JSON.stringify({ 
+        action: 'want', 
+        data: ['blocks'] 
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.block) {
+        const blockEvent = new CustomEvent(BLOCK_MINED_EVENT, { 
+          detail: {
+            height: data.block.height,
+            minedBy: data.block.pool,
+            timestamp: new Date()
+          }
+        });
+        window.dispatchEvent(blockEvent);
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
   // Simulate mined blocks for development purposes
   useEffect(() => {
     // Function to fetch the latest block data

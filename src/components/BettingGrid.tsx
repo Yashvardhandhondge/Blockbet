@@ -20,7 +20,7 @@ const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
 const MIN_BET = 1000; // 1K sats
 const MAX_BET = 1000000; // 1M sats
-const PLATFORM_FEE = 0.025; // 2.5%
+const PLATFORM_FEE = 0.025; 
 
 // Add logging for initialization
 console.log('Initializing BettingGrid with settings:', {
@@ -184,6 +184,7 @@ const BettingGrid = () => {
         }
         
         if (prev <= 0) {
+          // Only set betting as closed, don't reset bets
           setIsBettingClosed(true);
           return 0;
         }
@@ -198,10 +199,8 @@ const BettingGrid = () => {
       console.log('Block mined event received:', e.detail);
       
       if (e.detail) {
-        // First process existing bets
-        processBetsForBlock(e.detail);
-        // Then start a new round
-        startNewBettingRound();
+        processBetsForBlock(e.detail); // Process existing bets
+        startNewBettingRound(); // Then start new round
       }
     };
 
@@ -252,6 +251,31 @@ const BettingGrid = () => {
       setTotalBet(0);
     }
   }, [bets]);
+
+  useEffect(() => {
+    // Initial update
+    updateVisualIndicators();
+
+    // Update every 30 seconds
+    const poolStatsInterval = setInterval(() => {
+      updateVisualIndicators();
+      // Update mining pool stats from API
+      miningPools.forEach(pool => {
+        fetch(`/api/pool-stats/${pool.id}`)
+          .then(res => res.json())
+          .then(data => {
+            pool.hashRate = data.hashRate;
+            pool.hashRatePercent = data.hashRatePercent;
+            pool.blocksLast24h = data.blocksLast24h;
+            // Update odds based on new hashrate
+            pool.odds = 100 / data.hashRatePercent;
+          })
+          .catch(err => console.error('Error updating pool stats:', err));
+      });
+    }, 30000);
+
+    return () => clearInterval(poolStatsInterval);
+  }, []);
 
   const startNewBettingRound = () => {
     const now = new Date();
@@ -487,12 +511,22 @@ const BettingGrid = () => {
     setBetHistory(prev => [newBet, ...prev]);
 
     if (isWin) {
-      const winAmount = amount * (pool?.odds || 2);
-      setWalletBalance(prev => prev + winAmount);
-      console.log('Bet won:', { poolId, amount, winAmount });
+      const rawWinAmount = Math.floor(amount * pool.odds);
+      const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
+      const netWinAmount = rawWinAmount - platformFee;
+      
+      setWalletBalance(prev => prev + netWinAmount);
+      console.log('Bet won:', { 
+        poolId, 
+        amount, 
+        rawWinAmount,
+        platformFee,
+        netWinAmount 
+      });
+      
       toast({
         title: "Bet won!",
-        description: `You won ${formatSats(winAmount)} betting on ${pool?.name}!`,
+        description: `You won ${formatSats(netWinAmount)} (after ${PLATFORM_FEE * 100}% platform fee) betting on ${pool?.name}!`,
         variant: "default"
       });
     }
