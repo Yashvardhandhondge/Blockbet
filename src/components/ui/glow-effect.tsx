@@ -1,31 +1,19 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { motion, Transition, MotionProps } from 'framer-motion';
+import { useEffect } from 'react';
 
-export type GlowEffectProps = {
+export interface GlowEffectProps {
   className?: string;
   style?: React.CSSProperties;
   colors?: string[];
-  mode?:
-    | 'rotate'
-    | 'pulse'
-    | 'breathe'
-    | 'colorShift'
-    | 'flowHorizontal'
-    | 'static';
-  blur?:
-    | number
-    | 'softest'
-    | 'soft'
-    | 'medium'
-    | 'strong'
-    | 'stronger'
-    | 'strongest'
-    | 'none';
+  mode?: 'rotate' | 'pulse' | 'breathe' | 'colorShift' | 'flowHorizontal' | 'static';
+  blur?: number | 'softest' | 'soft' | 'medium' | 'strong' | 'stronger' | 'strongest' | 'none';
   transition?: Transition;
   scale?: number;
   duration?: number;
-};
+  onAnimationComplete?: () => void;
+}
 
 export function GlowEffect({
   className,
@@ -36,7 +24,25 @@ export function GlowEffect({
   transition,
   scale = 1,
   duration = 5,
+  onAnimationComplete
 }: GlowEffectProps) {
+  useEffect(() => {
+    console.log('GlowEffect mounted:', {
+      mode,
+      colors: colors.join(', '),
+      scale,
+      duration,
+      timestamp: new Date().toISOString()
+    });
+
+    return () => {
+      console.log('GlowEffect unmounted:', {
+        mode,
+        timestamp: new Date().toISOString()
+      });
+    };
+  }, [mode, colors, scale, duration]);
+
   const BASE_TRANSITION = {
     repeat: Infinity,
     duration: duration,
@@ -131,15 +137,20 @@ export function GlowEffect({
 
   return (
     <motion.div
-      style={
-        {
-          ...style,
-          '--scale': scale,
-          willChange: 'transform',
-          backfaceVisibility: 'hidden',
-        } as React.CSSProperties
-      }
+      style={{
+        ...style,
+        '--scale': scale,
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+      } as React.CSSProperties}
       animate={animations[mode]}
+      onAnimationComplete={() => {
+        console.log('Glow animation completed:', {
+          mode,
+          timestamp: new Date().toISOString()
+        });
+        onAnimationComplete?.();
+      }}
       className={cn(
         'pointer-events-none absolute inset-0 h-full w-full',
         'scale-[var(--scale)] transform-gpu',

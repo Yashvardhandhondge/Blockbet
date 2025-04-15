@@ -23,7 +23,12 @@ const LiveBlockData = ({
     console.log('Dispatching block mined event with data:', blockData);
     
     // Create a custom event with the block data
-    const event = new CustomEvent(BLOCK_MINED_EVENT, { detail: blockData });
+    const event = new CustomEvent(BLOCK_MINED_EVENT, { 
+      detail: {
+        ...blockData,
+        timestamp: Date.now()  // Add timestamp for sync
+      }
+    });
     window.dispatchEvent(event);
     
     // If processBets callback is provided, call it with the block data

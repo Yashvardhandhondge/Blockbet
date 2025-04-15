@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
@@ -22,16 +21,27 @@ const LatestMiningPool = () => {
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [lastFetchTime, setLastFetchTime] = useState(0);
+  const THROTTLE_TIME = 1000; // 1 second throttle
   const { toast } = useToast();
 
   const fetchData = async () => {
+    const now = Date.now();
+    if (now - lastFetchTime < THROTTLE_TIME) {
+      return; // Throttle requests
+    }
+    
     try {
-      setIsLoading(true);
-      const data = await fetchWithRetry(() => fetchLatestBlockData());
+      setLastFetchTime(now);
+      const data = await fetchWithRetry(() => fetchLatestBlockData(), 3, 1000);
       
       if (blocks.length > 0 && hasNewBlock(blocks, [data.latestBlock, ...data.previousBlocks])) {
         setPreviousLatestBlock(blocks[0].hash);
         setIsNewBlockAppearing(true);
+        
+        // Dispatch block mined event
+        const event = new CustomEvent(BLOCK_MINED_EVENT, { detail: data.latestBlock });
+        window.dispatchEvent(event);
         
         toast({
           title: "New Block Found!",
@@ -64,19 +74,23 @@ const LatestMiningPool = () => {
       setIsLoading(false);
     }
   };
-  
+
+  // Poll for updates
   useEffect(() => {
-    const refreshInterval = setInterval(() => {
+    const pollInterval = setInterval(() => {
       setShouldRefresh(prev => !prev);
-    }, 30000);
+    }, 1000); // Poll every second
     
-    return () => clearInterval(refreshInterval);
+    // Cleanup
+    return () => clearInterval(pollInterval);
   }, []);
-  
+
+  // Fetch data when shouldRefresh changes
   useEffect(() => {
     fetchData();
   }, [shouldRefresh]);
-  
+
+  // Initial fetch
   useEffect(() => {
     fetchData();
   }, []);

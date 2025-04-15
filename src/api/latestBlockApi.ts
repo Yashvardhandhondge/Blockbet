@@ -1,4 +1,3 @@
-
 import { fetchRecentBlocks, calculateAverageBlockTime, estimateNextBlockTime } from '../services/mempoolService';
 import { Block } from '@/utils/types';
 
@@ -14,47 +13,47 @@ export interface LatestBlockData {
  * @returns Promise with latest block data
  */
 export const fetchLatestBlockData = async (): Promise<LatestBlockData> => {
+  const start = performance.now();
+  
   try {
-    // Fetch recent blocks from the API
     const mempoolBlocks = await fetchRecentBlocks();
     
     if (!mempoolBlocks || mempoolBlocks.length === 0) {
       throw new Error('No blocks returned from API');
     }
-    
-    // Calculate average block time
+
+    // Calculate timing metrics
     const avgBlockTime = calculateAverageBlockTime(mempoolBlocks);
-    
-    // Estimate next block time
     const estimatedNextBlock = estimateNextBlockTime(mempoolBlocks);
     
-    // Map the Mempool API responses to our Block interface
-    const mappedBlocks: Block[] = mempoolBlocks.map(block => {
-      // Convert sat to BTC (1 BTC = 100,000,000 satoshis)
-      const blockReward = 6.25; // Current block reward in BTC
+    // Map the blocks with optimized processing
+    const mappedBlocks = await Promise.all(mempoolBlocks.map(block => {
+      const blockReward = 6.25;
       const feesInBtc = block.extras?.totalFees ? block.extras.totalFees / 100000000 : 0;
       const totalBtc = blockReward + feesInBtc;
       
-      // Get fee range
-      const feeRange = block.extras?.feeRange 
-        ? `${block.extras.feeRange[0]} - ${block.extras.feeRange[block.extras.feeRange.length - 1]} sat/vB`
-        : '0 - 0 sat/vB';
-      
-      // Get median fee for fee display
-      const medianFee = block.extras?.medianFee || 0;
-      
       return {
         height: block.height,
-        hash: block.id, // The block hash
+        hash: block.id,
         minedBy: block.extras?.pool?.name || 'Unknown',
-        timestamp: block.timestamp * 1000, // Convert from seconds to milliseconds
+        timestamp: block.timestamp * 1000,
         size: block.size,
         transactionCount: block.tx_count,
         fees: block.extras?.totalFees || 0,
-        feesRangeText: `~${medianFee} sat/vB`,
-        feeRange: feeRange,
-        totalBtc: totalBtc // Total BTC (block reward + fees)
+        feesRangeText: `~${block.extras?.medianFee || 0} sat/vB`,
+        feeRange: block.extras?.feeRange ? 
+          `${block.extras.feeRange[0]} - ${block.extras.feeRange[block.extras.feeRange.length - 1]} sat/vB` :
+          '0 - 0 sat/vB',
+        totalBtc
       };
+    }));
+
+    const end = performance.now();
+    console.log('Block data processing performance:', {
+      totalTime: Math.round(end - start) + 'ms',
+      blockCount: mappedBlocks.length,
+      avgBlockTime: avgBlockTime.toFixed(2) + ' min',
+      timestamp: new Date().toISOString()
     });
     
     return {

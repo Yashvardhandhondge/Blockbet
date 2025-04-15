@@ -1,4 +1,3 @@
-
 import { MiningPool } from './types';
 
 export const formatSatsToBTC = (sats: number): string => {
@@ -12,7 +11,17 @@ export const formatSats = (sats: number): string => {
 
 // Function to emit a player win event
 export const emitPlayerWin = () => {
-  console.log('Emitting player win event');
-  const event = new CustomEvent('playerWin', { detail: { timestamp: Date.now() } });
-  window.dispatchEvent(event);
+  const winEvent = new CustomEvent('playerWin', { 
+    detail: { 
+      timestamp: Date.now(),
+      source: 'betting-grid'
+    } 
+  });
+  
+  console.log('Emitting playerWin event:', {
+    timestamp: new Date().toISOString(),
+    eventDetail: winEvent.detail
+  });
+  
+  window.dispatchEvent(winEvent);
 };

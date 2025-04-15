@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BettingGrid from '@/components/BettingGrid';
@@ -26,15 +25,19 @@ const Index = () => {
   // Listen for player win events from BettingGrid
   useEffect(() => {
     const handlePlayerWin = (e: CustomEvent<any>) => {
-      console.log('Player win event received in Index', e);
-      // This event will now only be triggered when player actually wins
+      console.log('Player win event received in Index:', {
+        timestamp: new Date().toISOString(),
+        eventDetail: e.detail
+      });
+      
       setShowConfetti(true);
     };
 
-    // Event name for player winning
+    // Event listener for player winning
     window.addEventListener('playerWin', handlePlayerWin as EventListener);
     
     return () => {
+      console.log('Cleaning up win event listener');
       window.removeEventListener('playerWin', handlePlayerWin as EventListener);
     };
   }, []);

@@ -1,11 +1,21 @@
-
 import { fetchRecentBlocks, calculateMiningPoolStats } from '../services/mempoolService';
 
+const REFRESH_INTERVAL = 10000; // 10 seconds
+let lastFetchTime = 0;
+let cachedStats: any = null;
+
 /**
- * Fetches mining pool statistics from Mempool.space API
+ * Fetches mining pool statistics from Mempool.space API with caching
  * @returns Promise with mining pool statistics
  */
 export const fetchMiningPoolStats = async () => {
+  const now = Date.now();
+  
+  // Return cached data if it's fresh enough
+  if (cachedStats && (now - lastFetchTime) < REFRESH_INTERVAL) {
+    return cachedStats;
+  }
+  
   try {
     const blocks = await fetchRecentBlocks();
     
@@ -33,6 +43,10 @@ export const fetchMiningPoolStats = async () => {
     });
     
     const poolStats = calculateMiningPoolStats(processedBlocks);
+    
+    // Update cache
+    cachedStats = poolStats;
+    lastFetchTime = now;
     
     return poolStats;
   } catch (error) {

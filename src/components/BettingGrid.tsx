@@ -18,9 +18,17 @@ import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
+const MIN_BET = 1000; // 1K sats
+const MAX_BET = 1000000; // 1M sats
+const PLATFORM_FEE = 0.025; // 2.5%
 
-// Log the actual duration when component is loaded
-console.log('BETTING_ROUND_DURATION:', BETTING_ROUND_DURATION, 'seconds');
+// Add logging for initialization
+console.log('Initializing BettingGrid with settings:', {
+  MIN_BET,
+  MAX_BET,
+  PLATFORM_FEE,
+  BETTING_ROUND_DURATION
+});
 
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
@@ -162,45 +170,41 @@ const BettingGrid = () => {
       clearInterval(timerIntervalRef.current);
     }
 
-    // Log timer initialization
     console.log('Timer initialized with duration:', BETTING_ROUND_DURATION, 'seconds');
     console.log('Initial timeRemaining:', timeRemaining, 'seconds');
     
-    // Reset progress when starting new round
     setProgress(0);
 
     timerIntervalRef.current = setInterval(() => {
       setTimeRemaining(prev => {
         const newTime = prev <= 0 ? 0 : prev - 1;
         
-        // Log every 30 seconds to avoid console spam
         if (newTime % 30 === 0 || newTime <= 10) {
-          console.log(`Timer update: ${newTime} seconds remaining (${Math.floor(newTime / 60)}:${(newTime % 60).toString().padStart(2, '0')})`);
+          console.log(`Timer update: ${newTime} seconds remaining`);
         }
         
         if (prev <= 0) {
           setIsBettingClosed(true);
           return 0;
         }
-        // Update progress based on remaining time
+        
         const progressValue = ((BETTING_ROUND_DURATION - newTime) / BETTING_ROUND_DURATION) * 100;
         setProgress(progressValue);
         return newTime;
       });
     }, 1000);
-    
+
     const handleBlockMined = (e: CustomEvent<any>) => {
-      const timestamp = new Date().getTime();
-      console.log(`[${timestamp}] Block mined event received:`, e.detail);
-      console.log('Current time remaining before reset:', timeRemaining, 'seconds');
+      console.log('Block mined event received:', e.detail);
       
       if (e.detail) {
+        // First process existing bets
         processBetsForBlock(e.detail);
+        // Then start a new round
+        startNewBettingRound();
       }
-
-      startNewBettingRound();
     };
-    
+
     window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     
     return () => {
@@ -278,7 +282,16 @@ const BettingGrid = () => {
   };
 
   const handlePlaceBet = (poolId: string | null) => {
+    console.log('Attempting to place bet:', {
+      poolId,
+      selectedChip,
+      currentWalletBalance: walletBalance,
+      isBettingClosed,
+      timeRemaining
+    });
+
     if (timeRemaining <= 0 || isBettingClosed) {
+      console.log('Bet rejected: Betting period closed');
       toast({
         title: "Betting is closed",
         description: "Please wait for the next block to be mined",
@@ -288,6 +301,7 @@ const BettingGrid = () => {
     }
     
     if (!selectedChip) {
+      console.log('Bet rejected: No chip selected');
       toast({
         title: "Select a chip first",
         description: "Please select a chip value before placing a bet",
@@ -296,7 +310,29 @@ const BettingGrid = () => {
       return;
     }
 
+    // Enhanced bet limit validation with logging
+    if (selectedChip < MIN_BET) {
+      console.log('Bet rejected: Below minimum', { attempted: selectedChip, minimum: MIN_BET });
+      toast({
+        title: "Bet too small",
+        description: `Minimum bet is ${formatSats(MIN_BET)}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (selectedChip > MAX_BET) {
+      console.log('Bet rejected: Above maximum', { attempted: selectedChip, maximum: MAX_BET });
+      toast({
+        title: "Bet too large", 
+        description: `Maximum bet is ${formatSats(MAX_BET)}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (selectedChip > walletBalance) {
+      console.log('Bet rejected: Insufficient funds', { attempted: selectedChip, walletBalance });
       toast({
         title: "Insufficient funds",
         description: "You don't have enough balance to place this bet",
@@ -323,6 +359,7 @@ const BettingGrid = () => {
     setNextBetId(prev => prev + 1);
     
     const poolName = poolId ? miningPools.find(p => p.id === poolId)?.name || 'Unknown' : 'Empty Block';
+    console.log('Bet placed:', { poolId, poolName, amount: selectedChip });
     toast({
       title: "Bet placed!",
       description: `${formatSats(selectedChip)} on ${poolName}`,
@@ -341,6 +378,7 @@ const BettingGrid = () => {
     }
     
     setBets([]);
+    console.log('All bets cleared');
     toast({
       title: "Bets cleared",
       description: "All your bets have been cleared",
@@ -370,6 +408,7 @@ const BettingGrid = () => {
     const newBets = bets.slice(0, -1);
     setBets(newBets);
     const poolName = lastBet.poolId ? miningPools.find(p => p.id === lastBet.poolId)?.name || 'Unknown' : 'Empty Block';
+    console.log('Last bet cancelled:', { betId: lastBet.id, poolName, amount: lastBet.amount });
     toast({
       title: "Last bet cancelled",
       description: `Removed bet of ${(lastBet.amount / 100000).toFixed(5)} BTC on ${poolName}`,
@@ -388,6 +427,7 @@ const BettingGrid = () => {
       txId: Array(32).fill(0).map(() => Math.random().toString(36).charAt(2)).join('')
     };
     setDeposits([newDeposit, ...deposits]);
+    console.log('Deposit successful:', { amount: newDeposit.amount, newBalance });
     toast({
       title: "Deposit successful",
       description: "Added 0.1 BTC to your wallet",
@@ -415,12 +455,14 @@ const BettingGrid = () => {
           status: 'completed' as const
         } : w));
       }, 5000);
+      console.log('Withdrawal successful:', { amount: newWithdrawal.amount, newBalance });
       toast({
         title: "Withdrawal successful",
         description: "Withdrawn 0.1 BTC from your wallet",
         variant: "default"
       });
     } else {
+      console.log('Withdrawal failed: Insufficient funds', { walletBalance });
       toast({
         title: "Insufficient funds",
         description: "You don't have enough funds to withdraw",
@@ -447,6 +489,7 @@ const BettingGrid = () => {
     if (isWin) {
       const winAmount = amount * (pool?.odds || 2);
       setWalletBalance(prev => prev + winAmount);
+      console.log('Bet won:', { poolId, amount, winAmount });
       toast({
         title: "Bet won!",
         description: `You won ${formatSats(winAmount)} betting on ${pool?.name}!`,
@@ -632,7 +675,7 @@ const BettingGrid = () => {
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex items-center">
               {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">��{chipGroup.count}</span>}
+              {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
             </div>
           </div>)}
         {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
@@ -745,7 +788,13 @@ const BettingGrid = () => {
   };
 
   const processBetsForBlock = (blockData: any) => {
-    console.log('Processing bets with block data:', blockData, 'Current bets:', bets);
+    console.log('Processing bets for new block:', {
+      blockHeight: blockData.height,
+      minedBy: blockData.minedBy,
+      timestamp: blockData.timestamp,
+      activeBets: bets.length,
+      totalBetAmount: bets.reduce((sum, bet) => sum + bet.amount, 0)
+    });
     
     if (!bets || bets.length === 0) {
       console.log('No bets to process');
@@ -759,17 +808,27 @@ const BettingGrid = () => {
       )?.id || null 
       : null;
       
-    console.log('Winning pool:', winningPoolId, 'Mined by:', blockData.minedBy);
+    console.log('Winning pool determined:', {
+      winningPoolId,
+      minedBy: blockData.minedBy
+    });
     
     setWinningPool(winningPoolId);
-    setTimeout(() => setWinningPool(null), 10000);
     
     let playerHasWon = false;
     let totalWinAmount = 0;
     let unprocessedBets = [...bets];
     
-    unprocessedBets.forEach(bet => {
+    console.log('Processing individual bets...');
+    
+    unprocessedBets.forEach((bet, index) => {
       const isWin = bet.poolId === winningPoolId;
+      console.log(`Processing bet ${index + 1}/${unprocessedBets.length}:`, {
+        betId: bet.id,
+        poolId: bet.poolId,
+        amount: bet.amount,
+        isWin
+      });
       
       if (bet.poolId) {
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
@@ -777,8 +836,19 @@ const BettingGrid = () => {
         if (isWin) {
           const pool = miningPools.find(p => p.id === bet.poolId);
           if (pool) {
-            const winAmount = Math.floor(bet.amount * pool.odds);
-            totalWinAmount += winAmount;
+            const rawWinAmount = Math.floor(bet.amount * pool.odds);
+            const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
+            const netWinAmount = rawWinAmount - platformFee;
+            
+            console.log('Win calculation:', {
+              betAmount: bet.amount,
+              odds: pool.odds,
+              rawWinAmount,
+              platformFee,
+              netWinAmount
+            });
+            
+            totalWinAmount += netWinAmount;
             playerHasWon = true;
           }
         }
@@ -786,18 +856,31 @@ const BettingGrid = () => {
     });
     
     if (totalWinAmount > 0) {
-      setWalletBalance(prev => prev + totalWinAmount);
+      console.log('Player won! Emitting win event');
+      // Trigger confetti
+      emitPlayerWin();
       
       toast({
         title: "You won!",
-        description: `Total winnings: ${formatSats(totalWinAmount)}`,
+        description: `Total winnings: ${formatSats(totalWinAmount)} (after 2.5% platform fee)`,
         variant: "default"
       });
       
-      if (playerHasWon) {
-        emitPlayerWin();
-      }
+      setWalletBalance(prev => {
+        const newBalance = prev + totalWinAmount;
+        console.log('Wallet balance updated:', {
+          previousBalance: prev,
+          change: totalWinAmount,
+          newBalance
+        });
+        return newBalance;
+      });
     } else if (unprocessedBets.length > 0) {
+      console.log('Player lost. No wins from bets:', {
+        betsCount: unprocessedBets.length,
+        timestamp: new Date().toISOString()
+      });
+      
       toast({
         title: "Better luck next time!",
         description: "Your bets didn't win this round.",

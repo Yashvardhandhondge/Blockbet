@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';
 import { useCountUp } from '@/lib/animations';
@@ -26,26 +26,71 @@ const MiningPoolCard = ({
 }: MiningPoolCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showWinningEffect, setShowWinningEffect] = useState(false);
+  const winTimerRef = useRef<NodeJS.Timeout>();
   const isMobile = useIsMobile();
   
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
-  
   const poolColor = getPoolColor(pool.id);
 
+  // Enhanced winning effect management
   useEffect(() => {
     if (isWinningPool) {
-      console.log('Showing winning effect on pool:', pool.id);
+      console.log('Starting win animation for pool:', {
+        poolId: pool.id,
+        poolName: pool.name,
+        timestamp: new Date().toISOString()
+      });
+
+      // Clear any existing timer
+      if (winTimerRef.current) {
+        clearTimeout(winTimerRef.current);
+      }
+
       setShowWinningEffect(true);
       
-      const timer = setTimeout(() => {
+      // Set new timer
+      winTimerRef.current = setTimeout(() => {
+        console.log('Ending win animation for pool:', {
+          poolId: pool.id,
+          poolName: pool.name,
+          timestamp: new Date().toISOString()
+        });
         setShowWinningEffect(false);
-      }, 10000); // 10 seconds
-      
-      return () => clearTimeout(timer);
+      }, 10000);
     } else {
-      setShowWinningEffect(false);
+      // Clean up if pool is no longer winning
+      if (showWinningEffect) {
+        console.log('Clearing win animation for pool:', {
+          poolId: pool.id,
+          poolName: pool.name,
+          timestamp: new Date().toISOString()
+        });
+        setShowWinningEffect(false);
+      }
     }
-  }, [isWinningPool, pool.id]);
+
+    // Cleanup function
+    return () => {
+      if (winTimerRef.current) {
+        console.log('Cleaning up win timer for pool:', {
+          poolId: pool.id,
+          poolName: pool.name,
+          timestamp: new Date().toISOString()
+        });
+        clearTimeout(winTimerRef.current);
+      }
+    };
+  }, [isWinningPool, pool.id, pool.name]);
+
+  useEffect(() => {
+    console.log('MiningPoolCard state update:', {
+      poolId: pool.id,
+      poolName: pool.name,
+      isWinningPool,
+      showWinningEffect,
+      timestamp: new Date().toISOString()
+    });
+  }, [pool.id, pool.name, isWinningPool, showWinningEffect]);
   
   return (
     <div 
@@ -96,6 +141,13 @@ const MiningPoolCard = ({
           scale={1.3}
           duration={2}
           className="opacity-60"
+          onAnimationComplete={() => {
+            console.log('Glow effect animation cycle completed for:', {
+              poolId: pool.id,
+              poolName: pool.name,
+              timestamp: new Date().toISOString()
+            });
+          }}
         />
       )}
       
@@ -169,6 +221,12 @@ const MiningPoolCard = ({
             <div 
               className="h-full transition-all duration-1000 ease-out"
               style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
+              onTransitionEnd={() => {
+                console.log(`Hashrate bar animation completed for ${pool.name}:`, {
+                  displayedValue: displayedHashrate + '%',
+                  actualValue: pool.hashRatePercent + '%'
+                });
+              }}
             ></div>
           </div>
         </div>

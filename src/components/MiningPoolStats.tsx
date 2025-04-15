@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { fetchMiningPoolStats } from '@/api/miningPoolStatsApi';
 import { MiningPoolStats as PoolStats } from '@/services/mempoolService';
@@ -16,8 +15,16 @@ const MiningPoolStats = () => {
 
   const fetchData = async () => {
     try {
+      console.log('Fetching mining pool stats...');
       setIsLoading(true);
+      
       const stats = await fetchWithRetry(() => fetchMiningPoolStats(), 3, 2000);
+      console.log('Mining pool stats fetched:', {
+        pools: stats.length,
+        totalBlocks: stats.reduce((sum, p) => sum + p.blocksCount, 0),
+        timestamp: new Date().toISOString()
+      });
+      
       setPoolStats(stats);
       setLastUpdated(new Date());
       setError(null);
