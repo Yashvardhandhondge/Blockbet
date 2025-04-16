@@ -170,21 +170,12 @@ const BettingGrid = () => {
       clearInterval(timerIntervalRef.current);
     }
 
-    console.log('Timer initialized with duration:', BETTING_ROUND_DURATION, 'seconds');
-    console.log('Initial timeRemaining:', timeRemaining, 'seconds');
-    
-    setProgress(0);
-
     timerIntervalRef.current = setInterval(() => {
       setTimeRemaining(prev => {
         const newTime = prev <= 0 ? 0 : prev - 1;
         
-        if (newTime % 30 === 0 || newTime <= 10) {
-          console.log(`Timer update: ${newTime} seconds remaining`);
-        }
-        
         if (prev <= 0) {
-          // Only set betting as closed, don't reset bets
+          // Only close betting, don't reset anything
           setIsBettingClosed(true);
           return 0;
         }
@@ -199,8 +190,10 @@ const BettingGrid = () => {
       console.log('Block mined event received:', e.detail);
       
       if (e.detail) {
-        processBetsForBlock(e.detail); // Process existing bets
-        startNewBettingRound(); // Then start new round
+        // Process bets first
+        processBetsForBlock(e.detail);
+        // Then start new round which resets everything
+        startNewBettingRound();
       }
     };
 
@@ -279,20 +272,8 @@ const BettingGrid = () => {
 
   const startNewBettingRound = () => {
     const now = new Date();
-    console.log(`[${now.toISOString()}] Starting new betting round with duration:`, BETTING_ROUND_DURATION, 'seconds');
-    
     setTimeRemaining(BETTING_ROUND_DURATION);
     setProgress(0);
-    
-    setIsBettingClosed(false);
-    setSelectedChip(null);
-    setSelectedPool(null);
-    setBets([]);
-    setWinningPool(null);
-    
-    // Log expected end time
-    const endTime = new Date(now.getTime() + BETTING_ROUND_DURATION * 1000);
-    console.log(`Round should end at: ${endTime.toISOString()} (in ${BETTING_ROUND_DURATION} seconds)`);
     
     if (hasStartedInitialRound.current) {
       toast({
@@ -832,6 +813,7 @@ const BettingGrid = () => {
     
     if (!bets || bets.length === 0) {
       console.log('No bets to process');
+      // Don't reset anything if no bets to process
       return;
     }
     
@@ -922,8 +904,15 @@ const BettingGrid = () => {
       });
     }
     
+    setTimeout(() => {
+      setBets([]);
+      setIsBettingClosed(false);
+      setSelectedChip(null);
+      setSelectedPool(null);
+      setWinningPool(null);
+    }, 2000); // Give time for animations/effects
+
     setCurrentBlock(prev => prev + 1);
-    setBets([]);
   };
 
   const renderImprovedChips = (amounts: number[]) => {
