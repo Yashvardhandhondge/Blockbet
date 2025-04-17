@@ -54,63 +54,7 @@ const BettingGrid = () => {
     timestamp: Date;
     isWin: boolean;
     blockHeight: number;
-  }>>([{
-    id: 1,
-    poolId: 'foundry',
-    poolName: 'Foundry USA',
-    amount: 5000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2),
-    isWin: true,
-    blockHeight: 843231
-  }, {
-    id: 2,
-    poolId: 'antpool',
-    poolName: 'Antpool',
-    amount: 10000,
-    timestamp: new Date(Date.now() - 3600000 * 24 * 1.5),
-    isWin: false,
-    blockHeight: 843245
-  }, {
-    id: 3,
-    poolId: 'f2pool',
-    poolName: 'F2Pool',
-    amount: 1000,
-    timestamp: new Date(Date.now() - 3600000 * 24),
-    isWin: true,
-    blockHeight: 843260
-  }, {
-    id: 4,
-    poolId: 'binance',
-    poolName: 'Binance Pool',
-    amount: 50000,
-    timestamp: new Date(Date.now() - 3600000 * 12),
-    isWin: false,
-    blockHeight: 843279
-  }, {
-    id: 5,
-    poolId: 'viabtc',
-    poolName: 'ViaBTC',
-    amount: 5000,
-    timestamp: new Date(Date.now() - 3600000 * 6),
-    isWin: true,
-    blockHeight: 843291
-  }, {
-    id: 6,
-    poolId: 'slushpool',
-    poolName: 'Slush Pool',
-    amount: 10000,
-    timestamp: new Date(Date.now() - 3600000 * 3),
-    isWin: false,
-    blockHeight: 843301
-  }, {
-    id: 7,
-    poolId: 'poolin',
-    poolName: 'Poolin',
-    amount: 500,
-    timestamp: new Date(Date.now() - 3600000),
-    isWin: true,
-    blockHeight: 843310
-  }]);
+  }>>([]);
   const [deposits, setDeposits] = useState<Array<{
     id: number;
     amount: number;
@@ -474,7 +418,7 @@ const BettingGrid = () => {
     if (!pool) return;
     
     const newBet = {
-      id: betHistory.length + 1,
+      id: Date.now(), // Use timestamp as unique ID
       poolId: poolId,
       poolName: pool?.name || 'Unknown Pool',
       amount: amount,
@@ -482,7 +426,12 @@ const BettingGrid = () => {
       isWin: isWin,
       blockHeight: currentBlock + 1
     };
-    setBetHistory(prev => [newBet, ...prev]);
+
+    setBetHistory(prev => {
+      // Keep only last 50 bets to prevent too much history
+      const updatedHistory = [newBet, ...prev];
+      return updatedHistory.slice(0, 50);
+    });
 
     if (isWin) {
       const rawWinAmount = Math.floor(amount * pool.odds);
@@ -490,13 +439,6 @@ const BettingGrid = () => {
       const netWinAmount = rawWinAmount - platformFee;
       
       setWalletBalance(prev => prev + netWinAmount);
-      console.log('Bet won:', { 
-        poolId, 
-        amount, 
-        rawWinAmount,
-        platformFee,
-        netWinAmount 
-      });
       
       toast({
         title: "Bet won!",
