@@ -186,24 +186,10 @@ const BettingGrid = () => {
       });
     }, 1000);
 
-    const handleBlockMined = (e: CustomEvent<any>) => {
-      console.log('Block mined event received:', e.detail);
-      
-      if (e.detail) {
-        // Process bets first
-        processBetsForBlock(e.detail);
-        // Then start new round which resets everything
-        startNewBettingRound();
-      }
-    };
-
-    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
-    
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
-      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
     };
   }, []);
 
@@ -272,10 +258,15 @@ const BettingGrid = () => {
     return () => clearInterval(poolStatsInterval);
   }, []);
 
-  const startNewBettingRound = () => {
-    const now = new Date();
+  const startNewBettingRound = useCallback(() => {
+    console.log('Starting new betting round');
     setTimeRemaining(BETTING_ROUND_DURATION);
     setProgress(0);
+    setIsBettingClosed(false);
+    setBets([]);
+    setSelectedChip(null);
+    setSelectedPool(null);
+    setWinningPool(null);
     
     if (hasStartedInitialRound.current) {
       toast({
@@ -286,7 +277,7 @@ const BettingGrid = () => {
     } else {
       hasStartedInitialRound.current = true;
     }
-  };
+  }, []);
 
   const handlePlaceBet = (poolId: string | null) => {
     console.log('Attempting to place bet:', {
@@ -804,7 +795,7 @@ const BettingGrid = () => {
     );
   };
 
-  const processBetsForBlock = (blockData: any) => {
+  const processBetsForBlock = useCallback((blockData: any) => {
     console.log('Processing bets for new block:', {
       blockHeight: blockData.height,
       minedBy: blockData.minedBy,
@@ -814,8 +805,8 @@ const BettingGrid = () => {
     });
     
     if (!bets || bets.length === 0) {
-      console.log('No bets to process');
-      // Don't reset anything if no bets to process
+      console.log('No bets to process, starting new round');
+      startNewBettingRound();
       return;
     }
     
@@ -825,28 +816,15 @@ const BettingGrid = () => {
         p.id.toLowerCase().includes(blockData.minedBy.toLowerCase())
       )?.id || null 
       : null;
-      
-    console.log('Winning pool determined:', {
-      winningPoolId,
-      minedBy: blockData.minedBy
-    });
     
+    console.log('Winning pool determined:', { winningPoolId, minedBy: blockData.minedBy });
     setWinningPool(winningPoolId);
     
-    let playerHasWon = false;
     let totalWinAmount = 0;
-    let unprocessedBets = [...bets];
     
-    console.log('Processing individual bets...');
-    
-    unprocessedBets.forEach((bet, index) => {
+    // Process all bets immediately
+    bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
-      console.log(`Processing bet ${index + 1}/${unprocessedBets.length}:`, {
-        betId: bet.id,
-        poolId: bet.poolId,
-        amount: bet.amount,
-        isWin
-      });
       
       if (bet.poolId) {
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
@@ -857,65 +835,54 @@ const BettingGrid = () => {
             const rawWinAmount = Math.floor(bet.amount * pool.odds);
             const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
             const netWinAmount = rawWinAmount - platformFee;
+            totalWinAmount += netWinAmount;
             
-            console.log('Win calculation:', {
+            console.log('Win processed:', {
+              pool: pool.name,
               betAmount: bet.amount,
               odds: pool.odds,
-              rawWinAmount,
-              platformFee,
               netWinAmount
             });
-            
-            totalWinAmount += netWinAmount;
-            playerHasWon = true;
           }
         }
       }
     });
-    
+
+    // Update wallet and show results
     if (totalWinAmount > 0) {
-      console.log('Player won! Emitting win event');
-      // Trigger confetti
+      setWalletBalance(prev => prev + totalWinAmount);
       emitPlayerWin();
-      
       toast({
         title: "You won!",
-        description: `Total winnings: ${formatSats(totalWinAmount)} (after 2.5% platform fee)`,
+        description: `Total winnings: ${formatSats(totalWinAmount)} (after ${PLATFORM_FEE * 100}% platform fee)`,
         variant: "default"
       });
-      
-      setWalletBalance(prev => {
-        const newBalance = prev + totalWinAmount;
-        console.log('Wallet balance updated:', {
-          previousBalance: prev,
-          change: totalWinAmount,
-          newBalance
-        });
-        return newBalance;
-      });
-    } else if (unprocessedBets.length > 0) {
-      console.log('Player lost. No wins from bets:', {
-        betsCount: unprocessedBets.length,
-        timestamp: new Date().toISOString()
-      });
-      
+    } else {
       toast({
         title: "Better luck next time!",
         description: "Your bets didn't win this round.",
         variant: "destructive"
       });
     }
-    
-    setTimeout(() => {
-      setBets([]);
-      setIsBettingClosed(false);
-      setSelectedChip(null);
-      setSelectedPool(null);
-      setWinningPool(null);
-    }, 2000); // Give time for animations/effects
 
+    // Start new round after a short delay
+    setTimeout(startNewBettingRound, 2000);
     setCurrentBlock(prev => prev + 1);
-  };
+  }, [bets, setWalletBalance, startNewBettingRound]);
+
+  useEffect(() => {
+    const handleBlockMined = (e: CustomEvent<any>) => {
+      console.log('Block mined event received:', e.detail);
+      if (e.detail) {
+        processBetsForBlock(e.detail);
+      }
+    };
+
+    window.addEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+    return () => {
+      window.removeEventListener(BLOCK_MINED_EVENT, handleBlockMined as EventListener);
+    };
+  }, [processBetsForBlock]);
 
   const renderImprovedChips = (amounts: number[]) => {
     const groupedChips: {

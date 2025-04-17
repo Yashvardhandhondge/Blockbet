@@ -1,10 +1,9 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Profile } from '@/types/supabase';
 
 // LNBits API configuration
-const LNBITS_API_URL = 'https://c687a80746.d.voltageapp.io/api/v1';
-const LNBITS_ADMIN_KEY = 'e11b4d2b815343e9b8d26a773be430ab';
+const LNBITS_API_URL = process.env.NEXT_PUBLIC_LNBITS_API_URL || 'https://c687a80746.d.voltageapp.io';
+const LNBITS_ADMIN_KEY = process.env.NEXT_PUBLIC_LNBITS_ADMIN_KEY || '';
 
 // Define types for LNBits API responses
 export type LNBitsUser = {
@@ -44,26 +43,29 @@ export type LNBitsPayment = {
 };
 
 // Service for handling LNBits operations
-export const lnbitsService = {
+export class LNBitsService {
   // Create a new LNBits user
   async createUser(username: string): Promise<LNBitsUser | null> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/usermanager/users`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Api-Key': LNBITS_ADMIN_KEY,
         },
         body: JSON.stringify({
-          username,
+          admin_id: LNBITS_ADMIN_KEY, // Add admin_id
+          user_name: username, // Change username to user_name
+          wallet_name: 'default', // Add wallet_name
           admin: false,
           email: "",
-          password: "" // Password not needed for LNURL auth
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create LNBits user: ${response.statusText}`);
+        const error = await response.text();
+        console.error('LNBits error:', error);
+        throw new Error(`Failed to create LNBits user: ${response.status} - ${error}`);
       }
 
       return await response.json();
@@ -71,12 +73,12 @@ export const lnbitsService = {
       console.error('Error creating LNBits user:', error);
       return null;
     }
-  },
+  }
 
   // Create a new wallet for a user
   async createWallet(userId: string, walletName: string): Promise<LNBitsWallet | null> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/usermanager/wallets`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/usermanager/wallets`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,12 +99,12 @@ export const lnbitsService = {
       console.error('Error creating wallet:', error);
       return null;
     }
-  },
+  }
 
   // Create an invoice for a user's wallet
   async createInvoice(walletInvoiceKey: string, amountSats: number, memo: string): Promise<LNBitsInvoice | null> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/payments`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,12 +126,12 @@ export const lnbitsService = {
       console.error('Error creating invoice:', error);
       return null;
     }
-  },
+  }
 
   // Check if an invoice has been paid
   async checkInvoice(walletInvoiceKey: string, paymentHash: string): Promise<boolean> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/payments/${paymentHash}`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/payments/${paymentHash}`, {
         headers: {
           'X-Api-Key': walletInvoiceKey,
         },
@@ -145,12 +147,12 @@ export const lnbitsService = {
       console.error('Error checking invoice:', error);
       return false;
     }
-  },
+  }
 
   // Pay an invoice from a user's wallet
   async payInvoice(walletAdminKey: string, bolt11: string): Promise<LNBitsPayment | null> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/payments`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,12 +173,12 @@ export const lnbitsService = {
       console.error('Error paying invoice:', error);
       return null;
     }
-  },
+  }
 
   // Get wallet details including balance
   async getWallet(walletInvoiceKey: string): Promise<{ balance: number } | null> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/wallet`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/wallet`, {
         headers: {
           'X-Api-Key': walletInvoiceKey,
         },
@@ -191,18 +193,18 @@ export const lnbitsService = {
       console.error('Error getting wallet:', error);
       return null;
     }
-  },
+  }
 
   // Generate LNURL-auth login URL
   async generateLnurlAuthUrl(callbackUrl: string, k1: string): Promise<string> {
     // Construct the LNURL-auth URL for LNBits
-    return `${LNBITS_API_URL}/lnurlauth?tag=login&action=login&k1=${k1}&callback=${encodeURIComponent(callbackUrl)}`;
-  },
+    return `${LNBITS_API_URL}/api/v1/lnurlauth?tag=login&action=login&k1=${k1}&callback=${encodeURIComponent(callbackUrl)}`;
+  }
 
   // Verify LNURL-auth signature
   async verifyLnurlAuth(k1: string, sig: string, key: string): Promise<boolean> {
     try {
-      const response = await fetch(`${LNBITS_API_URL}/lnurlauth/verify?k1=${k1}&sig=${sig}&key=${key}`, {
+      const response = await fetch(`${LNBITS_API_URL}/api/v1/lnurlauth/verify?k1=${k1}&sig=${sig}&key=${key}`, {
         method: 'GET',
       });
 
@@ -216,8 +218,8 @@ export const lnbitsService = {
       console.error('Error verifying LNURL-auth:', error);
       return false;
     }
-  },
-};
+  }
+}
 
 // Functions for managing user wallets in our app
 export const walletManager = {
@@ -243,6 +245,7 @@ export const walletManager = {
       }
 
       // Create new LNBits user
+      const lnbitsService = new LNBitsService();
       const lnbitsUser = await lnbitsService.createUser(username);
       if (!lnbitsUser) return false;
 
@@ -297,6 +300,7 @@ export const walletManager = {
       }
 
       // Create invoice
+      const lnbitsService = new LNBitsService();
       const invoice = await lnbitsService.createInvoice(
         profile.lnbits_invoice_key,
         amountSats,
@@ -355,6 +359,7 @@ export const walletManager = {
       }
 
       // Pay invoice
+      const lnbitsService = new LNBitsService();
       const payment = await lnbitsService.payInvoice(
         profile.lnbits_admin_key,
         bolt11
@@ -408,6 +413,7 @@ export const walletManager = {
       }
 
       // Get wallet details from LNBits
+      const lnbitsService = new LNBitsService();
       const wallet = await lnbitsService.getWallet(profile.lnbits_invoice_key);
       if (!wallet) return null;
 

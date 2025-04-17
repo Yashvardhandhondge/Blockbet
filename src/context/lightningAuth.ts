@@ -1,7 +1,7 @@
 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lnbitsService, walletManager } from "@/services/lnbitsService";
+import { LNBitsService, walletManager } from "@/services/lnbitsService";
 
 // Helper function to create a new Lightning user
 export const createLightningUser = async (key: string): Promise<boolean> => {
@@ -58,7 +58,7 @@ export const handleLnurlAuth = async (
     }
     
     // Verify the LNURL auth signature
-    const isValid = await lnbitsService.verifyLnurlAuth(k1, sig, key);
+    const isValid = await LNBitsService.verifyLnurlAuth(k1, sig, key);
     
     if (!isValid) {
       throw new Error('Failed to verify Lightning authentication');
