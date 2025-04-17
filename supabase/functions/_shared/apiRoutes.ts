@@ -1,7 +1,6 @@
 
 // API routes for the LNBits integration
-/// <reference types="deno" />
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.14.0';
 
 // LNBits API configuration
 const LNBITS_API_URL = 'https://c687a80746.d.voltageapp.io/api/v1';

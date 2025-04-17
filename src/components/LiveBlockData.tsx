@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Waves, Clock } from 'lucide-react';
 import { fetchWithRetry } from '@/utils/errorUtils';
@@ -18,97 +18,91 @@ const LiveBlockData = ({
   pendingTransactions,
   averageBlockTime = "10.0"
 }: LiveBlockDataProps) => {
-  // Helper function to dispatch a custom event when a block is mined
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const [lastBlockHeight, setLastBlockHeight] = useState<number>(0);
+
   const dispatchBlockMinedEvent = (blockData: any) => {
-    console.log('Dispatching block mined event with data:', blockData);
-    
-    // Create a custom event with the block data
+    // Only dispatch if this is a new block
+    if (blockData.height <= lastBlockHeight) {
+      return;
+    }
+
+    console.log('New block detected:', blockData);
+    setLastBlockHeight(blockData.height);
+
     const event = new CustomEvent(BLOCK_MINED_EVENT, { 
       detail: {
         ...blockData,
-        timestamp: Date.now()  // Add timestamp for sync
+        timestamp: Date.now()
       }
     });
     window.dispatchEvent(event);
-    
-    // If processBets callback is provided, call it with the block data
+
     if (processBets) {
       processBets(blockData);
     }
   };
-  
-  // Establish WebSocket connection for real-time updates
-  useEffect(() => {
-    const ws = new WebSocket('wss://mempool.space/api/v1/ws');
-    
-    ws.onopen = () => {
+
+  const connectWebSocket = () => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      return;
+    }
+
+    wsRef.current = new WebSocket('wss://mempool.space/api/v1/ws');
+
+    wsRef.current.onopen = () => {
       console.log('WebSocket connected');
-      ws.send(JSON.stringify({ 
-        action: 'want', 
-        data: ['blocks'] 
+      wsRef.current?.send(JSON.stringify({ 
+        action: 'want',
+        data: ['blocks', 'mempool-blocks', 'mining']
       }));
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.block) {
-        const blockEvent = new CustomEvent(BLOCK_MINED_EVENT, { 
-          detail: {
+    wsRef.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.block) {
+          dispatchBlockMinedEvent({
             height: data.block.height,
             minedBy: data.block.pool,
-            timestamp: new Date()
-          }
-        });
-        window.dispatchEvent(blockEvent);
+            timestamp: new Date(),
+            hash: data.block.id,
+            difficulty: data.block.difficulty,
+            size: data.block.size,
+            weight: data.block.weight
+          });
+        }
+      } catch (err) {
+        console.error('Error processing websocket message:', err);
       }
     };
+
+    wsRef.current.onclose = () => {
+      console.log('WebSocket disconnected, attempting to reconnect...');
+      reconnectTimeoutRef.current = setTimeout(connectWebSocket, 3000);
+    };
+
+    wsRef.current.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      wsRef.current?.close();
+    };
+  };
+
+  useEffect(() => {
+    connectWebSocket();
 
     return () => {
-      ws.close();
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
     };
   }, []);
 
-  // Simulate mined blocks for development purposes
-  useEffect(() => {
-    // Function to fetch the latest block data
-    const fetchLatestBlock = async () => {
-      try {
-        // In a real app, this would fetch from an API
-        const mockMinedBy = ['foundry', 'antpool', 'f2pool', 'binance', 'viabtc', 'slushpool', 'braiinspool'];
-        const randomPool = mockMinedBy[Math.floor(Math.random() * mockMinedBy.length)];
-        
-        // Mock block data
-        const blockData = {
-          height: Math.floor(800000 + Math.random() * 100000),
-          minedBy: randomPool,
-          timestamp: Date.now(),
-          hash: Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')
-        };
-        
-        // Dispatch the event with the block data
-        dispatchBlockMinedEvent(blockData);
-        
-        console.log('New block mined by:', randomPool);
-      } catch (error) {
-        console.error('Error fetching latest block:', error);
-      }
-    };
-    
-    // Fetch immediately on mount to start the first round
-    fetchLatestBlock();
-    
-    // Then set up interval (for development only) - setting to 10 minutes (600000ms) to better simulate Bitcoin blocks
-    // We've increased this from 30 seconds to prevent chips being cleared too frequently
-    const interval = setInterval(fetchLatestBlock, 600000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {/* Component doesn't render anything visible */}
-    </div>
-  );
+  return null;
 };
 
 export default LiveBlockData;
