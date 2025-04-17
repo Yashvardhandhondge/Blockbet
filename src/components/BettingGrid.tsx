@@ -252,16 +252,18 @@ const BettingGrid = () => {
     // Update every 30 seconds
     const poolStatsInterval = setInterval(() => {
       updateVisualIndicators();
-      // Update mining pool stats from API
-      miningPools.forEach(pool => {
-        fetch(`/api/pool-stats/${pool.id}`)
-          .then(res => res.json())
-          .then(data => {
-            pool.hashRate = data.hashRate;
-            pool.hashRatePercent = data.hashRatePercent;
-            pool.blocksLast24h = data.blocksLast24h;
-            // Update odds based on new hashrate
-            pool.odds = 100 / data.hashRatePercent;
+      // Update mining pool stats using the proper service
+      import('@/api/miningPoolStatsApi').then(({ fetchMiningPoolStats }) => {
+        fetchMiningPoolStats()
+          .then(stats => {
+            miningPools.forEach(pool => {
+              const poolStats = stats.find(s => s.poolName.toLowerCase().includes(pool.id.toLowerCase()));
+              if (poolStats) {
+                pool.hashRate = poolStats.hashrate;
+                pool.hashRatePercent = poolStats.percentage;
+                pool.odds = 100 / poolStats.percentage; // Update odds based on new percentage
+              }
+            });
           })
           .catch(err => console.error('Error updating pool stats:', err));
       });
