@@ -30,6 +30,22 @@ console.log('Initializing BettingGrid with settings:', {
   BETTING_ROUND_DURATION
 });
 
+// Patch: Ensure MARA pool is included
+if (!miningPools.some(pool => pool.id === 'mara')) {
+  miningPools.push({
+    id: 'mara',
+    name: 'MARA Pool',
+    hashRate: 25.0,
+    hashRatePercent: 4.5,
+    blocksLast24h: 5,
+    colorClass: 'bg-indigo-600',
+    odds: 22,
+    region: 'Asia',
+    logoUrl: '/pool-logos/mara.svg',
+    gradient: 'linear-gradient(135deg, #6366F1, #4F46E5)'
+  });
+}
+
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
@@ -106,36 +122,30 @@ const BettingGrid = () => {
   const [progress, setProgress] = useState(0);
   const [winningPool, setWinningPool] = useState<string | null>(null);
   const [isBettingClosed, setIsBettingClosed] = useState(false);
+  const [lastBlockTime, setLastBlockTime] = useState<number | null>(null);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
-
-    timerIntervalRef.current = setInterval(() => {
-      setTimeRemaining(prev => {
-        const newTime = prev <= 0 ? 0 : prev - 1;
-        
-        if (prev <= 0) {
-          // Only close betting, don't reset anything
-          setIsBettingClosed(true);
-          return 0;
-        }
-        
-        const progressValue = ((BETTING_ROUND_DURATION - newTime) / BETTING_ROUND_DURATION) * 100;
-        setProgress(progressValue);
-        return newTime;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
+    if (!lastBlockTime) return;
+    
+    const endTime = lastBlockTime + BETTING_ROUND_DURATION * 1000;
+    const intervalId = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      setTimeRemaining(remaining);
+      
+      if (remaining <= 0) {
+        setIsBettingClosed(true);
+        toast({
+          title: "Betting round closed",
+          description: "Waiting for next block to be mined",
+          variant: "destructive"
+        });
       }
-    };
-  }, []);
+    }, 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [lastBlockTime]);
 
   const [currentRoundId] = useState(`round-${Date.now()}`);
   
@@ -176,13 +186,10 @@ const BettingGrid = () => {
   }, [bets]);
 
   useEffect(() => {
-    // Initial update
     updateVisualIndicators();
 
-    // Update every 30 seconds
     const poolStatsInterval = setInterval(() => {
       updateVisualIndicators();
-      // Update mining pool stats using the proper service
       import('@/api/miningPoolStatsApi').then(({ fetchMiningPoolStats }) => {
         fetchMiningPoolStats()
           .then(stats => {
@@ -191,7 +198,7 @@ const BettingGrid = () => {
               if (poolStats) {
                 pool.hashRate = poolStats.hashrate;
                 pool.hashRatePercent = poolStats.percentage;
-                pool.odds = 100 / poolStats.percentage; // Update odds based on new percentage
+                pool.odds = 100 / poolStats.percentage;
               }
             });
           })
@@ -204,7 +211,6 @@ const BettingGrid = () => {
 
   const startNewBettingRound = useCallback(() => {
     console.log('Starting new betting round');
-    setTimeRemaining(BETTING_ROUND_DURATION);
     setProgress(0);
     setIsBettingClosed(false);
     setBets([]);
@@ -252,7 +258,6 @@ const BettingGrid = () => {
       return;
     }
 
-    // Enhanced bet limit validation with logging
     if (selectedChip < MIN_BET) {
       console.log('Bet rejected: Below minimum', { attempted: selectedChip, minimum: MIN_BET });
       toast({
@@ -418,7 +423,7 @@ const BettingGrid = () => {
     if (!pool) return;
     
     const newBet = {
-      id: Date.now(), // Use timestamp as unique ID
+      id: Date.now(),
       poolId: poolId,
       poolName: pool?.name || 'Unknown Pool',
       amount: amount,
@@ -427,11 +432,7 @@ const BettingGrid = () => {
       blockHeight: currentBlock + 1
     };
 
-    setBetHistory(prev => {
-      // Keep only last 50 bets to prevent too much history
-      const updatedHistory = [newBet, ...prev];
-      return updatedHistory.slice(0, 50);
-    });
+    setBetHistory(prev => [newBet, ...prev].slice(0, 50));
 
     if (isWin) {
       const rawWinAmount = Math.floor(amount * pool.odds);
@@ -764,13 +765,10 @@ const BettingGrid = () => {
     
     let totalWinAmount = 0;
     
-    // Process all bets immediately
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
-      
       if (bet.poolId) {
         handleAddBetToHistory(bet.poolId, bet.amount, isWin);
-        
         if (isWin) {
           const pool = miningPools.find(p => p.id === bet.poolId);
           if (pool) {
@@ -778,7 +776,6 @@ const BettingGrid = () => {
             const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
             const netWinAmount = rawWinAmount - platformFee;
             totalWinAmount += netWinAmount;
-            
             console.log('Win processed:', {
               pool: pool.name,
               betAmount: bet.amount,
@@ -789,8 +786,7 @@ const BettingGrid = () => {
         }
       }
     });
-
-    // Update wallet and show results
+    
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
       emitPlayerWin();
@@ -806,8 +802,7 @@ const BettingGrid = () => {
         variant: "destructive"
       });
     }
-
-    // Start new round after a short delay
+    
     setTimeout(startNewBettingRound, 2000);
     setCurrentBlock(prev => prev + 1);
   }, [bets, setWalletBalance, startNewBettingRound]);
@@ -816,6 +811,7 @@ const BettingGrid = () => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received:', e.detail);
       if (e.detail) {
+        setLastBlockTime(e.detail.timestamp);
         processBetsForBlock(e.detail);
       }
     };
@@ -1071,7 +1067,6 @@ const BettingGrid = () => {
     console.log('- NODE_ENV:', process.env.NODE_ENV);
     console.log('- Window location:', window.location.href);
     
-    // Log if we're in production mode
     if (process.env.NODE_ENV === 'production') {
       console.warn('Running in production mode - timer should be set to 8 minutes');
       console.log('Explicitly verifying BETTING_ROUND_DURATION:', BETTING_ROUND_DURATION);
