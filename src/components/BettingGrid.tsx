@@ -30,7 +30,7 @@ console.log('Initializing BettingGrid with settings:', {
   BETTING_ROUND_DURATION
 });
 
-// Patch: Ensure MARA pool is included
+// Patch: Ensure MARA pool is included with correct logoUrl
 if (!miningPools.some(pool => pool.id === 'mara')) {
   miningPools.push({
     id: 'mara',
@@ -41,7 +41,7 @@ if (!miningPools.some(pool => pool.id === 'mara')) {
     colorClass: 'bg-indigo-600',
     odds: 22,
     region: 'Asia',
-    logoUrl: '/pool-logos/mara.svg',
+    logoUrl: '/pool-logos/marapool.svg', // Updated to correct file path
     gradient: 'linear-gradient(135deg, #6366F1, #4F46E5)'
   });
 }
