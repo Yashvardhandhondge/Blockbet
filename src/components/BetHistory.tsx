@@ -1,6 +1,9 @@
+// src/components/BetHistory.tsx
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { formatSats } from '@/utils/formatters';
+import { BetHistoryRecord } from '@/services/betHistoryService';
 
 // Add a mapping function for pool IDs to correct image filenames
 const getNormalizedPoolId = (poolId: string): string => {
@@ -19,28 +22,35 @@ const getNormalizedPoolId = (poolId: string): string => {
 };
 
 export interface BetHistoryProps {
-  bets: Array<{
-    id: number;
-    poolId: string;
-    poolName: string;
-    amount: number;
-    timestamp: Date;
-    isWin: boolean;
-    blockHeight: number;
-  }>;
+  bets: BetHistoryRecord[];
+  isLoading?: boolean;
 }
 
-const BetHistory: React.FC<BetHistoryProps> = ({ bets }) => {
+const BetHistory: React.FC<BetHistoryProps> = ({ bets, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <div className="text-center py-6">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce"></div>
+          <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:0.2s]"></div>
+          <div className="w-3 h-3 rounded-full bg-btc-orange/70 animate-bounce [animation-delay:0.4s]"></div>
+        </div>
+        <p className="mt-2 text-white/40">Loading bet history...</p>
+      </div>
+    );
+  }
+
   if (!bets || bets.length === 0) {
     return (
       <div className="text-center py-6 text-white/40">
         <p>No bet history yet</p>
+        <p className="text-xs mt-2 text-white/30">Place bets to see your history</p>
       </div>
     );
   }
   
   return (
-    <div className="space-y-2 max-h-[300px] overflow-y-auto">
+    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
       {bets.map((bet) => (
         <div 
           key={`bet-${bet.id}`}
@@ -93,6 +103,11 @@ const BetHistory: React.FC<BetHistoryProps> = ({ bets }) => {
             )}>
               {formatSats(bet.amount)}
             </div>
+            {bet.isWin && bet.winAmount && (
+              <div className="text-xs text-green-400">
+                +{formatSats(bet.winAmount)}
+              </div>
+            )}
           </div>
         </div>
       ))}

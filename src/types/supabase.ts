@@ -41,3 +41,15 @@ export type LightningWithdrawal = {
   status: 'pending' | 'completed' | 'failed';
   created_at: string;
 };
+
+export type BetHistoryEntry = {
+  id: string;
+  user_id: string;
+  pool_id: string;
+  pool_name: string;
+  amount: number;
+  created_at: string;
+  is_win: boolean;
+  block_height: number;
+  win_amount?: number; 
+};

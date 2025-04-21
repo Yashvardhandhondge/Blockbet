@@ -15,6 +15,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import BetHistory from './BetHistory';
 import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
 import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from "@/components/ui/origin-tabs";
+import { betHistoryService,BetHistoryRecord } from '@/services/betHistoryService';
+import { useAuth } from '@/context/AuthContext';
 
 const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
@@ -65,6 +67,7 @@ const getNormalizedPoolId = (poolId: string): string => {
 };
 
 const BettingGrid = () => {
+  const { user} = useAuth();
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
   const [bets, setBets] = useState<{
     poolId: string | null;
@@ -80,15 +83,8 @@ const BettingGrid = () => {
   const [currentBlock, setCurrentBlock] = useState(miningPools[0]?.blocksLast24h || 0);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
   const [walletBalance, setWalletBalance] = useState(25000000);
-  const [betHistory, setBetHistory] = useState<Array<{
-    id: number;
-    poolId: string;
-    poolName: string;
-    amount: number;
-    timestamp: Date;
-    isWin: boolean;
-    blockHeight: number;
-  }>>([]);
+  const [betHistory, setBetHistory] = useState<BetHistoryRecord[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [deposits, setDeposits] = useState<Array<{
     id: number;
     amount: number;
@@ -144,6 +140,26 @@ const BettingGrid = () => {
   const [glowingPools, setGlowingPools] = useState<string[]>([]);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const loadBetHistory = useCallback(async () => {
+    if (user) {
+      try {
+        setIsLoadingHistory(true);
+        const history = await betHistoryService.getUserBetHistory();
+        console.log('Loaded bet history:', history.length, 'entries');
+        setBetHistory(history);
+      } catch (error) {
+        console.error('Error loading bet history:', error);
+        toast({
+          title: "Error loading bet history",
+          description: "Could not retrieve your previous bets",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    }
+  }, [user]);
   
   // Load lastBlockTime from localStorage on component mount
   useEffect(() => {
@@ -166,28 +182,25 @@ const BettingGrid = () => {
     }
   }, [lastBlockTime]);
 
-  // Timer effect
+  // Timer effect - Update for smoother animation
   useEffect(() => {
     if (!lastBlockTime) return;
     
-    // Clear any existing timer
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
     
     const endTime = lastBlockTime + BETTING_ROUND_DURATION * 1000;
     
-    // Initial calculation (run immediately)
     const calculateTimeRemaining = () => {
       const now = Date.now();
-      const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
-      setTimeRemaining(remaining);
+      const remaining = Math.max(0, (endTime - now) / 1000);
+      setTimeRemaining(Math.floor(remaining)); // Floor for display
       
-      // Update progress bar
+      // Update progress bar with decimal precision for smoother animation
       const elapsedPercent = Math.max(0, Math.min(100, 100 - (remaining / BETTING_ROUND_DURATION * 100)));
       setProgress(elapsedPercent);
       
-      // Close betting when timer expires
       if (remaining <= 0 && !isBettingClosed) {
         setIsBettingClosed(true);
         toast({
@@ -199,13 +212,12 @@ const BettingGrid = () => {
       }
     };
     
-    // Run initial calculation
+    // Initial calculation
     calculateTimeRemaining();
     
-    // Set up interval for updating
-    timerIntervalRef.current = setInterval(calculateTimeRemaining, 1000);
+    // Update more frequently for smoother animation
+    timerIntervalRef.current = setInterval(calculateTimeRemaining, 100); // 10 updates per second
     
-    // Clean up on unmount or when lastBlockTime changes
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -475,24 +487,44 @@ const BettingGrid = () => {
     }
   };
 
-  const handleAddBetToHistory = (poolId: string, amount: number, isWin: boolean) => {
+  const handleAddBetToHistory = async (poolId: string, amount: number, isWin: boolean, winAmount?: number) => {
     const pool = miningPools.find(p => p.id === poolId);
     if (!pool) return;
     
-    const newBet = {
-      id: Date.now(),
+    // Create new bet object
+    const newBet: Omit<BetHistoryRecord, 'id' | 'timestamp'> = {
       poolId: poolId,
-      poolName: pool?.name || 'Unknown Pool',
+      poolName: pool.name,
       amount: amount,
-      timestamp: new Date(),
       isWin: isWin,
-      blockHeight: currentBlock + 1
+      blockHeight: currentBlock + 1,
+      winAmount: winAmount
     };
-
-    setBetHistory(prev => [newBet, ...prev].slice(0, 50));
-
-    if (isWin) {
-      const rawWinAmount = Math.floor(amount * pool.odds);
+  
+    // Save to database if user is logged in
+    if (user) {
+      try {
+        console.log('Saving bet to history:', newBet);
+        await betHistoryService.saveBetHistory(newBet);
+        
+        // Refresh the history to get the latest data
+        await loadBetHistory();
+      } catch (error) {
+        console.error('Failed to save bet history:', error);
+      }
+    }
+  
+    // For immediate UI feedback, add to local state as well
+    const localBet: BetHistoryRecord = {
+      ...newBet,
+      id: Date.now(),
+      timestamp: new Date()
+    };
+    
+    setBetHistory(prev => [localBet, ...prev].slice(0, 50));
+  
+    if (isWin && pool) {
+      const rawWinAmount = winAmount || Math.floor(amount * pool.odds);
       const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
       const netWinAmount = rawWinAmount - platformFee;
       
@@ -833,24 +865,36 @@ const BettingGrid = () => {
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       if (bet.poolId) {
-        handleAddBetToHistory(bet.poolId, bet.amount, isWin);
-        if (isWin) {
-          const pool = miningPools.find(p => p.id === bet.poolId);
-          if (pool) {
+        const pool = miningPools.find(p => p.id === bet.poolId);
+        if (pool) {
+          if (isWin) {
             const rawWinAmount = Math.floor(bet.amount * pool.odds);
             const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
             const netWinAmount = rawWinAmount - platformFee;
             totalWinAmount += netWinAmount;
+            
+            // Save with win amount
+            handleAddBetToHistory(bet.poolId, bet.amount, isWin, netWinAmount);
+            
             console.log('Win processed:', {
               pool: pool.name,
               betAmount: bet.amount,
               odds: pool.odds,
               netWinAmount
             });
+          } else {
+            // Save as a loss
+            handleAddBetToHistory(bet.poolId, bet.amount, isWin);
           }
         }
       }
     });
+    
+    useEffect(() => {
+      if (user) {
+        loadBetHistory();
+      }
+    }, [loadBetHistory, user]);
     
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
@@ -1142,6 +1186,7 @@ const BettingGrid = () => {
     }
   }, []);
 
+  // Update Progress component render for smoother transition
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
@@ -1154,12 +1199,12 @@ const BettingGrid = () => {
             <div className="relative pr-14">
               <Progress 
                 value={progress} 
-                className="h-2 bg-white/10 rounded-full w-full transition-all duration-1000 ease-linear" 
-                indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-all duration-1000 ease-linear" 
+                className="h-2 bg-white/10 rounded-full w-full" 
+                indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-[width] duration-100 ease-linear" 
               />
             </div>
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 progress-time-display">
-              <span className="text-xs font-mono font-bold text-btc-orange">
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+              <span className="text-xs font-mono font-bold text-btc-orange tabular-nums">
                 {timeRemaining > 0 ? formatTimeRemaining() : "0:00"}
               </span>
             </div>
@@ -1331,8 +1376,8 @@ const BettingGrid = () => {
               </OriginTabsContent>
               
               <OriginTabsContent value="history" className="mt-4">
-                <BetHistory bets={betHistory} />
-              </OriginTabsContent>
+  <BetHistory bets={betHistory} isLoading={isLoadingHistory} />
+</OriginTabsContent>
               
               <OriginTabsContent value="transactions" className="mt-4">
                 {renderTransactionHistory()}

@@ -9,6 +9,49 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bet_history: {
+        Row: {
+          id: string
+          user_id: string
+          pool_id: string
+          pool_name: string
+          amount: number
+          is_win: boolean
+          block_height: number
+          win_amount: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          pool_id: string
+          pool_name: string
+          amount: number
+          is_win: boolean
+          block_height: number
+          win_amount?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          pool_id?: string
+          pool_name?: string
+          amount?: number
+          is_win?: boolean
+          block_height?: number
+          win_amount?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bet_history_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       lightning_deposits: {
         Row: {
           amount_sats: number

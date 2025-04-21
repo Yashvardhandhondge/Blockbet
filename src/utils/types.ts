@@ -1,3 +1,4 @@
+// src/utils/types.ts
 
 export interface MiningPool {
   id: string;
@@ -28,4 +29,29 @@ export interface Block {
 export interface UserBalance {
   availableBalance: number;
   inPlay: number;
+}
+
+// New type for bet history entries in the database
+export interface BetHistoryEntry {
+  id: string;
+  user_id: string;
+  pool_id: string;
+  pool_name: string;
+  amount: number;
+  is_win: boolean;
+  block_height: number;
+  win_amount?: number | null;
+  created_at: string;
+}
+
+// Client-side representation of bet history
+export interface BetHistoryRecord {
+  id: number;
+  poolId: string;
+  poolName: string;
+  amount: number;
+  timestamp: Date;
+  isWin: boolean;
+  blockHeight: number;
+  winAmount?: number;
 }
