@@ -144,6 +144,28 @@ useEffect(() => {
         </div>
       )}
       
+      {showWinningEffect && (
+        <>
+          <GlowEffect 
+            colors={['#fbbf24', '#f59e0b', '#f97316']} 
+            mode="pulse" 
+            blur="strongest"
+            scale={1.5}
+            duration={1.5}
+            className="opacity-80"
+          />
+          <GlowEffect 
+            colors={['#f7931a', '#fbbf24', '#f59e0b']} 
+            mode="rotate" 
+            blur="strong"
+            scale={1.4}
+            duration={2}
+            className="opacity-70"
+          />
+          <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-yellow-500/20 via-orange-500/20 to-yellow-500/20"></div>
+        </>
+      )}
+
       {isSelected && (
         <GlowEffect 
           colors={[poolColor, '#f7931a']} 
@@ -151,31 +173,14 @@ useEffect(() => {
           blur="stronger"
           scale={1.2}
           duration={3}
-          className="opacity-30"
+          className="opacity-40"
         />
       )}
 
-      {showWinningEffect && (
-        <GlowEffect 
-          colors={['#f7931a', '#f7931a', '#fbb034']} 
-          mode="pulse" 
-          blur="strong"
-          scale={1.3}
-          duration={2}
-          className="opacity-60"
-          onAnimationComplete={() => {
-            console.log('Glow effect animation cycle completed for:', {
-              poolId: pool.id,
-              poolName: pool.name,
-              timestamp: new Date().toISOString()
-            });
-          }}
-        />
-      )}
-      
       <div className={cn(
         "absolute inset-0 opacity-30 transition-opacity duration-300",
-        isSelected ? "opacity-40" : "opacity-20"
+        isSelected ? "opacity-40" : "opacity-20",
+        showWinningEffect && "opacity-60"
       )}
       style={{ background: getDarkerTechGradient(pool.id) }}></div>
       
