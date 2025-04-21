@@ -141,6 +141,7 @@ const BettingGrid = () => {
   const [winningPool, setWinningPool] = useState<string | null>(null);
   const [isBettingClosed, setIsBettingClosed] = useState(false);
   const [lastBlockTime, setLastBlockTime] = useState<number | null>(null);
+  const [glowingPools, setGlowingPools] = useState<string[]>([]);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -260,14 +261,13 @@ const BettingGrid = () => {
     return () => clearInterval(poolStatsInterval);
   }, []);
 
-  const startNewBettingRound = useCallback(() => {
-    console.log('Starting new betting round');
+  const startNewBettingRoundKeepGlow = useCallback(() => {
+    console.log('Starting new betting round (keeping glow effects)');
     setProgress(0);
     setIsBettingClosed(false);
     setBets([]);
     setSelectedChip(null);
     setSelectedPool(null);
-    setWinningPool(null);
     
     if (hasStartedInitialRound.current) {
       toast({
@@ -279,6 +279,12 @@ const BettingGrid = () => {
       hasStartedInitialRound.current = true;
     }
   }, []);
+
+  const startNewBettingRound = useCallback(() => {
+    startNewBettingRoundKeepGlow();
+    setWinningPool(null);
+    setGlowingPools([]);
+  }, [startNewBettingRoundKeepGlow]);
 
   const handlePlaceBet = (poolId: string | null) => {
     console.log('Attempting to place bet:', {
@@ -813,6 +819,14 @@ const BettingGrid = () => {
     
     console.log('Winning pool determined:', { winningPoolId, minedBy: blockData.minedBy });
     setWinningPool(winningPoolId);
+
+    if (winningPoolId) {
+      setGlowingPools(prev => [...prev, winningPoolId]);
+      
+      setTimeout(() => {
+        setGlowingPools(prev => prev.filter(id => id !== winningPoolId));
+      }, 10000);
+    }
     
     let totalWinAmount = 0;
     
@@ -854,15 +868,14 @@ const BettingGrid = () => {
       });
     }
     
-    setTimeout(startNewBettingRound, 2000);
+    setTimeout(startNewBettingRoundKeepGlow, 2000);
     setCurrentBlock(prev => prev + 1);
-  }, [bets, setWalletBalance, startNewBettingRound]);
+  }, [bets, setWalletBalance, startNewBettingRoundKeepGlow]);
 
   useEffect(() => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received:', e.detail);
       if (e.detail) {
-        // Update the lastBlockTime when a new block is mined
         const newBlockTime = e.detail.timestamp || Date.now();
         setLastBlockTime(newBlockTime);
         processBetsForBlock(e.detail);
@@ -947,7 +960,6 @@ const BettingGrid = () => {
       );
     }
     
-    // Sort bets by totalAmount in descending order
     const sortedBets = [...consolidatedBets].sort((a, b) => b.totalAmount - a.totalAmount);
     
     return (
@@ -1215,7 +1227,7 @@ const BettingGrid = () => {
                 onSelect={() => handleSelectPool(pool)}
                 isSelected={selectedPool?.id === pool.id}
                 bets={getBetsOnPool(pool.id)}
-                isWinningPool={winningPool === pool.id}
+                isWinningPool={glowingPools.includes(pool.id)}
                 disabled={isBettingClosed}
               />
             </div>
