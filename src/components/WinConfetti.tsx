@@ -58,7 +58,7 @@ const WinConfetti: React.FC<WinConfettiProps> = ({
         clearTimeout(timer);
       };
     }
-  }, [isActive, duration, onComplete]);
+  }, [isActive, duration, onComplete, dimensions]);
 
   if (!showConfetti) return null;
 

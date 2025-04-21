@@ -31,12 +31,21 @@ const LiveBlockData = ({
     console.log('New block detected:', blockData);
     setLastBlockHeight(blockData.height);
 
+    // Create the event with the current timestamp
+    const currentTimestamp = Date.now();
     const event = new CustomEvent(BLOCK_MINED_EVENT, { 
       detail: {
         ...blockData,
-        timestamp: Date.now()
+        timestamp: currentTimestamp
       }
     });
+    
+    console.log(`Dispatching block mined event at ${new Date(currentTimestamp).toISOString()}`, {
+      height: blockData.height,
+      minedBy: blockData.minedBy,
+      timestamp: currentTimestamp
+    });
+    
     window.dispatchEvent(event);
 
     if (processBets) {

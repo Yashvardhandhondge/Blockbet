@@ -154,11 +154,13 @@ const BettingGrid = () => {
   useEffect(() => {
     if (timeRemaining <= 0 && !isBettingClosed) {
       setIsBettingClosed(true);
+      // Only show the toast once when betting closes
       toast({
         title: "Betting round closed",
         description: "Waiting for next block to be mined",
         variant: "destructive"
       });
+      console.log('Betting closed at:', new Date().toISOString());
     }
   }, [timeRemaining, isBettingClosed]);
 
@@ -1101,7 +1103,7 @@ const BettingGrid = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl h-[110px]">
           <div className="flex justify-between items-start mb-2">
-            <h3 className="text-white text-sm">Step 1. Found your Wallet.</h3>
+            <h3 className="text-white text-sm">Step 1. Fund your Wallet.</h3>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -1139,11 +1141,11 @@ const BettingGrid = () => {
             <span className="hidden md:block">Step 3. Place your bets on mining pools.</span>
           </h3>
           <div className="flex gap-2">
-            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleCancelLastBet}>
+            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleCancelLastBet} disabled={isBettingClosed}>
               <Trash2 className="h-3.5 w-3.5 text-white/60 mr-1" />
               <span>Undo</span>
             </Button>
-            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleClearBets}>
+            <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleClearBets} disabled={isBettingClosed}>
               <X className="h-3.5 w-3.5 text-white/60 mr-1" />
               <span>Clear</span>
             </Button>

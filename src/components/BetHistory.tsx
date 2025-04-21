@@ -39,18 +39,27 @@ const BetHistory: React.FC<BetHistoryProps> = ({ bets }) => {
               "w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-3",
               bet.isWin ? "bg-green-500/20" : "bg-white/10"
             )}>
-              <img 
-                src={`/pool-logos/${bet.poolId}.svg`} 
-                alt={bet.poolName}
-                className="w-6 h-6 object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/pool-logos/default.svg';
-                }}
-              />
+              {bet.poolId === 'empty' ? (
+                <div className="w-full h-full flex items-center justify-center bg-black/50">
+                  <svg className="w-4 h-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </div>
+              ) : (
+                <img 
+                  src={`/pool-logos/${bet.poolId.replace('mining-squared', 'unknown')}.svg`}
+                  alt={bet.poolName}
+                  className="w-6 h-6 object-contain"
+                  onError={(e) => {
+                    console.error(`Failed to load logo for ${bet.poolId}`);
+                    (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
+                  }}
+                />
+              )}
             </div>
             <div>
               <div className="text-sm font-medium text-white">
-                {bet.poolName}
+                {bet.poolName === 'Mining Squared' ? 'Unknown' : bet.poolName}
                 {bet.isWin && (
                   <span className="ml-2 text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded-full">
                     Win

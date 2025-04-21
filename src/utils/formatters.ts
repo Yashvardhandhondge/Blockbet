@@ -11,8 +11,24 @@ export const formatSats = (sats: number): string => {
 };
 
 // Function to emit a player win event
+// Function to emit a player win event
 export const emitPlayerWin = () => {
-  // Ensure JSConfetti is loaded
+  // First dispatch the custom event for React components
+  const winEvent = new CustomEvent('playerWin', { 
+    detail: { 
+      timestamp: Date.now(),
+      source: 'betting-grid'
+    } 
+  });
+  
+  console.log('Emitting playerWin event:', {
+    timestamp: new Date().toISOString(),
+    eventDetail: winEvent.detail
+  });
+  
+  window.dispatchEvent(winEvent);
+  
+  // Then try to trigger JSConfetti if available
   try {
     const jsConfetti = new JSConfetti();
     jsConfetti.addConfetti({
@@ -31,21 +47,9 @@ export const emitPlayerWin = () => {
         confettiRadius: 8,
       });
     }, 300);
+    
+    console.log('JSConfetti triggered successfully');
   } catch (error) {
-    console.error('Failed to trigger confetti:', error);
+    console.error('Failed to trigger JSConfetti:', error);
   }
-
-  const winEvent = new CustomEvent('playerWin', { 
-    detail: { 
-      timestamp: Date.now(),
-      source: 'betting-grid'
-    } 
-  });
-  
-  console.log('Emitting playerWin event:', {
-    timestamp: new Date().toISOString(),
-    eventDetail: winEvent.detail
-  });
-  
-  window.dispatchEvent(winEvent);
 };

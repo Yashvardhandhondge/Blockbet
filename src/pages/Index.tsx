@@ -23,24 +23,32 @@ const Index = () => {
   }, []);
 
   // Listen for player win events from BettingGrid
-  useEffect(() => {
-    const handlePlayerWin = (e: CustomEvent<any>) => {
-      console.log('Player win event received in Index:', {
-        timestamp: new Date().toISOString(),
-        eventDetail: e.detail
-      });
-      
-      setShowConfetti(true);
-    };
-
-    // Event listener for player winning
-    window.addEventListener('playerWin', handlePlayerWin as EventListener);
+// Listen for player win events from BettingGrid
+useEffect(() => {
+  const handlePlayerWin = (e: CustomEvent<any>) => {
+    console.log('Player win event received in Index:', {
+      timestamp: new Date().toISOString(),
+      eventDetail: e.detail
+    });
     
-    return () => {
-      console.log('Cleaning up win event listener');
-      window.removeEventListener('playerWin', handlePlayerWin as EventListener);
-    };
-  }, []);
+    // Trigger the confetti effect
+    setShowConfetti(true);
+    
+    // For debugging
+    setTimeout(() => {
+      console.log('Confetti effect should now be visible');
+    }, 100);
+  };
+
+  console.log('Adding playerWin event listener');
+  // Event listener for player winning
+  window.addEventListener('playerWin', handlePlayerWin as EventListener);
+  
+  return () => {
+    console.log('Cleaning up win event listener');
+    window.removeEventListener('playerWin', handlePlayerWin as EventListener);
+  };
+}, []);
 
   // Animation for sections
   const headerAnimation = useElementAppear(!isLoading, {

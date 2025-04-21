@@ -32,55 +32,56 @@ const MiningPoolCard = ({
   const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
   const poolColor = getPoolColor(pool.id);
 
-  // Enhanced winning effect management
-  useEffect(() => {
-    if (isWinningPool) {
-      console.log('Starting win animation for pool:', {
+// Enhanced winning effect management with fixed 10-second duration
+useEffect(() => {
+  if (isWinningPool) {
+    console.log('Starting win animation for pool:', {
+      poolId: pool.id,
+      poolName: pool.name,
+      timestamp: new Date().toISOString()
+    });
+
+    // Clear any existing timer
+    if (winTimerRef.current) {
+      clearTimeout(winTimerRef.current);
+    }
+
+    // Show the winning effect
+    setShowWinningEffect(true);
+    
+    // Set timer to exactly 10 seconds
+    winTimerRef.current = setTimeout(() => {
+      console.log('Ending win animation for pool after 10 seconds:', {
         poolId: pool.id,
         poolName: pool.name,
         timestamp: new Date().toISOString()
       });
-
-      // Clear any existing timer
-      if (winTimerRef.current) {
-        clearTimeout(winTimerRef.current);
-      }
-
-      setShowWinningEffect(true);
-      
-      // Set new timer
-      winTimerRef.current = setTimeout(() => {
-        console.log('Ending win animation for pool:', {
-          poolId: pool.id,
-          poolName: pool.name,
-          timestamp: new Date().toISOString()
-        });
-        setShowWinningEffect(false);
-      }, 10000);
-    } else {
-      // Clean up if pool is no longer winning
-      if (showWinningEffect) {
-        console.log('Clearing win animation for pool:', {
-          poolId: pool.id,
-          poolName: pool.name,
-          timestamp: new Date().toISOString()
-        });
-        setShowWinningEffect(false);
-      }
+      setShowWinningEffect(false);
+    }, 10000); // Exactly 10 seconds
+  } else {
+    // Clean up if pool is no longer winning
+    if (showWinningEffect) {
+      console.log('Clearing win animation for pool:', {
+        poolId: pool.id,
+        poolName: pool.name,
+        timestamp: new Date().toISOString()
+      });
+      setShowWinningEffect(false);
     }
+  }
 
-    // Cleanup function
-    return () => {
-      if (winTimerRef.current) {
-        console.log('Cleaning up win timer for pool:', {
-          poolId: pool.id,
-          poolName: pool.name,
-          timestamp: new Date().toISOString()
-        });
-        clearTimeout(winTimerRef.current);
-      }
-    };
-  }, [isWinningPool, pool.id, pool.name]);
+  // Cleanup function
+  return () => {
+    if (winTimerRef.current) {
+      console.log('Cleaning up win timer for pool:', {
+        poolId: pool.id,
+        poolName: pool.name,
+        timestamp: new Date().toISOString()
+      });
+      clearTimeout(winTimerRef.current);
+    }
+  };
+}, [isWinningPool, pool.id, pool.name, showWinningEffect]);
 
   useEffect(() => {
     console.log('MiningPoolCard state update:', {
