@@ -947,6 +947,9 @@ const BettingGrid = () => {
       );
     }
     
+    // Sort bets by totalAmount in descending order
+    const sortedBets = [...consolidatedBets].sort((a, b) => b.totalAmount - a.totalAmount);
+    
     return (
       <div className="space-y-3">
         <div className="flex justify-between text-white/60 text-xs border-b border-white/10 pb-2 px-1">
@@ -954,7 +957,7 @@ const BettingGrid = () => {
           <span>Total Bet</span>
         </div>
         
-        {consolidatedBets.map((bet, index) => {
+        {sortedBets.map((bet, index) => {
           const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
           const poolName = pool ? pool.name : 'Empty Block';
           const potentialWin = pool ? Math.floor(bet.totalAmount * pool.odds) : Math.floor(bet.totalAmount * 80);
