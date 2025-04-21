@@ -110,6 +110,9 @@ const LatestMiningPool = () => {
       'viabtc': '/pool-logos/viabtc.svg',
       'slushpool': '/pool-logos/slushpool.svg',
       'braiins pool': '/pool-logos/braiinspool.svg',
+      'bitfufupool': '/pool-logos/bitfufupool.svg',  // BitFuFuPool logo
+      'ocean': '/pool-logos/ocean.svg',                // OCEAN logo
+      'mara': '/pool-logos/marapool.svg',              // MARA Pool logo
       'poolin': '/pool-logos/poolin.svg',
       'btc.com': '/pool-logos/btccom.svg',
       'sbi crypto': '/pool-logos/sbicrypto.svg',
@@ -129,7 +132,6 @@ const LatestMiningPool = () => {
       'rawpool': '/pool-logos/rawpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
       'secpool': '/pool-logos/secpool.svg',
-      'ocean': '/pool-logos/Ocean.svg',
     };
     
     for (const [key, value] of Object.entries(poolLogoMap)) {
