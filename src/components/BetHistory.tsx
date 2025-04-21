@@ -1,7 +1,22 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { formatSats } from '@/utils/formatters';
+
+// Add a mapping function for pool IDs to correct image filenames
+const getNormalizedPoolId = (poolId: string): string => {
+  // Mapping for specific pools with different case or naming conventions
+  const poolMapping: Record<string, string> = {
+    'foundry': 'foundryusa',
+    'foundryusa': 'foundryusa',
+    'binance': 'binancepool',
+    'ocean': 'Ocean', // Fix: Changed to capital 'O' for correct filename
+    'bitfufupool': 'BitFuFuPool', // Fix: Changed to match actual case in filename
+    'mara': 'marapool',
+    'mining-squared': 'unknown'
+  };
+  
+  return poolMapping[poolId.toLowerCase()] || poolId;
+};
 
 export interface BetHistoryProps {
   bets: Array<{
@@ -47,11 +62,11 @@ const BetHistory: React.FC<BetHistoryProps> = ({ bets }) => {
                 </div>
               ) : (
                 <img 
-                  src={`/pool-logos/${bet.poolId.replace('mining-squared', 'unknown')}.svg`}
+                  src={`/pool-logos/${getNormalizedPoolId(bet.poolId)}.svg`}
                   alt={bet.poolName}
                   className="w-6 h-6 object-contain"
                   onError={(e) => {
-                    console.error(`Failed to load logo for ${bet.poolId}`);
+                    console.error(`Failed to load logo for ${bet.poolId} (normalized: ${getNormalizedPoolId(bet.poolId)})`);
                     (e.target as HTMLImageElement).src = '/pool-logos/unknown.svg';
                   }}
                 />

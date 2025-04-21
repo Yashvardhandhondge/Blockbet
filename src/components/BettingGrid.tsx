@@ -41,10 +41,28 @@ if (!miningPools.some(pool => pool.id === 'mara')) {
     colorClass: 'bg-indigo-600',
     odds: 22,
     region: 'Asia',
-    logoUrl: '/pool-logos/marapool.svg', // Updated to correct file path
+    logoUrl: '/pool-logos/marapool.svg', 
     gradient: 'linear-gradient(135deg, #6366F1, #4F46E5)'
   });
 }
+
+// Add this helper function for normalizing pool IDs
+const getNormalizedPoolId = (poolId: string): string => {
+  if (!poolId) return 'unknown';
+  
+  // Mapping for specific pools with different case or naming conventions
+  const poolMapping: Record<string, string> = {
+    'foundry': 'foundryusa',
+    'foundryusa': 'foundryusa',
+    'binance': 'binancepool',
+    'ocean': 'Ocean', // Fix: Changed to capital 'O' for correct filename
+    'bitfufupool': 'BitFuFuPool', // Fix: Changed to match actual case in filename
+    'mara': 'marapool',
+    'mining-squared': 'unknown'
+  };
+  
+  return poolMapping[poolId.toLowerCase()] || poolId;
+};
 
 const BettingGrid = () => {
   const [selectedChip, setSelectedChip] = useState<number | null>(null);
@@ -125,45 +143,78 @@ const BettingGrid = () => {
   const [lastBlockTime, setLastBlockTime] = useState<number | null>(null);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Load lastBlockTime from localStorage on component mount
+  useEffect(() => {
+    const storedLastBlockTime = localStorage.getItem('lastBlockTime');
+    if (storedLastBlockTime) {
+      const parsedTime = parseInt(storedLastBlockTime);
+      setLastBlockTime(parsedTime);
+    } else {
+      // Simulate a recent block for first-time visitors
+      const simulatedBlockTime = Date.now() - (Math.floor(Math.random() * 60) * 1000);
+      localStorage.setItem('lastBlockTime', simulatedBlockTime.toString());
+      setLastBlockTime(simulatedBlockTime);
+    }
+  }, []);
 
+  // Update and persist lastBlockTime
+  useEffect(() => {
+    if (lastBlockTime) {
+      localStorage.setItem('lastBlockTime', lastBlockTime.toString());
+    }
+  }, [lastBlockTime]);
+
+  // Timer effect
   useEffect(() => {
     if (!lastBlockTime) return;
     
+    // Clear any existing timer
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
+    
     const endTime = lastBlockTime + BETTING_ROUND_DURATION * 1000;
-    const intervalId = setInterval(() => {
-      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+    
+    // Initial calculation (run immediately)
+    const calculateTimeRemaining = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
       setTimeRemaining(remaining);
       
-      if (remaining <= 0) {
+      // Update progress bar
+      const elapsedPercent = Math.max(0, Math.min(100, 100 - (remaining / BETTING_ROUND_DURATION * 100)));
+      setProgress(elapsedPercent);
+      
+      // Close betting when timer expires
+      if (remaining <= 0 && !isBettingClosed) {
         setIsBettingClosed(true);
         toast({
           title: "Betting round closed",
           description: "Waiting for next block to be mined",
           variant: "destructive"
         });
+        console.log('Betting closed at:', new Date().toISOString());
       }
-    }, 1000);
+    };
     
-    return () => clearInterval(intervalId);
-  }, [lastBlockTime]);
+    // Run initial calculation
+    calculateTimeRemaining();
+    
+    // Set up interval for updating
+    timerIntervalRef.current = setInterval(calculateTimeRemaining, 1000);
+    
+    // Clean up on unmount or when lastBlockTime changes
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, [lastBlockTime, isBettingClosed]);
 
-  const [currentRoundId] = useState(`round-${Date.now()}`);
-  
   const hasStartedInitialRound = useRef(false);
   
-  useEffect(() => {
-    if (timeRemaining <= 0 && !isBettingClosed) {
-      setIsBettingClosed(true);
-      // Only show the toast once when betting closes
-      toast({
-        title: "Betting round closed",
-        description: "Waiting for next block to be mined",
-        variant: "destructive"
-      });
-      console.log('Betting closed at:', new Date().toISOString());
-    }
-  }, [timeRemaining, isBettingClosed]);
-
+  // Add the missing updateVisualIndicators function
   const updateVisualIndicators = useCallback(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
@@ -176,9 +227,7 @@ const BettingGrid = () => {
       return Math.max(9.2, Math.min(10.5, prev + variation));
     });
   }, []);
-
-  useRandomInterval(updateVisualIndicators, 3000, 8000);
-
+  
   useEffect(() => {
     if (bets && Array.isArray(bets)) {
       setTotalBet(bets.reduce((sum, bet) => sum + bet.amount, 0));
@@ -813,7 +862,9 @@ const BettingGrid = () => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received:', e.detail);
       if (e.detail) {
-        setLastBlockTime(e.detail.timestamp);
+        // Update the lastBlockTime when a new block is mined
+        const newBlockTime = e.detail.timestamp || Date.now();
+        setLastBlockTime(newBlockTime);
         processBetsForBlock(e.detail);
       }
     };
@@ -914,10 +965,11 @@ const BettingGrid = () => {
                 <div className="w-8 h-8 rounded-full overflow-hidden mr-3">
                   {bet.poolId ? (
                     <img 
-                      src={`/pool-logos/${bet.poolId}.svg`} 
+                      src={`/pool-logos/${getNormalizedPoolId(bet.poolId)}.svg`} 
                       alt={poolName}
                       className="w-full h-full object-cover"
                       onError={(e) => {
+                        console.log(`Error loading logo for ${bet.poolId} (normalized: ${getNormalizedPoolId(bet.poolId)})`);
                         e.currentTarget.src = '/pool-logos/default.svg';
                       }} 
                     />

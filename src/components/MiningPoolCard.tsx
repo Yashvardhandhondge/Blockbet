@@ -16,6 +16,27 @@ interface MiningPoolCardProps {
   isWinningPool?: boolean;
 }
 
+// Add this helper function for getting the correct logo URL
+const getNormalizedPoolLogoUrl = (pool: MiningPool): string => {
+  // Check if the pool already has a valid logoUrl
+  if (pool.logoUrl && !pool.logoUrl.includes('undefined')) {
+    return pool.logoUrl;
+  }
+  
+  // Mapping for specific pools with different case or naming conventions
+  const poolMapping: Record<string, string> = {
+    'foundry': 'foundryusa',
+    'foundryusa': 'foundryusa',
+    'binance': 'binancepool',
+    'ocean': 'Ocean', // Fix: Changed to capital 'O' for correct filename
+    'bitfufupool': 'BitFuFuPool', // Fix: Changed to match actual case in filename
+    'mara': 'marapool',
+  };
+  
+  const normalizedId = poolMapping[pool.id.toLowerCase()] || pool.id;
+  return `/pool-logos/${normalizedId}.svg`;
+};
+
 const MiningPoolCard = ({ 
   pool, 
   onSelect, 
@@ -168,12 +189,12 @@ useEffect(() => {
           )}>
             <div className="w-full h-full flex items-center justify-center rounded-lg overflow-hidden">
               <img 
-                src={pool.logoUrl} 
+                src={getNormalizedPoolLogoUrl(pool)} 
                 alt={`${pool.name} logo`} 
                 className="w-full h-full object-contain" 
                 onError={(e) => {
-                  console.log(`Error loading logo for ${pool.id}: ${pool.logoUrl}`);
-                  e.currentTarget.src = '/Mempool Bitcoin Explorer (2).svg';
+                  console.log(`Error loading logo for ${pool.id}: ${getNormalizedPoolLogoUrl(pool)}`);
+                  e.currentTarget.src = '/pool-logos/unknown.svg';
                 }} 
               />
             </div>
