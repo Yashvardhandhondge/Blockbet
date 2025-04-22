@@ -50,7 +50,8 @@ const MiningPoolCard = ({
   const winTimerRef = useRef<NodeJS.Timeout>();
   const isMobile = useIsMobile();
   
-  const displayedHashrate = useCountUp(pool.hashRatePercent, 1500, 300);
+  // Make sure we have a valid hashrate value before animating
+  const displayedHashrate = useCountUp(pool.hashRatePercent > 0 ? pool.hashRatePercent : 0.1, 1500, 300);
   const poolColor = getPoolColor(pool.id);
 
 // Enhanced winning effect management with fixed 10-second duration

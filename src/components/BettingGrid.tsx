@@ -257,16 +257,41 @@ const BettingGrid = () => {
       import('@/api/miningPoolStatsApi').then(({ fetchMiningPoolStats }) => {
         fetchMiningPoolStats()
           .then(stats => {
-            miningPools.forEach(pool => {
-              const poolStats = stats.find(s => s.poolName.toLowerCase().includes(pool.id.toLowerCase()));
-              if (poolStats) {
-                pool.hashRate = poolStats.hashrate;
-                pool.hashRatePercent = poolStats.percentage;
-                pool.odds = 100 / poolStats.percentage;
-              }
-            });
+            if (stats && stats.length > 0) {
+              miningPools.forEach(pool => {
+                // Try multiple matching strategies
+                const poolStats = stats.find(s => 
+                  s.poolName.toLowerCase().includes(pool.id.toLowerCase()) ||
+                  pool.id.toLowerCase().includes(s.poolName.toLowerCase()) ||
+                  pool.name.toLowerCase().includes(s.poolName.toLowerCase()) ||
+                  s.poolName.toLowerCase().includes(pool.name.toLowerCase())
+                );
+                
+                if (poolStats) {
+                  // Ensure we have valid non-zero values
+                  if (poolStats.hashrate > 0) pool.hashRate = poolStats.hashrate;
+                  if (poolStats.percentage > 0) pool.hashRatePercent = poolStats.percentage;
+                  if (poolStats.percentage > 0) pool.odds = 100 / poolStats.percentage;
+                  console.log(`Updated pool stats for ${pool.name}: ${pool.hashRate} EH/s, ${pool.hashRatePercent}%`);
+                } else {
+                  // Set fallback minimum values if no stats found
+                  if (pool.hashRate <= 0) pool.hashRate = 0.1;
+                  if (pool.hashRatePercent <= 0) pool.hashRatePercent = 0.1;
+                  console.log(`No API stats found for ${pool.name}, using minimum values`);
+                }
+              });
+            } else {
+              console.warn('Received empty stats from API, using default values');
+            }
           })
-          .catch(err => console.error('Error updating pool stats:', err));
+          .catch(err => {
+            console.error('Error updating pool stats:', err);
+            // Ensure minimum values in case of API error
+            miningPools.forEach(pool => {
+              if (pool.hashRate <= 0) pool.hashRate = 0.1;
+              if (pool.hashRatePercent <= 0) pool.hashRatePercent = 0.1;
+            });
+          });
       });
     }, 30000);
 
