@@ -1007,7 +1007,7 @@ const BettingGrid = () => {
           <div 
             key={`chip-${chipGroup.amount}-${index}`} 
             className={cn(
-              "relative w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white border-2 border-white/50",
+              "relative w-7 h-7 rounded-full flex items-center justify-center border-2 border-white/50",
               getChipColor(chipGroup.amount)
             )}
             style={{
@@ -1017,11 +1017,13 @@ const BettingGrid = () => {
           >
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex flex-col items-center justify-center leading-tight">
-              <div className="truncate max-w-[24px] text-center">
+              <div className="text-[8px] font-semibold text-white truncate max-w-[20px] text-center">
                 {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               </div>
               {chipGroup.count > 1 && (
-                <div className="text-xs mt-0.5 font-semibold">×{chipGroup.count}</div>
+                <div className="text-[6px] mt-0.5 font-semibold text-white/80">
+                  ×{chipGroup.count}
+                </div>
               )}
             </div>
           </div>
@@ -1029,7 +1031,7 @@ const BettingGrid = () => {
         
         {remainingDenoms > 0 && (
           <div 
-            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
+            className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
             style={{
               zIndex: 1,
               transform: `translateX(${chipsToShow.length * 4}px)`
