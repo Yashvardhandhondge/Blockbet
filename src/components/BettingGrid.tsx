@@ -18,7 +18,8 @@ import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from
 import { betHistoryService,BetHistoryRecord } from '@/services/betHistoryService';
 import { useAuth } from '@/context/AuthContext';
 
-const CHIP_VALUES = [100, 500, 1000, 5000, 10000, 50000, 100000];
+const CHIP_VALUES = [1000, 5000, 10000, 20000, 50000, 100000, 200000];
+
 const BETTING_ROUND_DURATION = 8 * 60; // 8 minutes in seconds
 const MIN_BET = 1000; // 1K sats
 const MAX_BET = 1000000; // 1M sats
@@ -671,46 +672,48 @@ const BettingGrid = () => {
   };
 
   const getChipColor = (value: number) => {
-    switch (value) {
-      case 100:
-        return "bg-blue-600";
-      case 500:
-        return "bg-green-600";
+    switch(value) {
       case 1000:
         return "bg-purple-600";
       case 5000:
         return "bg-pink-600";
       case 10000:
         return "bg-orange-600";
+      case 20000:
+        return "bg-blue-600";
       case 50000:
         return "bg-red-600";
       case 100000:
         return "bg-yellow-600";
+      case 200000:
+        return "bg-green-600";
       default:
         return "bg-gray-600";
     }
   };
-
+  
   const getChipSecondaryColor = (value: number) => {
-    switch (value) {
-      case 100:
-        return "bg-blue-500";
-      case 500:
-        return "bg-green-500";
+    switch(value) {
       case 1000:
         return "bg-purple-500";
       case 5000:
         return "bg-pink-500";
       case 10000:
         return "bg-orange-500";
+      case 20000:
+        return "bg-blue-500";
       case 50000:
         return "bg-red-500";
       case 100000:
         return "bg-yellow-500";
+      case 200000:
+        return "bg-green-500";
       default:
         return "bg-gray-500";
     }
   };
+
+ 
 
   const formatChipValue = (value: number) => {
     if (value >= 100000) return `${value / 1000}K`;
