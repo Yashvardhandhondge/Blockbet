@@ -1,16 +1,16 @@
-// src/services/betHistoryService.ts
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 export interface BetHistoryRecord {
-  id: number;
+  id: string;
   poolId: string;
   poolName: string;
   amount: number;
   timestamp: Date;
   isWin: boolean;
   blockHeight: number;
-  winAmount?: number;
+  winAmount?: number | null;
 }
 
 export const betHistoryService = {
@@ -72,7 +72,7 @@ export const betHistoryService = {
 
       // Convert to application format
       return (data || []).map(item => ({
-        id: typeof item.id === 'string' ? parseInt(item.id.replace(/-/g, '').substring(0, 8), 16) : Math.floor(Math.random() * 100000),
+        id: item.id,
         poolId: item.pool_id,
         poolName: item.pool_name,
         amount: item.amount,

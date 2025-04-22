@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bet_history: {
+        Row: {
+          amount: number
+          block_height: number
+          created_at: string
+          id: string
+          is_win: boolean
+          pool_id: string
+          pool_name: string
+          user_id: string
+          win_amount: number | null
+        }
+        Insert: {
+          amount: number
+          block_height: number
+          created_at?: string
+          id?: string
+          is_win?: boolean
+          pool_id: string
+          pool_name: string
+          user_id: string
+          win_amount?: number | null
+        }
+        Update: {
+          amount?: number
+          block_height?: number
+          created_at?: string
+          id?: string
+          is_win?: boolean
+          pool_id?: string
+          pool_name?: string
+          user_id?: string
+          win_amount?: number | null
+        }
+        Relationships: []
+      }
       lightning_deposits: {
         Row: {
           amount_sats: number
