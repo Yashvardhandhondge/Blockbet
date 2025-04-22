@@ -293,10 +293,25 @@ const BettingGrid = () => {
   }, []);
 
   const startNewBettingRound = useCallback(() => {
-    startNewBettingRoundKeepGlow();
+    console.log('Starting new betting round with complete reset');
+    setProgress(0);
+    setIsBettingClosed(false);
+    setBets([]);
+    setSelectedChip(null);
+    setSelectedPool(null);
     setWinningPool(null);
     setGlowingPools([]);
-  }, [startNewBettingRoundKeepGlow]);
+    
+    if (hasStartedInitialRound.current) {
+      toast({
+        title: "New betting round started",
+        description: `You have ${Math.floor(BETTING_ROUND_DURATION / 60)} minutes to place your bets`,
+        variant: "default"
+      });
+    } else {
+      hasStartedInitialRound.current = true;
+    }
+  }, []);
 
   const handlePlaceBet = (poolId: string | null) => {
     console.log('Attempting to place bet:', {
@@ -836,6 +851,9 @@ const BettingGrid = () => {
       totalBetAmount: bets.reduce((sum, bet) => sum + bet.amount, 0)
     });
     
+    // Clear betting state first to prevent visual artifacts
+    setIsBettingClosed(false);
+    
     if (!bets || bets.length === 0) {
       console.log('No bets to process, starting new round');
       startNewBettingRound();
@@ -851,7 +869,7 @@ const BettingGrid = () => {
     
     console.log('Winning pool determined:', { winningPoolId, minedBy: blockData.minedBy });
     setWinningPool(winningPoolId);
-
+  
     if (winningPoolId) {
       setGlowingPools(prev => [...prev, winningPoolId]);
       
@@ -862,6 +880,7 @@ const BettingGrid = () => {
     
     let totalWinAmount = 0;
     
+    // Process all bets first
     bets.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       if (bet.poolId) {
@@ -890,11 +909,10 @@ const BettingGrid = () => {
       }
     });
     
-    useEffect(() => {
-      if (user) {
-        loadBetHistory();
-      }
-    }, [loadBetHistory, user]);
+    // Clear bets immediately to refresh the UI
+    setBets([]);
+    setSelectedChip(null);
+    setSelectedPool(null);
     
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
@@ -912,9 +930,14 @@ const BettingGrid = () => {
       });
     }
     
-    setTimeout(startNewBettingRoundKeepGlow, 2000);
+    // Update block counter
     setCurrentBlock(prev => prev + 1);
-  }, [bets, setWalletBalance, startNewBettingRoundKeepGlow]);
+    
+    // Let the glow effects play for a moment, then complete the reset
+    setTimeout(() => {
+      startNewBettingRound();
+    }, 3000);
+  }, [bets, setWalletBalance, startNewBettingRound, handleAddBetToHistory]);
 
   useEffect(() => {
     const handleBlockMined = (e: CustomEvent<any>) => {
