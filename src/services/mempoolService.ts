@@ -1,3 +1,4 @@
+
 /**
  * Service for interacting with the Mempool.space API
  */
@@ -25,14 +26,13 @@ export interface MempoolBlock {
     medianFee: number;
     feeRange: number[];
     reward: number;
-    totalFees: number;
-    avgFee: number;
-    avgFeeRate: number;
     pool: {
       id: string;
       name: string;
       slug: string;
     };
+    avgFee: number;
+    avgFeeRate: number;
     avgTxSize: number;
     totalInputs: number;
     totalOutputs: number;
@@ -62,6 +62,7 @@ export interface MiningPoolStats {
   blocksCount: number;
   percentage: number;
   hashrate: number; // EH/s
+  multiplier?: number; // Added field for payout multiplier
 }
 
 let lastBlockHash: string | null = null;
@@ -243,8 +244,19 @@ export const calculateMiningPoolStats = (blocks: MempoolBlock[]): MiningPoolStat
     });
   }
 
-  console.log('Final mining pool stats:', stats);
-  return stats.sort((a, b) => b.blocksCount - a.blocksCount);
+  // Sort stats by blocksCount in descending order for multiplier calculation
+  const sortedStats = stats.sort((a, b) => b.blocksCount - a.blocksCount);
+  
+  // Calculate and assign dynamic multipliers
+  sortedStats.forEach((pool, index) => {
+    // Apply the multiplier formula: starting at 2.0x and increasing by 0.5x for each subsequent pool
+    // The pool with the most blocks gets 2.0x, next gets 2.5x, etc.
+    const baseMultiplier = 2.0;
+    pool.multiplier = baseMultiplier + (index * 0.5);
+  });
+
+  console.log('Final mining pool stats with multipliers:', sortedStats);
+  return sortedStats;
 };
 
 /**
