@@ -1247,12 +1247,19 @@ const BettingGrid = () => {
             <span className="text-xs font-medium text-white">Betting closes in:</span>
           </div>
           <div className="flex-grow mx-4 relative">
-            <div className="relative pr-14">
+          <div className="relative pr-14">
               <Progress 
                 value={progress} 
                 className="h-2 bg-white/10 rounded-full w-full" 
                 indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-[width] duration-100 ease-linear" 
               />
+              {timeRemaining <= 0 && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs font-medium text-gradient animate-pulse-subtle">
+                    All bets closed for this round. Please wait for the next block to place new bets.
+                  </span>
+                </div>
+              )}
             </div>
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
               <span className="text-xs font-mono font-bold text-btc-orange tabular-nums">
