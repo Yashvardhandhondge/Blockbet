@@ -1,4 +1,3 @@
-
 import { MiningPool } from './types';
 
 export const miningPools: MiningPool[] = [
@@ -217,6 +216,18 @@ export const miningPools: MiningPool[] = [
     region: 'Europe',
     logoUrl: '/pool-logos/whitepool.svg',
     gradient: 'linear-gradient(135deg, #ffffff, #d4d4d8)'
+  },
+  {
+    id: 'mining-squared',
+    name: 'Mining Squared',
+    hashRate: 18.9,
+    hashRatePercent: 3.2,
+    blocksLast24h: 5,
+    colorClass: 'bg-gray-600',
+    odds: 31.25,
+    region: 'Unknown',
+    logoUrl: '/pool-logos/unknown.svg',
+    gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
   },
   {
     id: 'unknown',

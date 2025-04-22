@@ -830,13 +830,13 @@ const BettingGrid = () => {
                 
                 <div 
                   className={cn(
-                    "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+                    "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-9 h-9 text-base",
                     getChipColor(amount)
                   )}
                   style={{
                     boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
                     position: stackSize > 1 ? 'relative' : 'relative',
-                    bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
+                    bottom: stackSize > 1 ? (stackSize - 1) * 6 : 0,
                     right: 0,
                   }}
                 >
@@ -847,11 +847,11 @@ const BettingGrid = () => {
                       borderColor: `${getChipSecondaryColor(amount)}`
                     }}
                   ></div>
-                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
+                  <span className="relative z-10 text-white font-bold drop-shadow-md text-sm">
                     {formatChipValue(amount)}
                   </span>
                   {betCount > 1 && 
-                    <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
+                    <span className="relative z-10 text-white font-semibold drop-shadow-md text-xs -mt-0.5">
                       ×{betCount}
                     </span>
                   }
@@ -1005,7 +1005,7 @@ const BettingGrid = () => {
           <div 
             key={`chip-${chipGroup.amount}-${index}`} 
             className={cn(
-              "relative w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40",
+              "relative w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white border-2 border-white/50",
               getChipColor(chipGroup.amount)
             )}
             style={{
@@ -1014,12 +1014,12 @@ const BettingGrid = () => {
             }}
           >
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
-            <div className="flex flex-col items-center justify-center leading-none">
-              <div className="truncate max-w-[18px] text-center">
+            <div className="flex flex-col items-center justify-center leading-tight">
+              <div className="truncate max-w-[24px] text-center">
                 {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               </div>
               {chipGroup.count > 1 && (
-                <div className="text-[6px] mt-0.5">×{chipGroup.count}</div>
+                <div className="text-xs mt-0.5 font-semibold">×{chipGroup.count}</div>
               )}
             </div>
           </div>
@@ -1237,6 +1237,11 @@ const BettingGrid = () => {
     }
   }, []);
 
+  // Sort mining pools descending by blocksLast24h
+  const sortedMiningPools = [...miningPools].sort(
+    (a, b) => b.blocksLast24h - a.blocksLast24h
+  );
+
   // Update Progress component render for smoother transition
   return (
     <div className="w-full">
@@ -1313,17 +1318,17 @@ const BettingGrid = () => {
           <div className="flex gap-2">
             <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleCancelLastBet} disabled={isBettingClosed}>
               <Trash2 className="h-3.5 w-3.5 text-white/60 mr-1" />
-              <span>Undo</span>
+              <span>Undo last</span>
             </Button>
             <Button variant="outline" className="border-white/10 hover:border-white/20 hover:bg-white/5 rounded-full text-xs p-1.5 h-7" onClick={handleClearBets} disabled={isBettingClosed}>
               <X className="h-3.5 w-3.5 text-white/60 mr-1" />
-              <span>Clear</span>
+              <span>Clear all</span>
             </Button>
           </div>
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {miningPools.map((pool) => (
+          {sortedMiningPools.map((pool) => (
             <div key={pool.id} className="transition-all">
               <MiningPoolCard 
                 pool={pool} 
