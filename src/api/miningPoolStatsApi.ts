@@ -1,10 +1,8 @@
-
-import { fetchRecentBlocks, calculateMiningPoolStats, calculatePoolPayouts, MiningPoolStats, PoolPayout } from '../services/mempoolService';
+import { fetchRecentBlocks, calculateMiningPoolStats } from '../services/mempoolService';
 
 const REFRESH_INTERVAL = 10000; // 10 seconds
 let lastFetchTime = 0;
-let cachedStats: MiningPoolStats[] = null;
-let cachedPayouts: PoolPayout[] = null;
+let cachedStats: any = null;
 
 /**
  * Fetches mining pool statistics from Mempool.space API with caching
@@ -53,37 +51,6 @@ export const fetchMiningPoolStats = async () => {
     return poolStats;
   } catch (error) {
     console.error('Error fetching mining pool stats:', error);
-    throw error;
-  }
-};
-
-/**
- * Fetches and calculates mining pool payout multipliers based on 24h block counts
- * @returns Promise with mining pool payout information
- */
-export const fetchMiningPoolPayouts = async (): Promise<PoolPayout[]> => {
-  const now = Date.now();
-  
-  // Return cached data if it's fresh enough
-  if (cachedPayouts && (now - lastFetchTime) < REFRESH_INTERVAL) {
-    return cachedPayouts;
-  }
-  
-  try {
-    // Reuse stats if we already have them
-    const stats = cachedStats && (now - lastFetchTime) < REFRESH_INTERVAL
-      ? cachedStats
-      : await fetchMiningPoolStats();
-    
-    // Calculate payout multipliers based on block counts
-    const payouts = calculatePoolPayouts(stats);
-    
-    // Update cache
-    cachedPayouts = payouts;
-    
-    return payouts;
-  } catch (error) {
-    console.error('Error calculating mining pool payouts:', error);
     throw error;
   }
 };

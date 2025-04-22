@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { MiningPool } from '@/utils/types';
 import { cn } from '@/lib/utils';

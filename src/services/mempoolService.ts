@@ -1,4 +1,3 @@
-
 /**
  * Service for interacting with the Mempool.space API
  */
@@ -65,18 +64,8 @@ export interface MiningPoolStats {
   hashrate: number; // EH/s
 }
 
-export interface PoolPayout {
-  poolId: string;
-  poolName: string;
-  blocksCount: number; 
-  payoutMultiplier: number;
-}
-
 let lastBlockHash: string | null = null;
 let lastBlockTime: number = 0;
-let lastPoolStats: MiningPoolStats[] = [];
-let lastCalculatedPayouts: PoolPayout[] = [];
-let lastPoolStatsTime: number = 0;
 
 /**
  * Fetches recent blocks from the Mempool.space API
@@ -255,78 +244,7 @@ export const calculateMiningPoolStats = (blocks: MempoolBlock[]): MiningPoolStat
   }
 
   console.log('Final mining pool stats:', stats);
-  
-  // Cache the stats for quick access
-  lastPoolStats = stats.sort((a, b) => b.blocksCount - a.blocksCount);
-  lastPoolStatsTime = Date.now();
-  
   return stats.sort((a, b) => b.blocksCount - a.blocksCount);
-};
-
-/**
- * Calculates payout multipliers based on mining pool statistics
- * @param poolStats Array of mining pool statistics
- * @returns Array of pool payout data
- */
-export const calculatePoolPayouts = (poolStats: MiningPoolStats[]): PoolPayout[] => {
-  if (!poolStats.length) {
-    console.log('No pool stats available for payout calculation');
-    return [];
-  }
-
-  console.log('Calculating pool payouts from stats:', {
-    poolCount: poolStats.length,
-    timestamp: new Date().toISOString()
-  });
-
-  // Sort pools by blocks mined (descending)
-  const sortedStats = [...poolStats].sort((a, b) => b.blocksCount - a.blocksCount);
-  
-  // Calculate payouts with incrementing multipliers
-  const payouts: PoolPayout[] = sortedStats.map((stat, index) => {
-    const poolId = stat.poolName.toLowerCase()
-      .replace(/\s+/g, '')
-      .replace(/\./g, '')
-      .replace(/-/g, '');
-    
-    // Start at 2.0x, increment by 0.5x for each position
-    const payoutMultiplier = 2.0 + (index * 0.5);
-    
-    return {
-      poolId,
-      poolName: stat.poolName,
-      blocksCount: stat.blocksCount,
-      payoutMultiplier
-    };
-  });
-
-  console.log('Calculated pool payouts:', {
-    poolCount: payouts.length,
-    minMultiplier: payouts.length > 0 ? payouts[0].payoutMultiplier : 'N/A',
-    maxMultiplier: payouts.length > 0 ? payouts[payouts.length - 1].payoutMultiplier : 'N/A',
-    timestamp: new Date().toISOString()
-  });
-
-  // Cache the payouts for quick access
-  lastCalculatedPayouts = payouts;
-  
-  return payouts;
-};
-
-/**
- * Gets the most recently calculated pool payouts
- * If data is older than 10 minutes, recalculate
- * @returns Array of pool payout data
- */
-export const getPoolPayouts = (): PoolPayout[] => {
-  const TEN_MINUTES = 10 * 60 * 1000;
-  
-  if (lastCalculatedPayouts.length === 0 || Date.now() - lastPoolStatsTime > TEN_MINUTES) {
-    console.log('Payouts data stale or not available, recalculating');
-    return []; // Return empty, caller should fetch fresh data
-  }
-  
-  return lastCalculatedPayouts;
 };
 
 /**

@@ -1,294 +1,258 @@
+import { MiningPool } from './types';
 
-import { PoolPayout } from '@/services/mempoolService';
-
-export interface MiningPool {
-  id: string;
-  name: string;
-  hashRate: number;
-  hashRatePercent: number;
-  blocksLast24h: number;
-  colorClass: string;
-  odds: number;
-  region: string;
-  logoUrl?: string;
-  gradient?: string;
-}
-
-// Mining pools with default values (will be updated dynamically)
 export const miningPools: MiningPool[] = [
-  {
-    id: 'empty',
-    name: 'Empty Block',
-    hashRate: 0,
-    hashRatePercent: 0,
-    blocksLast24h: 0,
-    colorClass: 'bg-gray-600',
-    odds: 35.0, // Static 35x payout for Empty Block
-    region: 'Global',
-    logoUrl: '/pool-logos/unknown.svg',
-    gradient: 'linear-gradient(135deg, #333333, #222222)'
-  },
   {
     id: 'foundry',
     name: 'Foundry USA',
-    hashRate: 156.2,
-    hashRatePercent: 28.9,
+    hashRate: 156.3,
+    hashRatePercent: 26.5,
     blocksLast24h: 38,
-    colorClass: 'bg-orange-600',
-    odds: 2.0,
+    colorClass: 'bg-orange-500',
+    odds: 3.77,
     region: 'North America',
     logoUrl: '/pool-logos/foundryusa.svg',
-    gradient: 'linear-gradient(135deg, #F97316, #EA580C)'
+    gradient: 'linear-gradient(135deg, #F97316, #7C2D12)'
   },
   {
     id: 'antpool',
     name: 'AntPool',
-    hashRate: 94.3,
-    hashRatePercent: 14.8,
+    hashRate: 98.7,
+    hashRatePercent: 16.7,
     blocksLast24h: 24,
     colorClass: 'bg-red-600',
-    odds: 2.5,
+    odds: 5.99,
     region: 'Asia',
     logoUrl: '/pool-logos/antpool.svg',
-    gradient: 'linear-gradient(135deg, #E74C3C, #C0392B)'
+    gradient: 'linear-gradient(135deg, #DC2626, #7F1D1D)'
   },
   {
     id: 'f2pool',
     name: 'F2Pool',
-    hashRate: 75.8,
-    hashRatePercent: 12.1,
+    hashRate: 74.5,
+    hashRatePercent: 12.6,
     blocksLast24h: 18,
-    colorClass: 'bg-blue-600',
-    odds: 3.0,
+    colorClass: 'bg-blue-500',
+    odds: 7.94,
     region: 'Asia',
     logoUrl: '/pool-logos/f2pool.svg',
-    gradient: 'linear-gradient(135deg, #3498DB, #2980B9)'
-  },
-  {
-    id: 'viabtc',
-    name: 'ViaBTC',
-    hashRate: 58.5,
-    hashRatePercent: 8.4,
-    blocksLast24h: 14,
-    colorClass: 'bg-amber-600',
-    odds: 3.5,
-    region: 'Asia',
-    logoUrl: '/pool-logos/viabtc.svg',
-    gradient: 'linear-gradient(135deg, #E67E22, #D35400)'
+    gradient: 'linear-gradient(135deg, #3B82F6, #1E40AF)'
   },
   {
     id: 'binance',
     name: 'Binance Pool',
-    hashRate: 45.1,
-    hashRatePercent: 7.2,
-    blocksLast24h: 12,
+    hashRate: 52.1,
+    hashRatePercent: 8.8,
+    blocksLast24h: 13,
     colorClass: 'bg-yellow-500',
-    odds: 4.0,
-    region: 'Global',
+    odds: 11.36,
+    region: 'Asia',
     logoUrl: '/pool-logos/binancepool.svg',
-    gradient: 'linear-gradient(135deg, #F1C40F, #F39C12)'
+    gradient: 'linear-gradient(135deg, #EAB308, #854D0E)'
   },
   {
-    id: 'poolin',
-    name: 'Poolin',
-    hashRate: 37.6,
+    id: 'viabtc',
+    name: 'ViaBTC',
+    hashRate: 35.6,
     hashRatePercent: 6.0,
-    blocksLast24h: 10,
+    blocksLast24h: 9,
     colorClass: 'bg-green-600',
-    odds: 4.5,
+    odds: 16.67,
     region: 'Asia',
-    logoUrl: '/pool-logos/poolin.svg',
-    gradient: 'linear-gradient(135deg, #2ECC71, #27AE60)'
+    logoUrl: '/pool-logos/viabtc.svg',
+    gradient: 'linear-gradient(135deg, #16A34A, #14532D)'
   },
   {
     id: 'braiinspool',
     name: 'Braiins Pool',
-    hashRate: 31.5,
-    hashRatePercent: 5.0,
-    blocksLast24h: 8,
-    colorClass: 'bg-teal-500',
-    odds: 5.0,
+    hashRate: 30.5,
+    hashRatePercent: 5.2,
+    blocksLast24h: 7,
+    colorClass: 'bg-cyan-600',
+    odds: 19.23,
     region: 'Europe',
     logoUrl: '/pool-logos/braiinspool.svg',
-    gradient: 'linear-gradient(135deg, #1ABC9C, #16A085)'
+    gradient: 'linear-gradient(135deg, #0891B2, #164E63)'
+  },
+  {
+    id: 'poolin',
+    name: 'Poolin',
+    hashRate: 28.4,
+    hashRatePercent: 4.8,
+    blocksLast24h: 7,
+    colorClass: 'bg-emerald-600',
+    odds: 20.83,
+    region: 'Asia',
+    logoUrl: '/pool-logos/poolin.svg',
+    gradient: 'linear-gradient(135deg, #059669, #065F46)'
   },
   {
     id: 'sbicrypto',
     name: 'SBI Crypto',
-    hashRate: 25.1,
-    hashRatePercent: 4.0,
-    blocksLast24h: 6,
-    colorClass: 'bg-blue-800',
-    odds: 5.5,
+    hashRate: 27.3,
+    hashRatePercent: 4.6,
+    blocksLast24h: 7,
+    colorClass: 'bg-blue-700',
+    odds: 21.74,
     region: 'Asia',
     logoUrl: '/pool-logos/sbicrypto.svg',
-    gradient: 'linear-gradient(135deg, #0065F5, #004BB2)'
-  },
-  {
-    id: 'luxor',
-    name: 'Luxor',
-    hashRate: 18.8,
-    hashRatePercent: 3.0,
-    blocksLast24h: 5,
-    colorClass: 'bg-amber-500',
-    odds: 6.0,
-    region: 'North America',
-    logoUrl: '/pool-logos/luxor.svg',
-    gradient: 'linear-gradient(135deg, #F0BB31, #D69F1E)'
+    gradient: 'linear-gradient(135deg, #1D4ED8, #1E3A8A)'
   },
   {
     id: 'bitcoincom',
     name: 'Bitcoin.com',
-    hashRate: 16.3,
-    hashRatePercent: 2.4,
-    blocksLast24h: 4,
-    colorClass: 'bg-purple-600',
-    odds: 6.5,
-    region: 'Global',
+    hashRate: 26.2,
+    hashRatePercent: 4.4,
+    blocksLast24h: 6,
+    colorClass: 'bg-red-500',
+    odds: 22.73,
+    region: 'Asia',
     logoUrl: '/pool-logos/bitcoincom.svg',
-    gradient: 'linear-gradient(135deg, #9B59B6, #8E44AD)'
+    gradient: 'linear-gradient(135deg, #EF4444, #991B1B)'
   },
   {
     id: 'spiderpool',
     name: 'SpiderPool',
-    hashRate: 12.6,
-    hashRatePercent: 1.8,
-    blocksLast24h: 3,
-    colorClass: 'bg-amber-600',
-    odds: 7.0,
+    hashRate: 24.9,
+    hashRatePercent: 4.2,
+    blocksLast24h: 6,
+    colorClass: 'bg-yellow-600',
+    odds: 23.81,
     region: 'Asia',
     logoUrl: '/pool-logos/spiderpool.svg',
-    gradient: 'linear-gradient(135deg, #D6A300, #B58600)'
+    gradient: 'linear-gradient(135deg, #FFBE1E, #CA8A04)'
+  },
+  {
+    id: 'luxor',
+    name: 'Luxor',
+    hashRate: 23.8,
+    hashRatePercent: 4.0,
+    blocksLast24h: 6,
+    colorClass: 'bg-amber-500',
+    odds: 25.0,
+    region: 'North America',
+    logoUrl: '/pool-logos/luxor.svg',
+    gradient: 'linear-gradient(135deg, #F0BB31, #F59E0B)'
   },
   {
     id: 'ultimuspool',
-    name: 'Ultimus Pool',
-    hashRate: 10.0,
-    hashRatePercent: 1.4,
-    blocksLast24h: 3,
-    colorClass: 'bg-blue-700',
-    odds: 7.5,
-    region: 'North America',
+    name: 'ULTIMUSPOOL',
+    hashRate: 20.7,
+    hashRatePercent: 3.5,
+    blocksLast24h: 5,
+    colorClass: 'bg-indigo-600',
+    odds: 28.57,
+    region: 'Europe',
     logoUrl: '/pool-logos/ultimuspool.svg',
-    gradient: 'linear-gradient(135deg, #3E59DC, #1652EE)'
+    gradient: 'linear-gradient(135deg, #1652EE, #4F46E5)'
   },
   {
-    id: 'oceam',
-    name: 'Ocean',
-    hashRate: 8.8,
-    hashRatePercent: 1.2,
-    blocksLast24h: 2,
-    colorClass: 'bg-blue-400',
-    odds: 8.0,
-    region: 'Europe',
+    id: 'ocean',
+    name: 'OCEAN',
+    hashRate: 19.5,
+    hashRatePercent: 3.3,
+    blocksLast24h: 5,
+    colorClass: 'bg-sky-600',
+    odds: 30.30,
+    region: 'North America',
     logoUrl: '/pool-logos/Ocean.svg',
-    gradient: 'linear-gradient(135deg, #72BBFF, #5A99D3)'
+    gradient: 'linear-gradient(135deg, #72BBFF, #0284C7)'
   },
   {
     id: 'secpool',
-    name: 'SecPool',
-    hashRate: 7.5,
-    hashRatePercent: 1.0,
-    blocksLast24h: 2,
-    colorClass: 'bg-purple-700',
-    odds: 8.5,
-    region: 'Asia',
+    name: 'SECPOOL',
+    hashRate: 17.7,
+    hashRatePercent: 3.0,
+    blocksLast24h: 4,
+    colorClass: 'bg-purple-600',
+    odds: 33.33,
+    region: 'Europe',
     logoUrl: '/pool-logos/secpool.svg',
-    gradient: 'linear-gradient(135deg, #9333EA, #7C21D2)'
+    gradient: 'linear-gradient(135deg, #9333EA, #7E22CE)'
   },
   {
     id: 'carbonnegative',
     name: 'Carbon Negative',
-    hashRate: 6.3,
-    hashRatePercent: 0.8,
-    blocksLast24h: 2,
+    hashRate: 15.3,
+    hashRatePercent: 2.6,
+    blocksLast24h: 4,
     colorClass: 'bg-green-700',
-    odds: 9.0,
-    region: 'Europe',
+    odds: 38.46,
+    region: 'North America',
     logoUrl: '/pool-logos/carbonnegative.svg',
     gradient: 'linear-gradient(135deg, #15803D, #166534)'
   },
   {
-    id: 'bitfufu',
-    name: 'BitFuFu Pool',
-    hashRate: 5.0,
-    hashRatePercent: 0.6,
-    blocksLast24h: 1,
+    id: 'bitfufupool',
+    name: 'BitFuFuPool',
+    hashRate: 12.4,
+    hashRatePercent: 2.1,
+    blocksLast24h: 3,
     colorClass: 'bg-pink-600',
-    odds: 9.5,
+    odds: 47.62,
     region: 'Asia',
     logoUrl: '/pool-logos/BitFuFuPool.svg',
-    gradient: 'linear-gradient(135deg, #DB2777, #BE185D)'
+    gradient: 'linear-gradient(135deg, #DB2777, #9D174D)'
+  },
+  {
+    id: 'nicehash',
+    name: 'NiceHash',
+    hashRate: 11.8,
+    hashRatePercent: 2.0,
+    blocksLast24h: 3,
+    colorClass: 'bg-blue-400',
+    odds: 50.0,
+    region: 'Global',
+    logoUrl: '/pool-logos/nicehash.svg',
+    gradient: 'linear-gradient(135deg, #38BDF8, #0369A1)'
+  },
+  {
+    id: 'whitepool',
+    name: 'WhitePool',
+    hashRate: 11.2,
+    hashRatePercent: 1.9,
+    blocksLast24h: 3,
+    colorClass: 'bg-gray-100',
+    odds: 52.63,
+    region: 'Europe',
+    logoUrl: '/pool-logos/whitepool.svg',
+    gradient: 'linear-gradient(135deg, #ffffff, #d4d4d8)'
+  },
+  {
+    id: 'mining-squared',
+    name: 'Mining Squared',
+    hashRate: 18.9,
+    hashRatePercent: 3.2,
+    blocksLast24h: 5,
+    colorClass: 'bg-gray-600',
+    odds: 31.25,
+    region: 'Global',
+    logoUrl: '/pool-logos/MiningSquared.svg',
+    gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
   },
   {
     id: 'unknown',
     name: 'Unknown',
-    hashRate: 7.5,
+    hashRate: 7.3,
     hashRatePercent: 1.2,
     blocksLast24h: 2,
-    colorClass: 'bg-gray-500',
-    odds: 10.0,
-    region: 'Global',
+    colorClass: 'bg-gray-600',
+    odds: 83.33,
+    region: 'Unknown',
     logoUrl: '/pool-logos/unknown.svg',
-    gradient: 'linear-gradient(135deg, #6B7280, #4B5563)'
+    gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
   }
 ];
 
-/**
- * Gets a random mining pool (for simulation purposes)
- */
 export const getRandomMiningPool = (): MiningPool => {
-  const randomIndex = Math.floor(Math.random() * miningPools.length);
-  return miningPools[randomIndex];
-};
-
-/**
- * Updates mining pool data with real-time block counts and payout multipliers
- * @param payouts The calculated payout data from the mempool.space API
- */
-export const updateMiningPoolData = (payouts: PoolPayout[]): void => {
-  if (!payouts || payouts.length === 0) {
-    console.warn('No payout data available to update mining pools');
-    return;
+  const rand = Math.random() * 100;
+  let cumulative = 0;
+  
+  for (const pool of miningPools) {
+    cumulative += pool.hashRatePercent;
+    if (rand <= cumulative) {
+      return pool;
+    }
   }
   
-  console.log('Updating mining pool data with real-time payouts:', {
-    poolCount: payouts.length,
-    timestamp: new Date().toISOString()
-  });
-  
-  // Update each mining pool with calculated payout multipliers
-  miningPools.forEach(pool => {
-    // Skip Empty Block (which has a static payout)
-    if (pool.id === 'empty') return;
-    
-    // Find matching payout data
-    const payout = payouts.find(p => 
-      p.poolId.toLowerCase() === pool.id.toLowerCase() || 
-      p.poolName.toLowerCase().includes(pool.id.toLowerCase()) ||
-      pool.name.toLowerCase().includes(p.poolName.toLowerCase())
-    );
-    
-    if (payout) {
-      // Update the pool with real-time data
-      pool.blocksLast24h = payout.blocksCount;
-      pool.odds = payout.payoutMultiplier;
-      
-      console.log(`Updated pool ${pool.name}:`, {
-        blocks: pool.blocksLast24h,
-        multiplier: pool.odds.toFixed(1) + 'x'
-      });
-    } else {
-      console.log(`No payout data found for pool ${pool.name}`);
-    }
-  });
-};
-
-/**
- * Gets the mining pool by ID
- * @param id The pool ID
- * @returns The mining pool or undefined if not found
- */
-export const getMiningPoolById = (id: string): MiningPool | undefined => {
-  return miningPools.find(pool => pool.id === id);
+  return miningPools[0];
 };
