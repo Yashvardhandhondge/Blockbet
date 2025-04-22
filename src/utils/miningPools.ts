@@ -225,8 +225,8 @@ export const miningPools: MiningPool[] = [
     blocksLast24h: 5,
     colorClass: 'bg-gray-600',
     odds: 31.25,
-    region: 'Unknown',
-    logoUrl: '/pool-logos/unknown.svg',
+    region: 'Global',
+    logoUrl: '/pool-logos/MiningSquared.svg',
     gradient: 'linear-gradient(135deg, #4B5563, #1F2937)'
   },
   {
