@@ -882,6 +882,11 @@ const BettingGrid = () => {
     // Clear betting state first to prevent visual artifacts
     setIsBettingClosed(false);
     
+    // Immediately clear the bets to update UI
+    setBets([]);
+    setSelectedChip(null);
+    setSelectedPool(null);
+    
     if (!bets || bets.length === 0) {
       console.log('No bets to process, starting new round');
       startNewBettingRound();
@@ -908,8 +913,11 @@ const BettingGrid = () => {
     
     let totalWinAmount = 0;
     
+    // Process all bets using a local copy since we cleared the state
+    const betsToProcess = [...bets];
+    
     // Process all bets first
-    bets.forEach(bet => {
+    betsToProcess.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       if (bet.poolId) {
         const pool = miningPools.find(p => p.id === bet.poolId);
@@ -937,11 +945,6 @@ const BettingGrid = () => {
       }
     });
     
-    // Clear bets immediately to refresh the UI
-    setBets([]);
-    setSelectedChip(null);
-    setSelectedPool(null);
-    
     if (totalWinAmount > 0) {
       setWalletBalance(prev => prev + totalWinAmount);
       emitPlayerWin();
@@ -966,7 +969,6 @@ const BettingGrid = () => {
       startNewBettingRound();
     }, 3000);
   }, [bets, setWalletBalance, startNewBettingRound, handleAddBetToHistory]);
-
   useEffect(() => {
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received:', e.detail);
