@@ -228,6 +228,20 @@ const BettingGrid = () => {
       const variation = Math.random() * 0.4 - 0.2;
       return Math.max(9.2, Math.min(10.5, prev + variation));
     });
+
+    import('@/api/miningPoolStatsApi').then(({ fetchMiningPoolPayouts }) => {
+      fetchMiningPoolPayouts()
+        .then(payouts => {
+          if (payouts && payouts.length > 0) {
+            import('@/utils/miningPools').then(({ updateMiningPoolData }) => {
+              updateMiningPoolData(payouts);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Error updating pool payout data:', err);
+        });
+    });
   }, []);
   
   useEffect(() => {
@@ -258,7 +272,6 @@ const BettingGrid = () => {
                 if (poolStats) {
                   if (poolStats.hashrate > 0) pool.hashRate = poolStats.hashrate;
                   if (poolStats.percentage > 0) pool.hashRatePercent = poolStats.percentage;
-                  if (poolStats.percentage > 0) pool.odds = 100 / poolStats.percentage;
                   console.log(`Updated pool stats for ${pool.name}: ${pool.hashRate} EH/s, ${pool.hashRatePercent}%`);
                 } else {
                   if (pool.hashRate <= 0) pool.hashRate = 0.1;
@@ -280,8 +293,44 @@ const BettingGrid = () => {
       });
     }, 30000);
 
-    return () => clearInterval(poolStatsInterval);
-  }, []);
+    import('@/api/miningPoolStatsApi').then(({ fetchMiningPoolPayouts }) => {
+      fetchMiningPoolPayouts()
+        .then(payouts => {
+          if (payouts && payouts.length > 0) {
+            import('@/utils/miningPools').then(({ updateMiningPoolData }) => {
+              updateMiningPoolData(payouts);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Error updating initial pool payout data:', err);
+        });
+    });
+
+    const handleNewBlock = () => {
+      console.log('New block detected, updating mining pool payouts');
+      import('@/api/miningPoolStatsApi').then(({ fetchMiningPoolPayouts }) => {
+        fetchMiningPoolPayouts()
+          .then(payouts => {
+            if (payouts && payouts.length > 0) {
+              import('@/utils/miningPools').then(({ updateMiningPoolData }) => {
+                updateMiningPoolData(payouts);
+              });
+            }
+          })
+          .catch(err => {
+            console.error('Error updating pool payout data after new block:', err);
+          });
+      });
+    };
+
+    window.addEventListener('new-block', handleNewBlock);
+
+    return () => {
+      clearInterval(poolStatsInterval);
+      window.removeEventListener('new-block', handleNewBlock);
+    };
+  }, [updateVisualIndicators]);
 
   const startNewBettingRoundKeepGlow = useCallback(() => {
     console.log('Starting new betting round (keeping glow effects)');
@@ -719,33 +768,54 @@ const BettingGrid = () => {
     const groupedChips: {
       [key: number]: number;
     } = {};
+    
     amounts.forEach(amount => {
       groupedChips[amount] = (groupedChips[amount] || 0) + 1;
     });
+    
     const chipGroups = Object.entries(groupedChips).map(([amount, count]) => ({
       amount: parseInt(amount),
       count
     })).sort((a, b) => b.amount - a.amount);
+    
     const chipsToShow = chipGroups.slice(0, 3);
     const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
-    return <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", getChipColor(chipGroup.amount))} style={{
-        zIndex: 5 - index,
-        transform: `translateX(${index * 4}px)`
-      }}>
+    
+    return (
+      <div className="flex -space-x-1 mr-2">
+        {chipsToShow.map((chipGroup, index) => (
+          <div 
+            key={`chip-${chipGroup.amount}-${index}`} 
+            className={cn(
+              "relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", 
+              getChipColor(chipGroup.amount)
+            )} 
+            style={{
+              zIndex: 5 - index,
+              transform: `translateX(${index * 4}px)`
+            }}
+          >
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex items-center">
               {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
             </div>
-          </div>)}
-        {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
-        zIndex: 1,
-        transform: `translateX(${chipsToShow.length * 4}px)`
-      }}>
+          </div>
+        ))}
+        
+        {remainingDenoms > 0 && (
+          <div 
+            className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" 
+            style={{
+              zIndex: 1,
+              transform: `translateX(${chipsToShow.length * 4}px)`
+            }}
+          >
             +{remainingDenoms}
-          </div>}
-      </div>;
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderStackedChips = (bets: Array<{
@@ -797,5 +867,62 @@ const BettingGrid = () => {
                     }}
                   >
                     <div className="absolute rounded-full border border-white/30 inset-1"></div>
-                    <div className="flex items-center">
-                      {amount >= 1000 ? `${amount / 1000}K
+                    <div 
+                      className="absolute rounded-full border-dashed inset-0.5 border-2"
+                      style={{
+                        borderColor: `${getChipSecondaryColor(amount)}`
+                      }}
+                    ></div>
+                  </div>
+                ))}
+                
+                <div 
+                  className={cn(
+                    "rounded-full flex flex-col items-center justify-center font-bold text-white shadow-xl w-7 h-7",
+                    getChipColor(amount)
+                  )}
+                  style={{
+                    boxShadow: "0 3px 6px rgba(0,0,0,0.6)",
+                    position: stackSize > 1 ? 'relative' : 'relative',
+                    bottom: stackSize > 1 ? (stackSize - 1) * 4 : 0,
+                    right: 0,
+                  }}
+                >
+                  <div className="absolute rounded-full border border-white/30 inset-1"></div>
+                  <div 
+                    className="absolute rounded-full border-dashed inset-0.5 border-2"
+                    style={{
+                      borderColor: `${getChipSecondaryColor(amount)}`
+                    }}
+                  ></div>
+                  <span className="relative z-10 text-white font-bold drop-shadow-md text-[8px]">
+                    {formatChipValue(amount)}
+                  </span>
+                  {betCount > 1 && 
+                    <span className="relative z-10 text-white font-bold drop-shadow-md text-[6px] leading-none -mt-0.5">
+                      ×{betCount}
+                    </span>
+                  }
+                </div>
+              </div>
+            );
+          })}
+          
+          {remainingDenominations > 0 && (
+            <div className="text-xs text-white/80 font-medium ml-1 bg-black/50 px-1.5 py-0.5 rounded-full shadow-md">
+              +{remainingDenominations}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default BettingGrid;
