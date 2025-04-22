@@ -1,4 +1,3 @@
-
 import { fetchRecentBlocks, calculateMiningPoolStats } from '../services/mempoolService';
 
 const REFRESH_INTERVAL = 10000; // 10 seconds
