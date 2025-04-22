@@ -349,20 +349,20 @@ const getPoolColor = (poolId: string): string => {
 
 const getChipColor = (value: number) => {
   switch(value) {
-    case 100:
-      return "bg-blue-600";
-    case 500:
-      return "bg-green-600";
     case 1000:
       return "bg-purple-600";
     case 5000:
       return "bg-pink-600";
     case 10000:
       return "bg-orange-600";
+    case 20000:
+      return "bg-blue-600"; // Changed to blue for 20K
     case 50000:
       return "bg-red-600";
     case 100000:
-      return "bg-yellow-600";
+      return "bg-green-600"; // Changed to green for 100K
+    case 200000:
+      return "bg-yellow-500"; // Changed to gold/yellow for 200K
     default:
       return "bg-gray-600";
   }
@@ -370,20 +370,20 @@ const getChipColor = (value: number) => {
 
 const getChipSecondaryColor = (value: number) => {
   switch(value) {
-    case 100:
-      return "bg-blue-500";
-    case 500:
-      return "bg-green-500";
     case 1000:
       return "bg-purple-500";
     case 5000:
       return "bg-pink-500";
     case 10000:
       return "bg-orange-500";
+    case 20000:
+      return "bg-blue-500"; // Changed to blue for 20K
     case 50000:
       return "bg-red-500";
     case 100000:
-      return "bg-yellow-500";
+      return "bg-green-500"; // Changed to green for 100K
+    case 200000:
+      return "bg-yellow-400"; // Changed to gold/yellow for 200K
     default:
       return "bg-gray-500";
   }
