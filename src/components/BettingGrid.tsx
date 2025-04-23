@@ -1007,21 +1007,21 @@ const BettingGrid = () => {
           <div 
             key={`chip-${chipGroup.amount}-${index}`} 
             className={cn(
-              "relative w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white border border-white/40", 
+              "relative w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white border-2 border-white/50",
               getChipColor(chipGroup.amount)
             )}
             style={{
               zIndex: 5 - index,
-              transform: `translateX(${index * 6}px)`
+              transform: `translateX(${index * 4}px)`
             }}
           >
             <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
             <div className="flex flex-col items-center justify-center leading-tight">
-              <div className="truncate max-w-[32px] text-center">
+              <div className="truncate max-w-[24px] text-center">
                 {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
               </div>
               {chipGroup.count > 1 && (
-                <div className="text-xs -mt-0.5 font-semibold">×{chipGroup.count}</div>
+                <div className="text-xs mt-0.5 font-semibold">×{chipGroup.count}</div>
               )}
             </div>
           </div>
@@ -1029,10 +1029,10 @@ const BettingGrid = () => {
         
         {remainingDenoms > 0 && (
           <div 
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-black/50 border border-white/20 shadow-sm"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm"
             style={{
               zIndex: 1,
-              transform: `translateX(${chipsToShow.length * 6}px)`
+              transform: `translateX(${chipsToShow.length * 4}px)`
             }}
           >
             +{remainingDenoms}
@@ -1260,21 +1260,19 @@ const BettingGrid = () => {
     className="h-2 bg-white/10 rounded-full w-full" 
     indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-[width] duration-100 ease-linear" 
   />
-  {timeRemaining > 0 ? (
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
-        <span className="text-xs font-mono font-bold text-btc-orange tabular-nums">
-          {formatTimeRemaining()}
-        </span>
-      </div>
-    ) : (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xs font-medium text-gradient animate-pulse-subtle bg-black/80 px-2 py-1 rounded-sm z-10">
-          All bets closed for this round. Please wait for the next block to place new bets.
-        </span>
-      </div>
-    )}
+  {timeRemaining <= 0 && (
+    <div className="absolute inset-0 flex items-center justify-center" style={{ top: "-50%", transform: "translateY(50%)" }}>
+      <span className="text-xs font-medium text-gradient animate-pulse-subtle bg-black/80 px-2 py-1 rounded-sm z-10">
+        All bets closed for this round. Please wait for the next block to place new bets.
+      </span>
+    </div>
+  )}
 </div>
-         
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+              <span className="text-xs font-mono font-bold text-btc-orange tabular-nums">
+                {timeRemaining > 0 ? formatTimeRemaining() : "0:00"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
