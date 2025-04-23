@@ -256,3 +256,24 @@ export const getRandomMiningPool = (): MiningPool => {
   
   return miningPools[0];
 };
+
+
+// This function should be called whenever mining pool data is refreshed
+export const calculateDynamicPayoutMultipliers = (pools: MiningPool[]): MiningPool[] => {
+  // First, sort pools by blocksLast24h in descending order
+  const sortedPools = [...pools].sort((a, b) => b.blocksLast24h - a.blocksLast24h);
+  
+  // Assign multipliers, starting at 2.0 and increasing by 0.5 for each pool
+  return sortedPools.map((pool, index) => {
+    // Special cases for Unknown and Empty Block pools
+    if (pool.id === 'unknown') {
+      return { ...pool, odds: 25.0 }; // Static 25x for Unknown
+    } else if (pool.id === 'empty') {
+      return { ...pool, odds: 35.0 }; // Static 35x for Empty Block
+    } else {
+      // Dynamic multiplier starting at 2.0, increasing by 0.5 each step
+      const multiplier = 2.0 + (index * 0.5);
+      return { ...pool, odds: multiplier };
+    }
+  });
+};

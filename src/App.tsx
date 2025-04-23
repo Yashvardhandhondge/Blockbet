@@ -14,6 +14,7 @@ import LnurlCallback from "./pages/LnurlCallback";
 import { useState } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./components/ui/theme-provider";
+import { BalanceProvider } from "./context/BalanceContext";
 
 function App() {
   // Create a client instance inside the component to ensure hooks work properly
@@ -22,6 +23,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" attribute="class">
+      <BalanceProvider>
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
@@ -40,6 +42,7 @@ function App() {
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
+        </BalanceProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

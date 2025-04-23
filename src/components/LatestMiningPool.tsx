@@ -181,7 +181,7 @@ const LatestMiningPool = () => {
             <span className="text-xs text-white/70">Live</span>
           </div>
           <div className="flex items-center space-x-2">
-            <button 
+            {/* <button 
               onClick={handleManualRefresh}
               className={cn(
                 "p-1.5 rounded-full hover:bg-white/10 transition-colors",
@@ -190,7 +190,7 @@ const LatestMiningPool = () => {
               disabled={isLoading}
             >
               <RefreshCw className="h-4 w-4 text-white/70" />
-            </button>
+            </button> */}
             <button 
               onClick={scrollLeft}
               className="p-1.5 rounded-full hover:bg-white/10 transition-colors"

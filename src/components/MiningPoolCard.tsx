@@ -234,29 +234,32 @@ useEffect(() => {
             isMobile ? "mb-2" : "p-2"
           )}>
             <div className="text-white/80 text-center">
-              <span className={cn(
-                "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
-                isMobile ? "text-sm" : "text-lg"
-              )}>
-                {pool.odds.toFixed(2)}
-                <span className="ml-0.5">×</span>
-              </span>
+            <span className={cn(
+  "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
+  isMobile ? "text-sm" : "text-lg"
+)}>
+  {pool.odds.toFixed(2)}
+  <span className="ml-0.5">×</span>
+</span>
               <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
             </div>
           </div>
           
           <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-            <div 
-              className="h-full transition-all duration-1000 ease-out"
-              style={{ width: `${displayedHashrate}%`, background: getDarkerTechGradient(pool.id) }}
-              onTransitionEnd={() => {
-                console.log(`Hashrate bar animation completed for ${pool.name}:`, {
-                  displayedValue: displayedHashrate + '%',
-                  actualValue: pool.hashRatePercent + '%'
-                });
-              }}
-            ></div>
-          </div>
+  <div 
+    className="h-full transition-all duration-1000 ease-out"
+    style={{ 
+      width: `${displayedHashrate}%`, 
+      background: 'linear-gradient(90deg, #f7931a 0%, #ffd700 100%)' 
+    }}
+    onTransitionEnd={() => {
+      console.log(`Hashrate bar animation completed for ${pool.name}:`, {
+        displayedValue: displayedHashrate + '%',
+        actualValue: pool.hashRatePercent + '%'
+      });
+    }}
+  ></div>
+</div>
         </div>
 
         {bets.length > 0 && renderStackedChips(bets)}

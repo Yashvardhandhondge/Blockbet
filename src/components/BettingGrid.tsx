@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { MiningPool } from '@/utils/types';
-import { miningPools, getRandomMiningPool } from '@/utils/miningPools';
+import { miningPools, getRandomMiningPool, calculateDynamicPayoutMultipliers } from '@/utils/miningPools';
 import { Clock, Zap, Trash2, Server, X, ArrowDown, Wallet, History, CreditCard, ArrowUpRight, ArrowDownLeft, Info, Coins, Receipt, Banknote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -17,6 +17,7 @@ import { formatSatsToBTC, formatSats, emitPlayerWin } from '@/utils/formatters';
 import { OriginTabs, OriginTabsList, OriginTabsTrigger, OriginTabsContent } from "@/components/ui/origin-tabs";
 import { betHistoryService,BetHistoryRecord } from '@/services/betHistoryService';
 import { useAuth } from '@/context/AuthContext';
+import { useBalance } from '@/context/BalanceContext';
 
 const CHIP_VALUES = [1000, 5000, 10000, 20000, 50000, 100000, 200000];
 
@@ -83,7 +84,7 @@ const BettingGrid = () => {
   const [pendingTxCount, setPendingTxCount] = useState(12483);
   const [currentBlock, setCurrentBlock] = useState(miningPools[0]?.blocksLast24h || 0);
   const [avgBlockTime, setAvgBlockTime] = useState(9.8);
-  const [walletBalance, setWalletBalance] = useState(25000000);
+  const {walletBalance, setWalletBalance} = useBalance();
   const [betHistory, setBetHistory] = useState<BetHistoryRecord[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [deposits, setDeposits] = useState<Array<{
@@ -281,6 +282,10 @@ const BettingGrid = () => {
                   console.log(`No API stats found for ${pool.name}, using minimum values`);
                 }
               });
+              const updatedPools = calculateDynamicPayoutMultipliers(miningPools);
+          
+              // Then sort by blocksLast24h again to maintain the display order
+              const sortedPools = [...updatedPools].sort((a, b) => b.blocksLast24h - a.blocksLast24h);
             } else {
               console.warn('Received empty stats from API, using default values');
             }
@@ -1254,20 +1259,26 @@ const BettingGrid = () => {
             <span className="text-xs font-medium text-white">Betting closes in:</span>
           </div>
           <div className="flex-grow mx-4 relative">
-          <div className="relative pr-14">
-  <Progress 
-    value={progress} 
-    className="h-2 bg-white/10 rounded-full w-full" 
-    indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-[width] duration-100 ease-linear" 
-  />
-  {timeRemaining <= 0 && (
-    <div className="absolute inset-0 flex items-center justify-center" style={{ top: "-50%", transform: "translateY(50%)" }}>
-      <span className="text-xs font-medium text-gradient animate-pulse-subtle bg-black/80 px-2 py-1 rounded-sm z-10">
-        All bets closed for this round. Please wait for the next block to place new bets.
+          {timeRemaining > 0 ? (
+  <div className="relative pr-14">
+    <Progress 
+      value={progress} 
+      className="h-2 bg-white/10 rounded-full w-full" 
+      indicatorClassName="bg-gradient-to-r from-btc-orange to-yellow-500 transition-[width] duration-100 ease-linear" 
+    />
+    <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+      <span className="text-xs font-mono font-bold text-btc-orange tabular-nums">
+        {formatTimeRemaining()}
       </span>
     </div>
-  )}
-</div>
+  </div>
+) : (
+  <div className="flex items-center justify-center py-1">
+    <span className="text-xs font-medium bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent animate-pulse-subtle">
+      All bets closed for this round. Please wait for the next block to place new bets.
+    </span>
+  </div>
+)}
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
               <span className="text-xs font-mono font-bold text-btc-orange tabular-nums">
                 {timeRemaining > 0 ? formatTimeRemaining() : "0:00"}

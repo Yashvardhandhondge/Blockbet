@@ -12,17 +12,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useBalance } from '@/context/BalanceContext';
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const {walletBalance} = useBalance();
   const isLoggedIn = !!user;
-  const walletBalance = isLoggedIn ? '0.00125' : '0.00000000';
+  // const walletBalance = isLoggedIn ? '0.00125' : '0.00000000';
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   
-  const walletBalanceInSats = Math.floor(parseFloat(walletBalance) * 100000000).toLocaleString();
-
+  const walletBalanceInSats = Math.floor(walletBalance).toLocaleString();
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
