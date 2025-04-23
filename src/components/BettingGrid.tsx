@@ -25,7 +25,6 @@ const MIN_BET = 1000; // 1K sats
 const MAX_BET = 1000000; // 1M sats
 const PLATFORM_FEE = 0.025; 
 
-// Add logging for initialization
 console.log('Initializing BettingGrid with settings:', {
   MIN_BET,
   MAX_BET,
@@ -33,7 +32,6 @@ console.log('Initializing BettingGrid with settings:', {
   BETTING_ROUND_DURATION
 });
 
-// Patch: Ensure MARA pool is included with correct logoUrl
 if (!miningPools.some(pool => pool.id === 'mara')) {
   miningPools.push({
     id: 'mara',
@@ -49,17 +47,15 @@ if (!miningPools.some(pool => pool.id === 'mara')) {
   });
 }
 
-// Add this helper function for normalizing pool IDs
 const getNormalizedPoolId = (poolId: string): string => {
   if (!poolId) return 'unknown';
   
-  // Mapping for specific pools with different case or naming conventions
   const poolMapping: Record<string, string> = {
     'foundry': 'foundryusa',
     'foundryusa': 'foundryusa',
     'binance': 'binancepool',
-    'ocean': 'Ocean', // Fix: Changed to capital 'O' for correct filename
-    'bitfufupool': 'BitFuFuPool', // Fix: Changed to match actual case in filename
+    'ocean': 'Ocean',
+    'bitfufupool': 'BitFuFuPool',
     'mara': 'marapool',
     'mining-squared': 'unknown'
   };
@@ -162,28 +158,24 @@ const BettingGrid = () => {
     }
   }, [user]);
   
-  // Load lastBlockTime from localStorage on component mount
   useEffect(() => {
     const storedLastBlockTime = localStorage.getItem('lastBlockTime');
     if (storedLastBlockTime) {
       const parsedTime = parseInt(storedLastBlockTime);
       setLastBlockTime(parsedTime);
     } else {
-      // Simulate a recent block for first-time visitors
       const simulatedBlockTime = Date.now() - (Math.floor(Math.random() * 60) * 1000);
       localStorage.setItem('lastBlockTime', simulatedBlockTime.toString());
       setLastBlockTime(simulatedBlockTime);
     }
   }, []);
 
-  // Update and persist lastBlockTime
   useEffect(() => {
     if (lastBlockTime) {
       localStorage.setItem('lastBlockTime', lastBlockTime.toString());
     }
   }, [lastBlockTime]);
 
-  // Timer effect - Update for smoother animation
   useEffect(() => {
     if (!lastBlockTime) return;
     
@@ -196,9 +188,8 @@ const BettingGrid = () => {
     const calculateTimeRemaining = () => {
       const now = Date.now();
       const remaining = Math.max(0, (endTime - now) / 1000);
-      setTimeRemaining(Math.floor(remaining)); // Floor for display
+      setTimeRemaining(Math.floor(remaining));
       
-      // Update progress bar with decimal precision for smoother animation
       const elapsedPercent = Math.max(0, Math.min(100, 100 - (remaining / BETTING_ROUND_DURATION * 100)));
       setProgress(elapsedPercent);
       
@@ -213,11 +204,9 @@ const BettingGrid = () => {
       }
     };
     
-    // Initial calculation
     calculateTimeRemaining();
     
-    // Update more frequently for smoother animation
-    timerIntervalRef.current = setInterval(calculateTimeRemaining, 100); // 10 updates per second
+    timerIntervalRef.current = setInterval(calculateTimeRemaining, 100);
     
     return () => {
       if (timerIntervalRef.current) {
@@ -228,7 +217,6 @@ const BettingGrid = () => {
 
   const hasStartedInitialRound = useRef(false);
   
-  // Add the missing updateVisualIndicators function
   const updateVisualIndicators = useCallback(() => {
     setPendingTxCount(prev => {
       const variation = Math.random() * 100 - 20;
@@ -259,27 +247,46 @@ const BettingGrid = () => {
         fetchMiningPoolStats()
           .then(stats => {
             if (stats && stats.length > 0) {
-              miningPools.forEach(pool => {
-                // Try multiple matching strategies
-                const poolStats = stats.find(s => 
+              const sortedStats = stats
+                .filter(s => !!miningPools.find(pool =>
                   s.poolName.toLowerCase().includes(pool.id.toLowerCase()) ||
                   pool.id.toLowerCase().includes(s.poolName.toLowerCase()) ||
                   pool.name.toLowerCase().includes(s.poolName.toLowerCase()) ||
                   s.poolName.toLowerCase().includes(pool.name.toLowerCase())
+                ))
+                .sort((a, b) => b.blocksCount - a.blocksCount);
+
+              let multiplier = 2.0;
+              const usedIds = new Set();
+
+              sortedStats.forEach((stat, idx) => {
+                const matchingPool = miningPools.find(pool =>
+                  stat.poolName.toLowerCase().includes(pool.id.toLowerCase()) ||
+                  pool.id.toLowerCase().includes(stat.poolName.toLowerCase()) ||
+                  pool.name.toLowerCase().includes(stat.poolName.toLowerCase()) ||
+                  stat.poolName.toLowerCase().includes(pool.name.toLowerCase())
                 );
-                
-                if (poolStats) {
-                  // Ensure we have valid non-zero values
-                  if (poolStats.hashrate > 0) pool.hashRate = poolStats.hashrate;
-                  if (poolStats.percentage > 0) pool.hashRatePercent = poolStats.percentage;
-                  if (poolStats.percentage > 0) pool.odds = 100 / poolStats.percentage;
-                  console.log(`Updated pool stats for ${pool.name}: ${pool.hashRate} EH/s, ${pool.hashRatePercent}%`);
-                } else {
-                  // Set fallback minimum values if no stats found
-                  if (pool.hashRate <= 0) pool.hashRate = 0.1;
-                  if (pool.hashRatePercent <= 0) pool.hashRatePercent = 0.1;
-                  console.log(`No API stats found for ${pool.name}, using minimum values`);
+                if (matchingPool) {
+                  matchingPool.hashRate = stat.hashrate > 0 ? stat.hashrate : matchingPool.hashRate;
+                  matchingPool.hashRatePercent = stat.percentage > 0 ? stat.percentage : matchingPool.hashRatePercent;
+                  matchingPool.blocksLast24h = stat.blocksCount > 0 ? stat.blocksCount : matchingPool.blocksLast24h;
+                  matchingPool.odds = multiplier;
+                  usedIds.add(matchingPool.id);
+                  multiplier += 0.5;
                 }
+              });
+
+              let lastMultiplier = multiplier;
+              miningPools.forEach(pool => {
+                if (!usedIds.has(pool.id) && pool.id !== 'empty-block') {
+                  pool.odds = lastMultiplier;
+                  lastMultiplier += 0.5;
+                }
+              });
+
+              miningPools.forEach(pool => {
+                if (pool.hashRate <= 0) pool.hashRate = 0.1;
+                if (pool.hashRatePercent <= 0) pool.hashRatePercent = 0.1;
               });
             } else {
               console.warn('Received empty stats from API, using default values');
@@ -287,7 +294,6 @@ const BettingGrid = () => {
           })
           .catch(err => {
             console.error('Error updating pool stats:', err);
-            // Ensure minimum values in case of API error
             miningPools.forEach(pool => {
               if (pool.hashRate <= 0) pool.hashRate = 0.1;
               if (pool.hashRatePercent <= 0) pool.hashRatePercent = 0.1;
@@ -530,32 +536,35 @@ const BettingGrid = () => {
 
   const handleAddBetToHistory = async (poolId: string, amount: number, isWin: boolean, winAmount?: number) => {
     const pool = miningPools.find(p => p.id === poolId);
-    if (!pool) return;
-    
-    // Create new bet object
+    const isEmptyBlock = poolId === null || poolId === "empty-block" || poolId === "";
+
+    let payoutMultiplier = 1;
+    if (isEmptyBlock) {
+      payoutMultiplier = 35.0;
+    } else if (pool) {
+      payoutMultiplier = pool.odds || 2.0;
+    }
+
     const newBet: Omit<BetHistoryRecord, 'id' | 'timestamp'> = {
       poolId: poolId,
-      poolName: pool.name,
+      poolName: pool ? pool.name : 'Empty Block',
       amount: amount,
       isWin: isWin,
       blockHeight: currentBlock + 1,
       winAmount: winAmount
     };
-  
-    // Save to database if user is logged in
+
     if (user) {
       try {
         console.log('Saving bet to history:', newBet);
         await betHistoryService.saveBetHistory(newBet);
         
-        // Refresh the history to get the latest data
         await loadBetHistory();
       } catch (error) {
         console.error('Failed to save bet history:', error);
       }
     }
-  
-    // For immediate UI feedback, add to local state as well
+
     const localBet: BetHistoryRecord = {
       ...newBet,
       id: Date.now(),
@@ -563,9 +572,9 @@ const BettingGrid = () => {
     };
     
     setBetHistory(prev => [localBet, ...prev].slice(0, 50));
-  
+
     if (isWin && pool) {
-      const rawWinAmount = winAmount || Math.floor(amount * pool.odds);
+      const rawWinAmount = winAmount || Math.floor(amount * payoutMultiplier);
       const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
       const netWinAmount = rawWinAmount - platformFee;
       
@@ -573,7 +582,7 @@ const BettingGrid = () => {
       
       toast({
         title: "Bet won!",
-        description: `You won ${formatSats(netWinAmount)} (after ${PLATFORM_FEE * 100}% platform fee) betting on ${pool?.name}!`,
+        description: `You won ${formatSats(netWinAmount)} (after ${PLATFORM_FEE * 100}% platform fee) betting on ${pool?.name || "Empty Block"}!`,
         variant: "default"
       });
     }
@@ -680,13 +689,13 @@ const BettingGrid = () => {
       case 10000:
         return "bg-orange-600";
       case 20000:
-        return "bg-blue-600"; // Changed to blue for 20K
+        return "bg-blue-600";
       case 50000:
         return "bg-red-600";
       case 100000:
-        return "bg-green-600"; // Changed to green for 100K
+        return "bg-green-600";
       case 200000:
-        return "bg-yellow-500"; // Changed to gold/yellow for 200K
+        return "bg-yellow-500";
       default:
         return "bg-gray-600";
     }
@@ -701,19 +710,17 @@ const BettingGrid = () => {
       case 10000:
         return "bg-orange-500";
       case 20000:
-        return "bg-blue-500"; // Changed to blue for 20K
+        return "bg-blue-500";
       case 50000:
         return "bg-red-500";
       case 100000:
-        return "bg-green-500"; // Changed to green for 100K
+        return "bg-green-500";
       case 200000:
-        return "bg-yellow-400"; // Changed to gold/yellow for 200K
+        return "bg-yellow-400";
       default:
         return "bg-gray-500";
     }
   };
-
- 
 
   const formatChipValue = (value: number) => {
     if (value >= 100000) return `${value / 1000}K`;
@@ -879,10 +886,8 @@ const BettingGrid = () => {
       totalBetAmount: bets.reduce((sum, bet) => sum + bet.amount, 0)
     });
     
-    // Clear betting state first to prevent visual artifacts
     setIsBettingClosed(false);
     
-    // Immediately clear the bets to update UI
     setBets([]);
     setSelectedChip(null);
     setSelectedPool(null);
@@ -913,34 +918,43 @@ const BettingGrid = () => {
     
     let totalWinAmount = 0;
     
-    // Process all bets using a local copy since we cleared the state
     const betsToProcess = [...bets];
     
-    // Process all bets first
     betsToProcess.forEach(bet => {
       const isWin = bet.poolId === winningPoolId;
       if (bet.poolId) {
         const pool = miningPools.find(p => p.id === bet.poolId);
-        if (pool) {
-          if (isWin) {
-            const rawWinAmount = Math.floor(bet.amount * pool.odds);
-            const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
-            const netWinAmount = rawWinAmount - platformFee;
-            totalWinAmount += netWinAmount;
-            
-            // Save with win amount
-            handleAddBetToHistory(bet.poolId, bet.amount, isWin, netWinAmount);
-            
-            console.log('Win processed:', {
-              pool: pool.name,
-              betAmount: bet.amount,
-              odds: pool.odds,
-              netWinAmount
-            });
-          } else {
-            // Save as a loss
-            handleAddBetToHistory(bet.poolId, bet.amount, isWin);
-          }
+        let payoutMultiplier = pool?.odds || 2.0;
+        if (bet.poolId === null || bet.poolId === "empty-block" || bet.poolId === "") {
+          payoutMultiplier = 35.0;
+        }
+        if (isWin) {
+          const rawWinAmount = Math.floor(bet.amount * payoutMultiplier);
+          const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
+          const netWinAmount = rawWinAmount - platformFee;
+          totalWinAmount += netWinAmount;
+          
+          handleAddBetToHistory(bet.poolId, bet.amount, isWin, netWinAmount);
+          
+          console.log('Win processed:', {
+            pool: pool.name,
+            betAmount: bet.amount,
+            odds: pool.odds,
+            netWinAmount
+          });
+        } else {
+          handleAddBetToHistory(bet.poolId, bet.amount, isWin);
+        }
+      } else {
+        if (isWin) {
+          const payoutMultiplier = 35.0;
+          const rawWinAmount = Math.floor(bet.amount * payoutMultiplier);
+          const platformFee = Math.floor(rawWinAmount * PLATFORM_FEE);
+          const netWinAmount = rawWinAmount - platformFee;
+          totalWinAmount += netWinAmount;
+          handleAddBetToHistory(null, bet.amount, isWin, netWinAmount);
+        } else {
+          handleAddBetToHistory(null, bet.amount, isWin);
         }
       }
     });
@@ -961,10 +975,8 @@ const BettingGrid = () => {
       });
     }
     
-    // Update block counter
     setCurrentBlock(prev => prev + 1);
     
-    // Let the glow effects play for a moment, then complete the reset
     setTimeout(() => {
       startNewBettingRound();
     }, 3000);
@@ -1069,7 +1081,8 @@ const BettingGrid = () => {
         {sortedBets.map((bet, index) => {
           const pool = bet.poolId ? miningPools.find(p => p.id === bet.poolId) : null;
           const poolName = pool ? pool.name : 'Empty Block';
-          const potentialWin = pool ? Math.floor(bet.totalAmount * pool.odds) : Math.floor(bet.totalAmount * 80);
+          const payoutMultiplier = !bet.poolId || bet.poolId === "empty-block" ? 35.0 : (pool?.odds || 2.0);
+          const potentialWin = Math.floor(bet.totalAmount * payoutMultiplier);
           
           return (
             <div key={`bet-${bet.poolId}-${index}`} className="flex items-center justify-between border-b border-white/10 pb-3">
@@ -1239,12 +1252,10 @@ const BettingGrid = () => {
     }
   }, []);
 
-  // Sort mining pools descending by blocksLast24h
   const sortedMiningPools = [...miningPools].sort(
     (a, b) => b.blocksLast24h - a.blocksLast24h
   );
 
-  // Update Progress component render for smoother transition
   return (
     <div className="w-full">
       <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
@@ -1396,7 +1407,7 @@ const BettingGrid = () => {
                         "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
                         isMobile ? "text-sm" : "text-lg"
                       )}>
-                        80.00
+                        35.00
                         <span className="ml-0.5">×</span>
                       </span>
                       <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
@@ -1441,8 +1452,8 @@ const BettingGrid = () => {
               </OriginTabsContent>
               
               <OriginTabsContent value="history" className="mt-4">
-  <BetHistory bets={betHistory} isLoading={isLoadingHistory} />
-</OriginTabsContent>
+                <BetHistory bets={betHistory} isLoading={isLoadingHistory} />
+              </OriginTabsContent>
               
               <OriginTabsContent value="transactions" className="mt-4">
                 {renderTransactionHistory()}
