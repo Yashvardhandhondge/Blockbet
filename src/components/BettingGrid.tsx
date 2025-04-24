@@ -77,7 +77,7 @@ const BettingGrid = () => {
     id: number;
   }[]>([]);
   const [nextBetId, setNextBetId] = useState(1);
-  const [timeRemaining, setTimeRemaining] = useState(BETTING_ROUND_DURATION);
+  // const [timeRemaining, setTimeRemaining] = useState(BETTING_ROUND_DURATION);
   const [totalBet, setTotalBet] = useState(0);
   const [selectedPool, setSelectedPool] = useState<MiningPool | null>(null);
   const [timeVariation, setTimeVariation] = useState(0);
@@ -138,10 +138,10 @@ const BettingGrid = () => {
   const [progress, setProgress] = useState(0);
   const [winningPool, setWinningPool] = useState<string | null>(null);
   const [isBettingClosed, setIsBettingClosed] = useState(false);
-  const [lastBlockTime, setLastBlockTime] = useState<number | null>(null);
+  // const [lastBlockTime, setLastBlockTime] = useState<number | null>(null);
   const [glowingPools, setGlowingPools] = useState<string[]>([]);
 
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadBetHistory = useCallback(async () => {
     if (user) {
@@ -164,68 +164,68 @@ const BettingGrid = () => {
   }, [user]);
   
   // Load lastBlockTime from localStorage on component mount
-  useEffect(() => {
-    const storedLastBlockTime = localStorage.getItem('lastBlockTime');
-    if (storedLastBlockTime) {
-      const parsedTime = parseInt(storedLastBlockTime);
-      setLastBlockTime(parsedTime);
-    } else {
-      // Simulate a recent block for first-time visitors
-      const simulatedBlockTime = Date.now() - (Math.floor(Math.random() * 60) * 1000);
-      localStorage.setItem('lastBlockTime', simulatedBlockTime.toString());
-      setLastBlockTime(simulatedBlockTime);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedLastBlockTime = localStorage.getItem('lastBlockTime');
+  //   if (storedLastBlockTime) {
+  //     const parsedTime = parseInt(storedLastBlockTime);
+  //     setLastBlockTime(parsedTime);
+  //   } else {
+  //     // Simulate a recent block for first-time visitors
+  //     const simulatedBlockTime = Date.now() - (Math.floor(Math.random() * 60) * 1000);
+  //     localStorage.setItem('lastBlockTime', simulatedBlockTime.toString());
+  //     setLastBlockTime(simulatedBlockTime);
+  //   }
+  // }, []);
 
   // Update and persist lastBlockTime
-  useEffect(() => {
-    if (lastBlockTime) {
-      localStorage.setItem('lastBlockTime', lastBlockTime.toString());
-    }
-  }, [lastBlockTime]);
+  // useEffect(() => {
+  //   if (lastBlockTime) {
+  //     localStorage.setItem('lastBlockTime', lastBlockTime.toString());
+  //   }
+  // }, [lastBlockTime]);
 
   // Timer effect - Update for smoother animation
-  useEffect(() => {
-    if (!lastBlockTime) return;
+  // useEffect(() => {
+  //   if (!lastBlockTime) return;
     
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
+  //   if (timerIntervalRef.current) {
+  //     clearInterval(timerIntervalRef.current);
+  //   }
     
-    const endTime = lastBlockTime + BETTING_ROUND_DURATION * 1000;
+  //   const endTime = lastBlockTime + BETTING_ROUND_DURATION * 1000;
     
-    const calculateTimeRemaining = () => {
-      const now = Date.now();
-      const remaining = Math.max(0, (endTime - now) / 1000);
-      setTimeRemaining(Math.floor(remaining)); // Floor for display
+  //   const calculateTimeRemaining = () => {
+  //     const now = Date.now();
+  //     const remaining = Math.max(0, (endTime - now) / 1000);
+  //     setTimeRemaining(Math.floor(remaining)); // Floor for display
       
-      // Update progress bar with decimal precision for smoother animation
-      const elapsedPercent = Math.max(0, Math.min(100, 100 - (remaining / BETTING_ROUND_DURATION * 100)));
-      setProgress(elapsedPercent);
+  //     // Update progress bar with decimal precision for smoother animation
+  //     const elapsedPercent = Math.max(0, Math.min(100, 100 - (remaining / BETTING_ROUND_DURATION * 100)));
+  //     setProgress(elapsedPercent);
       
-      if (remaining <= 0 && !isBettingClosed) {
-        setIsBettingClosed(true);
-        toast({
-          title: "Betting round closed",
-          description: "Waiting for next block to be mined",
-          variant: "destructive"
-        });
-        console.log('Betting closed at:', new Date().toISOString());
-      }
-    };
+  //     if (remaining <= 0 && !isBettingClosed) {
+  //       setIsBettingClosed(true);
+  //       toast({
+  //         title: "Betting round closed",
+  //         description: "Waiting for next block to be mined",
+  //         variant: "destructive"
+  //       });
+  //       console.log('Betting closed at:', new Date().toISOString());
+  //     }
+  //   };
     
-    // Initial calculation
-    calculateTimeRemaining();
+  //   // Initial calculation
+  //   calculateTimeRemaining();
     
-    // Update more frequently for smoother animation
-    timerIntervalRef.current = setInterval(calculateTimeRemaining, 100); // 10 updates per second
+  //   // Update more frequently for smoother animation
+  //   timerIntervalRef.current = setInterval(calculateTimeRemaining, 100); // 10 updates per second
     
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-    };
-  }, [lastBlockTime, isBettingClosed]);
+  //   return () => {
+  //     if (timerIntervalRef.current) {
+  //       clearInterval(timerIntervalRef.current);
+  //     }
+  //   };
+  // }, [lastBlockTime, isBettingClosed]);
 
   const hasStartedInitialRound = useRef(false);
   
@@ -283,9 +283,14 @@ const BettingGrid = () => {
                 }
               });
               const updatedPools = calculateDynamicPayoutMultipliers(miningPools);
-          
-              // Then sort by blocksLast24h again to maintain the display order
-              const sortedPools = [...updatedPools].sort((a, b) => b.blocksLast24h - a.blocksLast24h);
+            
+              // Actually use the sorted pools (either assign them to a state variable or do something with them)
+              // For example, if you have a state for mining pools:
+              // setMiningPools(updatedPools);
+              
+              // Or if you're directly modifying the miningPools array:
+              miningPools.length = 0;
+              miningPools.push(...updatedPools);
             } else {
               console.warn('Received empty stats from API, using default values');
             }
@@ -345,23 +350,23 @@ const BettingGrid = () => {
   }, []);
 
   const handlePlaceBet = (poolId: string | null) => {
-    console.log('Attempting to place bet:', {
-      poolId,
-      selectedChip,
-      currentWalletBalance: walletBalance,
-      isBettingClosed,
-      timeRemaining
-    });
+    // console.log('Attempting to place bet:', {
+    //   poolId,
+    //   selectedChip,
+    //   currentWalletBalance: walletBalance,
+    //   isBettingClosed,
+    //   timeRemaining
+    // });
 
-    if (timeRemaining <= 0 || isBettingClosed) {
-      console.log('Bet rejected: Betting period closed');
-      toast({
-        title: "Betting is closed",
-        description: "Please wait for the next block to be mined",
-        variant: "destructive"
-      });
-      return;
-    }
+    // if (timeRemaining <= 0 || isBettingClosed) {
+    //   console.log('Bet rejected: Betting period closed');
+    //   toast({
+    //     title: "Betting is closed",
+    //     description: "Please wait for the next block to be mined",
+    //     variant: "destructive"
+    //   });
+    //   return;
+    // }
     
     if (!selectedChip) {
       console.log('Bet rejected: No chip selected');
@@ -420,7 +425,7 @@ const BettingGrid = () => {
     });
     setNextBetId(prev => prev + 1);
     
-    const poolName = poolId ? miningPools.find(p => p.id === poolId)?.name || 'Unknown' : 'Empty Block';
+    const poolName = poolId ? miningPools.find(p => p.id === poolId)?.name : 'Empty Block';
     console.log('Bet placed:', { poolId, poolName, amount: selectedChip });
     toast({
       title: "Bet placed!",
@@ -584,11 +589,11 @@ const BettingGrid = () => {
     }
   };
 
-  const formatTimeRemaining = () => {
-    const minutes = Math.floor(timeRemaining / 60);
-    const seconds = timeRemaining % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
+  // const formatTimeRemaining = () => {
+  //   const minutes = Math.floor(timeRemaining / 60);
+  //   const seconds = timeRemaining % 60;
+  //   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  // };
 
   const estimatedTime = (() => {
     const totalMinutes = (BETTING_ROUND_DURATION / 60) + timeVariation;
@@ -597,12 +602,12 @@ const BettingGrid = () => {
     return `${minutes}m ${seconds}s`;
   })();
 
-  const getUrgencyClass = () => {
-    const percentageLeft = timeRemaining / totalTime * 100;
-    if (percentageLeft < 20) return "text-btc-orange";
-    if (percentageLeft < 50) return "text-btc-orange";
-    return "text-btc-orange";
-  };
+  // const getUrgencyClass = () => {
+  //   const percentageLeft = timeRemaining / totalTime * 100;
+  //   if (percentageLeft < 20) return "text-btc-orange";
+  //   if (percentageLeft < 50) return "text-btc-orange";
+  //   return "text-btc-orange";
+  // };
 
   const handleSelectChip = (value: number) => {
     if (isBettingClosed) {
@@ -975,11 +980,19 @@ const BettingGrid = () => {
     }, 3000);
   }, [bets, setWalletBalance, startNewBettingRound, handleAddBetToHistory]);
   useEffect(() => {
+    // const handleBlockMined = (e: CustomEvent<any>) => {
+    //   console.log('Block mined event received:', e.detail);
+    //   if (e.detail) {
+    //     const newBlockTime = e.detail.timestamp || Date.now();
+    //     setLastBlockTime(newBlockTime);
+    //     processBetsForBlock(e.detail);
+    //   }
+    // };
+
     const handleBlockMined = (e: CustomEvent<any>) => {
       console.log('Block mined event received:', e.detail);
       if (e.detail) {
-        const newBlockTime = e.detail.timestamp || Date.now();
-        setLastBlockTime(newBlockTime);
+        // No need to set lastBlockTime since we removed timer functionality
         processBetsForBlock(e.detail);
       }
     };
@@ -1210,15 +1223,19 @@ const BettingGrid = () => {
     return (
       <div className="flex flex-wrap items-center justify-center gap-1.5 md:gap-3">
         {CHIP_VALUES.map(value => (
-          <button
-            key={`chip-${value}`}
-            className={cn(
-              "relative rounded-full w-9 h-9 md:w-12 md:h-12 flex items-center justify-center text-white font-bold text-xs md:text-sm transition-all",
-              selectedChip === value ? "ring-2 ring-white shadow-lg scale-110 z-10" : "hover:scale-105",
-              getChipColor(value)
-            )}
-            onClick={() => handleSelectChip(value)}
-          >
+        <button
+        key={`chip-${value}`}
+        className={cn(
+          "relative rounded-full w-9 h-9 md:w-12 md:h-12 flex items-center justify-center text-white font-bold text-xs md:text-sm transition-all",
+          selectedChip === value ? "shadow-lg scale-110 z-10" : "hover:scale-105",
+          getChipColor(value)
+        )}
+        style={selectedChip === value ? {
+          boxShadow: '0 0 0 2px transparent, 0 0 0 4px #f7931a',
+          background: `${getChipColor(value)}, linear-gradient(90deg, #f7931a 0%, #ffd700 100%) border-box`
+        } : {}}
+        onClick={() => handleSelectChip(value)}
+      >
             <div className="absolute inset-1 rounded-full border border-white/30"></div>
             <div 
               className="absolute inset-0.5 rounded-full border-dashed border-2"
@@ -1252,7 +1269,7 @@ const BettingGrid = () => {
   // Update Progress component render for smoother transition
   return (
     <div className="w-full">
-      <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
+      {/* <div className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl mb-6 overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center">
             <Clock className="h-4 w-4 text-btc-orange mr-1.5" />
@@ -1286,7 +1303,7 @@ const BettingGrid = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl h-[110px]">

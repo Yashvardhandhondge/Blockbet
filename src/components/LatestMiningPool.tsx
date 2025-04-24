@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestBlockData } from '@/api/latestBlockApi';
 import { Block } from '@/utils/types';
@@ -98,9 +98,8 @@ const LatestMiningPool = () => {
   const getPoolLogo = (poolName: string): string => {
     const normalizedName = poolName.toLowerCase().trim();
     
-    if (normalizedName === 'mining squared' || normalizedName.includes('mining squared')) {
-      return '/pool-logos/unknown.svg';
-    }
+    // FIX: Remove special handling for Mining Squared that sets it to unknown
+    // Instead, use unknown.svg as a fallback if needed, but preserve the name
     
     const poolLogoMap: { [key: string]: string } = {
       'foundry usa': '/pool-logos/foundryusa.svg',
@@ -110,9 +109,9 @@ const LatestMiningPool = () => {
       'viabtc': '/pool-logos/viabtc.svg',
       'slushpool': '/pool-logos/slushpool.svg',
       'braiins pool': '/pool-logos/braiinspool.svg',
-      'bitfufupool': '/pool-logos/bitfufupool.svg',  // BitFuFuPool logo
-      'ocean': '/pool-logos/ocean.svg',                // OCEAN logo
-      'mara': '/pool-logos/marapool.svg',              // MARA Pool logo
+      'bitfufupool': '/pool-logos/bitfufupool.svg',
+      'ocean': '/pool-logos/ocean.svg',
+      'mara': '/pool-logos/marapool.svg',
       'poolin': '/pool-logos/poolin.svg',
       'btc.com': '/pool-logos/btccom.svg',
       'sbi crypto': '/pool-logos/sbicrypto.svg',
@@ -132,6 +131,8 @@ const LatestMiningPool = () => {
       'rawpool': '/pool-logos/rawpool.svg',
       'sigmapool': '/pool-logos/sigmapoolcom.svg',
       'secpool': '/pool-logos/secpool.svg',
+      // Add Mining Squared with its proper logo
+      'mining squared': '/pool-logos/unknown.svg', // Use unknown.svg as fallback
     };
     
     for (const [key, value] of Object.entries(poolLogoMap)) {
@@ -181,16 +182,6 @@ const LatestMiningPool = () => {
             <span className="text-xs text-white/70">Live</span>
           </div>
           <div className="flex items-center space-x-2">
-            {/* <button 
-              onClick={handleManualRefresh}
-              className={cn(
-                "p-1.5 rounded-full hover:bg-white/10 transition-colors",
-                isLoading && "animate-spin"
-              )}
-              disabled={isLoading}
-            >
-              <RefreshCw className="h-4 w-4 text-white/70" />
-            </button> */}
             <button 
               onClick={scrollLeft}
               className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
@@ -298,7 +289,8 @@ const LatestMiningPool = () => {
                         "font-medium text-xs md:text-sm truncate w-full max-w-full md:max-w-[112px] title-gradient",
                         isLatestBlock ? "text-yellow-400" : ""
                       )}>
-                        {block.minedBy === 'Mining Squared' ? 'Unknown' : block.minedBy}
+                        {/* FIX: Remove the conditional that changes "Mining Squared" to "Unknown" */}
+                        {block.minedBy}
                       </p>
                       <p className={cn(
                         "text-[10px] md:text-xs mt-0.5 md:mt-1",
@@ -306,9 +298,9 @@ const LatestMiningPool = () => {
                       )}>
                         #{block.height}
                       </p>
-                      <p className="text-[8px] md:text-[10px] text-white/50 mt-0.5 md:mt-1 hidden md:block">
-                        {safeFormatTimeAgo(block.timestamp)}
-                      </p>
+                      <p className="text-[8px] md:text-[10px] text-white/50 mt-0.5 md:mt-1">
+  {safeFormatTimeAgo(block.timestamp)}
+</p>
                     </div>
                   </div>
                 </div>

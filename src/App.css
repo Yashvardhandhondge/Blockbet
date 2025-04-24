@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+.selected-chip::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 100%;
+  background: linear-gradient(90deg, #f7931a 0%, #ffd700 100%);
+  z-index: -1;
+}

@@ -229,21 +229,21 @@ useEffect(() => {
         )}
         
         <div className="mt-auto">
-          <div className={cn(
-            "flex justify-center items-center",
-            isMobile ? "mb-2" : "p-2"
-          )}>
-            <div className="text-white/80 text-center">
-            <span className={cn(
-  "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
-  isMobile ? "text-sm" : "text-lg"
+        <div className={cn(
+  "flex justify-center items-center",
+  isMobile ? "mb-2" : "p-2"
 )}>
-  {pool.odds.toFixed(2)}
-  <span className="ml-0.5">×</span>
-</span>
-              <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
-            </div>
-          </div>
+  <div className="text-white/80 text-center">
+    <span className={cn(
+      "font-bold bg-gradient-to-r from-btc-orange to-yellow-500 bg-clip-text text-transparent",
+      isMobile ? "text-sm" : "text-lg"
+    )}>
+      {pool.odds.toFixed(2)}
+      <span className="ml-0.5">×</span>
+    </span>
+    <span className={cn("ml-1 text-white/60", isMobile ? "text-[9px]" : "text-xs")}>payout</span>
+  </div>
+</div>
           
           <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
   <div 

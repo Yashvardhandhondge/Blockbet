@@ -259,6 +259,7 @@ export const getRandomMiningPool = (): MiningPool => {
 
 
 // This function should be called whenever mining pool data is refreshed
+// This function should be called whenever mining pool data is refreshed
 export const calculateDynamicPayoutMultipliers = (pools: MiningPool[]): MiningPool[] => {
   // First, sort pools by blocksLast24h in descending order
   const sortedPools = [...pools].sort((a, b) => b.blocksLast24h - a.blocksLast24h);

@@ -71,18 +71,19 @@ export function ToastContent({ title, description, poolName, variant = "default"
     )}>
       {poolName && (
         <Avatar className="h-8 w-8 border-2 border-white border-dashed bg-[#0a0a0a] p-0.5">
-          <AvatarImage src={getPoolLogo(poolName)} alt={poolName === 'Mining Squared' ? 'Unknown' : poolName} />
+          <AvatarImage 
+            src={getPoolLogo(poolName)} 
+            alt={poolName} 
+          />
           <AvatarFallback className="bg-btc-dark text-white text-xs">
-            {poolName === 'Mining Squared' ? 'UN' : poolName.substring(0, 2).toUpperCase()}
+            {poolName.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       )}
       <div>
         <div className="font-medium text-base text-btc-orange">{title}</div>
         {description && <div className="text-sm text-white/90">
-          {description.includes('Mining Squared') 
-            ? description.replace('Mining Squared', 'Unknown') 
-            : description}
+          {description}
         </div>}
       </div>
     </div>
