@@ -759,17 +759,19 @@ const BettingGrid = () => {
     const chipsToShow = chipGroups.slice(0, 3);
     const remainingDenoms = chipGroups.length > 3 ? chipGroups.length - 3 : 0;
     return <div className="flex -space-x-1 mr-2">
-        {chipsToShow.map((chipGroup, index) => <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-white/40", getChipColor(chipGroup.amount))} style={{
+        {chipsToShow.map((chipGroup, index) => <div key={`chip-${chipGroup.amount}-${index}`} className={cn("relative w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white border-2 border-white/50", getChipColor(chipGroup.amount))} style={{
         zIndex: 5 - index,
         transform: `translateX(${index * 4}px)`
       }}>
-            <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
-            <div className="flex items-center">
-              {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
-              {chipGroup.count > 1 && <span className="text-[6px] ml-0.5">×{chipGroup.count}</span>}
+            <div className="absolute inset-1 rounded-full border border-white/30"></div>
+            <div className="flex flex-col items-center justify-center leading-tight">
+              <div className="truncate max-w-[24px] text-center">
+                {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
+              </div>
+              {chipGroup.count > 1 && <div className="text-xs mt-0.5 font-semibold">×{chipGroup.count}</div>}
             </div>
           </div>)}
-        {remainingDenoms > 0 && <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
+        {remainingDenoms > 0 && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold bg-black/50 border border-white/20 shadow-sm" style={{
         zIndex: 1,
         transform: `translateX(${chipsToShow.length * 4}px)`
       }}>
@@ -1305,7 +1307,7 @@ const BettingGrid = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl h-[110px]">
-          <div className="flex justify-between items-start mb-2">
+          <div className="flex justify-between items-center mb-2">
             <h3 className="text-white text-sm">Step 1. Fund your Wallet.</h3>
           </div>
           <div className="flex items-center justify-between">
@@ -1330,7 +1332,7 @@ const BettingGrid = () => {
         </Card>
         
         <Card className="w-full bg-[#0a0a0a] border-white/10 p-4 rounded-xl relative h-[110px]">
-          <div className="flex justify-between items-start mb-2">
+          <div className="flex justify-between items-center mb-2">
             <h3 className="text-white text-sm">Step 2. Select chip value in Sats.</h3>
           </div>
           {renderChipSelection()}
@@ -1371,7 +1373,7 @@ const BettingGrid = () => {
           
           <div className="transition-all h-full">
             <div className={cn(
-              "relative rounded-xl overflow-hidden transition-all duration-300 border h-full",
+              "relative rounded-xl overflow-hidden transition-all duration-300 border h-full mx-auto",
               selectedPool === null && !!selectedChip ? "border-btc-orange shadow-[0_0_20px_rgba(247,147,26,0.15)]" : "border-white/10 hover:border-white/20",
               isBettingClosed ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
               "mobile-equal-height"
@@ -1437,7 +1439,14 @@ const BettingGrid = () => {
                   </div>
                 </div>
 
-                {renderStackedChips(getBetsOnPool(null))}
+                {/*
+                  was:
+                  {renderRouletteCasualChips(getBetsOnPool(null).map(bet => bet.amount))}
+                  now using the same stacked chip UI as other mining cards:
+                */}
+                <div className="absolute bottom-3 right-0 left-0 px-4 flex justify-end">
+                  {renderStackedChips(getBetsOnPool(null))}
+                </div>
               </div>
             </div>
           </div>
