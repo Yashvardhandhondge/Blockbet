@@ -79,7 +79,7 @@ const Navbar = () => {
               location.pathname === "/wallet" && location.search.includes("tab=deposit") ? "text-btc-orange" : "text-white hover:text-btc-orange"
             )}
           >
-            <ArrowDownToLine className="mr-1 h-4 w-4" />
+            <ArrowDownToLine className="mr-1 h-4 w-4 text-btc-orange" /> {/* Added text-btc-orange */}
             Deposit
           </Link>
           <Link 
@@ -89,7 +89,7 @@ const Navbar = () => {
               location.pathname === "/wallet" && location.search.includes("tab=withdraw") ? "text-btc-orange" : "text-white hover:text-btc-orange"
             )}
           >
-            <ArrowUpFromLine className="mr-1 h-4 w-4" />
+            <ArrowUpFromLine className="mr-1 h-4 w-4 text-btc-orange" /> {/* Added text-btc-orange */}
             Withdraw
           </Link>
           <Link 
@@ -227,7 +227,7 @@ const Navbar = () => {
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                <ArrowDownToLine className="mr-2 h-4 w-4 text-btc-orange" />
                 Deposit
               </Link>
               <Link 
@@ -238,7 +238,7 @@ const Navbar = () => {
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <ArrowUpFromLine className="mr-2 h-4 w-4" />
+                <ArrowUpFromLine className="mr-2 h-4 w-4 text-btc-orange" />
                 Withdraw
               </Link>
             </nav>
