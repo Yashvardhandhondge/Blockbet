@@ -42,16 +42,19 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">How to Play</a>
+                <a href="/how-to-play" className="text-white/70 hover:text-btc-orange transition-colors">How to Play</a>
               </li>
               <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Rules</a>
+                <a href="/auth" className="text-white/70 hover:text-btc-orange transition-colors">Profile</a>
               </li>
               <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">Leaderboard</a>
+                <a href="/wallet?tab=deposit" className="text-white/70 hover:text-btc-orange transition-colors">Deposit</a>
               </li>
               <li>
-                <a href="#" className="text-white/70 hover:text-btc-orange transition-colors">FAQ</a>
+                <a href="/wallet?tab=withdraw" className="text-white/70 hover:text-btc-orange transition-colors">Withdraw</a>
+              </li>
+              <li>
+                <a href="/leaderboard" className="text-white/70 hover:text-btc-orange transition-colors">Leaderboard</a>
               </li>
             </ul>
           </div>
