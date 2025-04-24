@@ -718,8 +718,6 @@ const BettingGrid = () => {
     }
   };
 
- 
-
   const formatChipValue = (value: number) => {
     if (value >= 100000) return `${value / 1000}K`;
     if (value >= 10000) return `${value / 1000}K`;
@@ -1020,7 +1018,7 @@ const BettingGrid = () => {
               transform: `translateX(${index * 4}px)`
             }}
           >
-            <div className="absolute inset-0 rounded-full border-[1.5px] border-white border-dashed"></div>
+            <div className="absolute inset-1 rounded-full border border-white/30"></div>
             <div className="flex flex-col items-center justify-center leading-tight">
               <div className="truncate max-w-[24px] text-center">
                 {chipGroup.amount >= 1000 ? `${chipGroup.amount / 1000}K` : chipGroup.amount}
@@ -1098,8 +1096,8 @@ const BettingGrid = () => {
                 </div>
                 <div>
                   <div className="text-sm font-medium text-white">{poolName}</div>
-                  <div className="flex items-center mt-1">
-                    {renderImprovedChips(bet.amounts)}
+                  <div className="text-xs text-white/60">
+                    {bet.amounts.length} bet{bet.amounts.length !== 1 ? 's' : ''}
                   </div>
                 </div>
               </div>
