@@ -11,46 +11,39 @@ export type Database = {
     Tables: {
       bet_history: {
         Row: {
+          amount: number
+          block_height: number
+          created_at: string
           id: string
-          user_id: string
+          is_win: boolean
           pool_id: string
           pool_name: string
-          amount: number
-          is_win: boolean
-          block_height: number
+          user_id: string
           win_amount: number | null
-          created_at: string
         }
         Insert: {
+          amount: number
+          block_height: number
+          created_at?: string
           id?: string
-          user_id: string
+          is_win?: boolean
           pool_id: string
           pool_name: string
-          amount: number
-          is_win: boolean
-          block_height: number
+          user_id: string
           win_amount?: number | null
-          created_at?: string
         }
         Update: {
+          amount?: number
+          block_height?: number
+          created_at?: string
           id?: string
-          user_id?: string
+          is_win?: boolean
           pool_id?: string
           pool_name?: string
-          amount?: number
-          is_win?: boolean
-          block_height?: number
+          user_id?: string
           win_amount?: number | null
-          created_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "bet_history_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
       lightning_deposits: {
         Row: {
