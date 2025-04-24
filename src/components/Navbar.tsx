@@ -1,5 +1,4 @@
-
-import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, Menu, X, User, LogOut, Award } from 'lucide-react';
+import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, Menu, X, User, LogOut, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -72,6 +71,36 @@ const Navbar = () => {
           >
             <Award className="mr-1 h-4 w-4" />
             Leaderboard
+          </Link>
+          <Link 
+            to="/wallet?tab=deposit" 
+            className={cn(
+              "text-sm font-semibold flex items-center transition-colors duration-200 transform hover:scale-105",
+              location.pathname === "/wallet" && location.search.includes("tab=deposit") ? "text-btc-orange" : "text-white hover:text-btc-orange"
+            )}
+          >
+            <ArrowDownToLine className="mr-1 h-4 w-4" />
+            Deposit
+          </Link>
+          <Link 
+            to="/wallet?tab=withdraw" 
+            className={cn(
+              "text-sm font-semibold flex items-center transition-colors duration-200 transform hover:scale-105",
+              location.pathname === "/wallet" && location.search.includes("tab=withdraw") ? "text-btc-orange" : "text-white hover:text-btc-orange"
+            )}
+          >
+            <ArrowUpFromLine className="mr-1 h-4 w-4" />
+            Withdraw
+          </Link>
+          <Link 
+            to="/auth" 
+            className={cn(
+              "text-sm font-semibold flex items-center transition-colors duration-200 transform hover:scale-105",
+              location.pathname === "/auth" ? "text-btc-orange" : "text-white hover:text-btc-orange"
+            )}
+          >
+            <User className="mr-1 h-4 w-4" />
+            Profile
           </Link>
         </nav>
 
@@ -189,6 +218,28 @@ const Navbar = () => {
               >
                 <User className="mr-2 h-4 w-4" />
                 Profile
+              </Link>
+              <Link 
+                to="/wallet?tab=deposit" 
+                className={cn(
+                  "text-sm font-semibold flex items-center",
+                  location.pathname === "/wallet" && location.search.includes("tab=deposit") ? "text-btc-orange" : "text-white hover:text-btc-orange"
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ArrowDownToLine className="mr-2 h-4 w-4" />
+                Deposit
+              </Link>
+              <Link 
+                to="/wallet?tab=withdraw" 
+                className={cn(
+                  "text-sm font-semibold flex items-center",
+                  location.pathname === "/wallet" && location.search.includes("tab=withdraw") ? "text-btc-orange" : "text-white hover:text-btc-orange"
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ArrowUpFromLine className="mr-2 h-4 w-4" />
+                Withdraw
               </Link>
             </nav>
           </div>
