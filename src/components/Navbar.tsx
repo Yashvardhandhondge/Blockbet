@@ -1,5 +1,5 @@
 
-import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, Menu, X, User, LogOut, Award, Zap } from 'lucide-react';
+import { Bitcoin, Wallet, ArrowDownToLine, ArrowUpFromLine, LogIn, Menu, X, User, LogOut, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -18,7 +18,6 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const {walletBalance} = useBalance();
   const isLoggedIn = !!user;
-  // const walletBalance = isLoggedIn ? '0.00125' : '0.00000000';
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -67,35 +66,40 @@ const Navbar = () => {
           <Link 
             to="/leaderboard" 
             className={cn(
-              "text-sm font-semibold transition-colors duration-200 transform hover:scale-105",
+              "text-sm font-semibold flex items-center transition-colors duration-200 transform hover:scale-105",
               location.pathname === "/leaderboard" ? "text-btc-orange" : "text-white hover:text-btc-orange"
             )}
           >
-            <span className="flex items-center">
-              <Award className="mr-1 h-4 w-4" />
-              Leaderboard
-            </span>
+            <Award className="mr-1 h-4 w-4" />
+            Leaderboard
           </Link>
         </nav>
 
         <div className="flex items-center space-x-3">
           {isLoggedIn ? (
             <>
-              <Link to="/wallet">
-                <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5">
-                  <Wallet className="h-4 w-4 text-btc-orange" />
-                  <span className="text-white font-medium text-sm">{walletBalance} BTC</span>
-                </div>
-              </Link>
+              <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5">
+                <Wallet className="h-4 w-4 text-btc-orange" />
+                <span className="text-white font-medium text-sm">{walletBalance} BTC</span>
+              </div>
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
                     <User className="mr-1 h-4 w-4 text-btc-orange" />
-                    <span className="sr-md:inline">Account</span>
+                    <span className="sr-md:inline">Profile</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-btc-darker border-white/10">
+                  <DropdownMenuItem 
+                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
+                    asChild
+                  >
+                    <Link to="/auth">
+                      <User className="h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem 
                     className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
                     onClick={handleSignOut}
@@ -106,65 +110,27 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
-                    <Zap className="mr-1 h-4 w-4 text-btc-orange" />
-                    <span>Wallet</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-btc-darker border-white/10">
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
-                    asChild
-                  >
-                    <Link to="/wallet">
-                      <Wallet className="h-4 w-4" />
-                      <span>Manage Wallet</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
-                    asChild
-                  >
-                    <Link to="/wallet?tab=deposit">
-                      <ArrowDownToLine className="h-4 w-4" />
-                      <span>Deposit</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className="flex items-center gap-2 text-white/80 hover:text-btc-orange focus:text-btc-orange font-medium cursor-pointer"
-                    asChild
-                  >
-                    <Link to="/wallet?tab=withdraw">
-                      <ArrowUpFromLine className="h-4 w-4" />
-                      <span>Withdraw</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Link to="/wallet?tab=deposit">
+                <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
+                  <ArrowDownToLine className="mr-1 h-4 w-4 text-btc-orange" />
+                  <span>Deposit</span>
+                </Button>
+              </Link>
+
+              <Link to="/wallet?tab=withdraw">
+                <Button variant="outline" size="sm" className="bg-btc-darker/80 border-white/10 hover:bg-btc-darker hover:border-white/20 font-semibold rounded-full">
+                  <ArrowUpFromLine className="mr-1 h-4 w-4 text-btc-orange" />
+                  <span>Withdraw</span>
+                </Button>
+              </Link>
             </>
           ) : (
             <>
-              <div className="hidden md:flex bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 items-center gap-1.5">
+              <div className="bg-btc-darker/90 border border-white/10 rounded-full py-1.5 px-3 flex items-center gap-1.5">
                 <Wallet className="h-4 w-4 text-btc-orange" />
                 <span className="text-white font-medium text-sm">{walletBalanceInSats} sats</span>
               </div>
-            
-              <Link to="/auth">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className={cn(
-                    "bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide rounded-full",
-                    isMobile ? "text-xs px-2.5 py-1 h-8" : ""
-                  )}
-                >
-                  <LogIn className={cn("mr-1", isMobile ? "h-3 w-3" : "h-4 w-4")} />
-                  <span>Sign / Login</span>
-                </Button>
-              </Link>
-              
+
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -216,41 +182,15 @@ const Navbar = () => {
               <Link 
                 to="/auth" 
                 className={cn(
-                  "text-sm font-semibold",
+                  "text-sm font-semibold flex items-center",
                   location.pathname === "/auth" ? "text-btc-orange" : "text-white hover:text-btc-orange"
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sign / Login
+                <User className="mr-2 h-4 w-4" />
+                Profile
               </Link>
             </nav>
-            
-            <div className="py-4 space-y-3">
-              <div className="bg-btc-darker/90 border border-white/10 rounded-full py-2 px-4 flex items-center justify-center gap-2">
-                <Wallet className="h-4 w-4 text-btc-orange" />
-                <span className="text-white font-medium">{walletBalanceInSats} sats</span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-btc-orange text-btc-darker border-btc-orange hover:bg-btc-orange/80 hover:text-btc-darker font-semibold tracking-wide w-full rounded-full"
-                >
-                  <ArrowDownToLine className="mr-1 h-4 w-4" />
-                  <span>Deposit</span>
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-btc-darker border-white/10 text-white hover:text-btc-orange hover:border-btc-orange/40 font-semibold tracking-wide w-full rounded-full"
-                >
-                  <ArrowUpFromLine className="mr-1 h-4 w-4" />
-                  <span>Withdraw</span>
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       )}
